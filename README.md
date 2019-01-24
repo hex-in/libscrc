@@ -3,31 +3,21 @@ libscrc
 
 libscrc is a library for calculating CRC4 CRC5 CRC6 CRC7 CRC8 CRC16 CRC32 CRC64.
 
-+------------+------------+------------+-----------+-----------+ 
-| CRCx       | CRC8       | CRC16      | CRC32     | CRC64     |
-+============+============+============+===========+===========+ 
-| CRC4-ITU   | Intel      | Modbus     | FSC       | ISO       |
-+------------+------------+------------+-----------+-----------+ 
-| CRC5-ITU   | BCC        | IBM        | CRC32     | ECMA182   |
-+------------+------------+------------+-----------+-----------+ 
-| CRC5-EPC   | LRC        | XModem     | MPEG2     |           |
-+------------+------------+------------+-----------+-----------+ 
-| CRC5-USB   | MAXIM8     | CCITT      |           |           |
-+------------+------------+------------+-----------+-----------+ 
-| CRC6-ITU   | ROHC       | Kermit     |           |           |
-+------------+------------+------------+-----------+-----------+ 
-| CRC7-MMC   | ITU8       | Sick       |           |           |
-+------------+------------+------------+-----------+-----------+ 
-|            | CRC8       | DNP        |           |           |
-+------------+------------+------------+-----------+-----------+ 
-|            |            | X25        |           |           |
-+------------+------------+------------+-----------+-----------+ 
-|            |            | USB        |           |           |
-+------------+------------+------------+-----------+-----------+
-|            |            | MAXIM16    |           |           |
-+------------+------------+------------+-----------+-----------+
-|            |            | DECT       |           |           |
-+------------+------------+------------+-----------+-----------+
+|  CRCx |  CRC8 | CRC16  |   CRC32| CRC64  |
+| :------------: | :------------: | :------------: | :------------: | :------------: |
+| CRC4-ITU | Intel | Modbus| FSC   | ISO    |
+| CRC5-ITU | BCC   | IBM   | CRC32 | ECMA182|
+| CRC5-EPC | LRC   | XModem| MPEG2 |        |
+| CRC5-USB | MAXIM8|CCITT  |       |        |
+| CRC6-ITU | ROHC  | Kermit|       |        |
+| CRC7-MMC | ITU8  | Sick  |       |        |
+|          | CRC8  | DNP   |       |        |
+|          |       | X25   |       |        |
+|          |       | USB   |       |        |
+|          |       | MAXIM16|      |        |
+|          |       | DECT  |       |        ||
+
+
 
 
 Installation
@@ -35,28 +25,28 @@ Installation
 
 * Compile and install the library::
 
-    pip3 install libscrc
+    >pip3 install libscrc
 
   or::
 
-    python setup.py build
-    python setup.py install
+    >python setup.py build
+    >python setup.py install
 
   You will need the administrative privileges to execute the last command.
 
 * Cross compile and install the library::
 
-    # vim setup.cfg
-    universal=1
-    plat-name=linux_armv7l
+    vim setup.cfg
+    >universal=1
+    >plat-name=linux_armv7l
 
     export CROSS_COMPILE=arm-linux-gnueabihf-
     export CC='${CROSS_COMPILE}gcc -pthread'
     export LDSHARED='${CROSS_COMPILE}gcc -shared'
     export CFLAGS='-I/usr/include/python3.5m -I/usr/include/'
 
-    python3 setup.py build
-    # gcc version 6.2.1 20161016 (Linaro GCC 6.2-2016.11)
+    >python3 setup.py build
+    gcc version 6.2.1 20161016 (Linaro GCC 6.2-2016.11)
     
 * After installation you can run unit tests to make sure that the library works fine.  Execute::
 
