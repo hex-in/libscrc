@@ -88,7 +88,7 @@ unsigned int hexinCRC32LeftCracker( const unsigned char *pSrc, unsigned int len,
     unsigned int crc = crc32;
 
 	for ( i=0; i<len; i++ ) {
-		crc = _hz_update_crc32_04c11db7( crc, pSrc[i], ploy );
+		crc = __hexinUpdateCRC32_LCracker( crc, pSrc[i], ploy );
 	}
 
     crc32_tab_shift_lcrack_init = FALSE;
