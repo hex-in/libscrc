@@ -1,26 +1,27 @@
 /*
-*********************************************************************************************************
-*                              		(c) Copyright 2006-2017, HZ, Studio
-*                                           All Rights Reserved
-* File    : _crc32module.c
-* Author  : Heyn (heyunhuan@gmail.com)
-* Version : V0.1.0
-* Web	  : http://heyunhuan513.blog.163.com
-*
-* LICENSING TERMS:
-* ---------------
-*		New Create at 	2017-08-09 16:39PM
-*                       2017-08-17 [Heyn] Optimized Code.
-*                       2017-08-21 [Heyn] Optimization code for the C99 standard.
-*                                         for ( unsigned int i=0; i<256; i++ ) -> for ( i=0; i<256; i++ )
-*                       2017-09-22 [Heyn] Optimized Code.
-*                                         New get crc32 table.
-*                       2019-04-18 [Heyn] New creaker.
-*
-*Web : https://en.wikipedia.org/wiki/Polynomial_representations_of_cyclic_redundancy_checks
-*
-*********************************************************************************************************
-*/
+ * *********************************************************************************************************
+ * *                              		(c) Copyright 2006-2017, HZ, Studio
+ * *                                           All Rights Reserved
+ * * File    : _crc32module.c
+ * * Author  : Heyn (heyunhuan@gmail.com)
+ * * Version : V0.1.0
+ * * Web	  : http://heyunhuan513.blog.163.com
+ * *
+ * * LICENSING TERMS:
+ * * ---------------
+ * *		New Create at 	2017-08-09 16:39PM
+ * *                       2017-08-17 [Heyn] Optimized Code.
+ * *                       2017-08-21 [Heyn] Optimization code for the C99 standard.
+ * *                                         for ( unsigned int i=0; i<256; i++ ) -> for ( i=0; i<256; i++ )
+ * *                       2017-09-22 [Heyn] Optimized Code.
+ * *                                         New get crc32 table.
+ * *                       2019-04-18 [Heyn] New creaker.
+ * *                       2019-04-28 [Heyn] New add lclear32 \ rclear32 \ pltable32 \ prtable32 functions.
+ * *
+ * *Web : https://en.wikipedia.org/wiki/Polynomial_representations_of_cyclic_redundancy_checks
+ * *
+ * *********************************************************************************************************
+ * */
 
 #include <Python.h>
 
@@ -44,10 +45,15 @@ static int              crc32_tab_shift_lcrack_init                     = FALSE;
 static int              crc32_tab_shift_rcrack_init                     = FALSE;
 
 /*
-*********************************************************************************************************
-                                    Cracker POLYNOMIAL [Shift Left]
-*********************************************************************************************************
-*/
+ * *********************************************************************************************************
+ *                                     Cracker POLYNOMIAL [Shift Left]
+ *                                     *********************************************************************************************************
+ *                                     */
+static void hexinClearLeftCrackTable( void )
+{
+    crc32_tab_shift_lcrack_init = FALSE;
+}
+
 static void __init_crc32_table_icracker_shiftleft( unsigned int poly ) 
 {
     unsigned int i = 0, j = 0;
@@ -91,15 +97,20 @@ unsigned int hexinCRC32LeftCracker( const unsigned char *pSrc, unsigned int len,
 		crc = __hexinUpdateCRC32_LCracker( crc, pSrc[i], ploy );
 	}
 
-    crc32_tab_shift_lcrack_init = FALSE;
 	return crc;
 }
 
 /*
-*********************************************************************************************************
-                                    Cracker POLYNOMIAL [Shift Right]
-*********************************************************************************************************
-*/
+ * *********************************************************************************************************
+ *                                     Cracker POLYNOMIAL [Shift Right]
+ *                                     *********************************************************************************************************
+ *                                     */
+
+static void hexinClearRightCrackTable( void )
+{
+    crc32_tab_shift_rcrack_init = FALSE;
+}
+
 static void __init_crc32_table_icracker_shiftright( unsigned int poly ) 
 {
     unsigned int i = 0, j = 0;
@@ -140,16 +151,14 @@ unsigned int hexinCRC32RightCracker( const unsigned char *pSrc, unsigned int len
 		crc = __hexinUpdateCRC32_RCracker( crc, pSrc[i], ploy );
 	}
 
-    crc32_tab_shift_rcrack_init = FALSE;
-
 	return crc;
 }
 
 /*
-*********************************************************************************************************
-                                    POLY=0x04C11DB7L [FSC]
-*********************************************************************************************************
-*/
+ * *********************************************************************************************************
+ *                                     POLY=0x04C11DB7L [FSC]
+ *                                     *********************************************************************************************************
+ *                                     */
 
 static void _init_crc32_table_04c11db7( void ) 
 {
@@ -197,10 +206,10 @@ unsigned int hz_calc_crc32_04c11db7( const unsigned char *pSrc, unsigned int len
 }
 
 /*
-*********************************************************************************************************
-                                    POLY=0xEDB88320L [CRC32 for file]
-*********************************************************************************************************
-*/
+ * *********************************************************************************************************
+ *                                     POLY=0xEDB88320L [CRC32 for file]
+ *                                     *********************************************************************************************************
+ *                                     */
 static void _init_crc32_table_edb88320( void ) 
 {
     unsigned int i = 0, j = 0;
@@ -244,16 +253,16 @@ unsigned int hz_calc_crc32_edb88320( const unsigned char *pSrc, unsigned int len
 }
 
 /*
-*********************************************************************************************************
-*                                   POLY=0x4C11DB7 [MPEG2 ]
-* Poly:    0x4C11DB7
-* Init:    0xFFFFFFF
-* Refin:   False
-* Refout:  False
-* Xorout:  0x00000000
-*
-*********************************************************************************************************
-*/
+ * *********************************************************************************************************
+ * *                                   POLY=0x4C11DB7 [MPEG2 ]
+ * * Poly:    0x4C11DB7
+ * * Init:    0xFFFFFFF
+ * * Refin:   False
+ * * Refout:  False
+ * * Xorout:  0x00000000
+ * *
+ * *********************************************************************************************************
+ * */
 
 static PyObject * _crc32_mpeg_2(PyObject *self, PyObject *args)
 {
@@ -276,17 +285,17 @@ static PyObject * _crc32_mpeg_2(PyObject *self, PyObject *args)
 }
 
 /*
-*********************************************************************************************************
-*                                   POLY=0x4C11DB7 [CRC_32 ADCCP ]
-* Poly:    0x4C11DB7
-* Init:    0xFFFFFFF
-* Refin:   True
-* Refout:  True
-* Xorout:  0xFFFFFFFF
-* Use:     WinRAR,ect
-*
-*********************************************************************************************************
-*/
+ * *********************************************************************************************************
+ * *                                   POLY=0x4C11DB7 [CRC_32 ADCCP ]
+ * * Poly:    0x4C11DB7
+ * * Init:    0xFFFFFFF
+ * * Refin:   True
+ * * Refout:  True
+ * * Xorout:  0xFFFFFFFF
+ * * Use:     WinRAR,ect
+ * *
+ * *********************************************************************************************************
+ * */
 
 static PyObject * _crc32_crc32(PyObject *self, PyObject *args)
 {
@@ -367,6 +376,31 @@ static PyObject * _crc32_lcracker( PyObject *self, PyObject *args )
     return Py_BuildValue( "I", result );
 }
 
+static PyObject * _crc32_lcracker_table(PyObject *self, PyObject *args)
+{
+    unsigned int i = 0x00;
+    unsigned int poly = CRC32_POLYNOMIAL_04C11DB7;
+    PyObject* plist = PyList_New( MAX_TABLE_ARRAY );
+
+#if PY_MAJOR_VERSION >= 3
+    if (!PyArg_ParseTuple(args, "I", &poly))
+        return NULL;
+#else
+    if (!PyArg_ParseTuple(args, "I", &poly))
+        return NULL;
+#endif /* PY_MAJOR_VERSION */
+
+    hexinClearLeftCrackTable();
+
+    if ( ! crc32_tab_shift_lcrack_init ) __init_crc32_table_icracker_shiftleft( poly );
+    for ( i=0; i<MAX_TABLE_ARRAY; i++ ) {
+        PyList_SetItem( plist, i, Py_BuildValue("I", crc32_tab_shift_left_cracker[i]) );
+    }
+
+    return plist;
+}
+
+
 static PyObject * _crc32_rcracker( PyObject *self, PyObject *args )
 {
     const unsigned char *data = NULL;
@@ -388,15 +422,56 @@ static PyObject * _crc32_rcracker( PyObject *self, PyObject *args )
     return Py_BuildValue( "I", result );
 }
 
+static PyObject * _crc32_rcracker_table(PyObject *self, PyObject *args)
+{
+    unsigned int i = 0x00;
+    unsigned int poly = CRC32_POLYNOMIAL_EDB88320;
+    PyObject* plist = PyList_New( MAX_TABLE_ARRAY );
+
+#if PY_MAJOR_VERSION >= 3
+    if (!PyArg_ParseTuple(args, "I", &poly))
+        return NULL;
+#else
+    if (!PyArg_ParseTuple(args, "I", &poly))
+        return NULL;
+#endif /* PY_MAJOR_VERSION */
+
+    hexinClearRightCrackTable();
+
+    if ( ! crc32_tab_shift_rcrack_init ) __init_crc32_table_icracker_shiftright( poly );
+    for ( i=0; i<MAX_TABLE_ARRAY; i++ ) {
+        PyList_SetItem( plist, i, Py_BuildValue("I", crc32_tab_shift_right_cracker[i]) );
+    }
+
+    return plist;
+}
+
+static PyObject * _crc32_lclear32( PyObject *self, PyObject *args )
+{
+    hexinClearLeftCrackTable();
+    Py_RETURN_TRUE;
+}
+
+static PyObject * _crc32_rclear32( PyObject *self, PyObject *args )
+{
+    hexinClearRightCrackTable();
+    Py_RETURN_TRUE;
+}
+
 /* method table */
 static PyMethodDef _crc32Methods[] = {
-    { "mpeg2",       _crc32_mpeg_2,      METH_VARARGS, "Calculate CRC (MPEG2) of CRC32 [Poly=0x04C11DB7, Init=0xFFFFFFFF, Xorout=0x00000000 Refin=False Refout=False]"},
-    { "fsc",         _crc32_mpeg_2,      METH_VARARGS, "Calculate CRC (Ethernt's FSC) of CRC32 [Poly=0x04C11DB7, Init=0xFFFFFFFF, Xorout=0x00000000 Refin=False Refout=False]"},
-    { "crc32",       _crc32_crc32,       METH_VARARGS, "Calculate CRC (WinRAR, File) of CRC32  [Poly=0xEDB88320, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]"},
+    { "mpeg2",       _crc32_mpeg_2,             METH_VARARGS,   "Calculate CRC (MPEG2) of CRC32 [Poly=0x04C11DB7, Init=0xFFFFFFFF, Xorout=0x00000000 Refin=False Refout=False]"},
+    { "fsc",         _crc32_mpeg_2,             METH_VARARGS,   "Calculate CRC (Ethernt's FSC) of CRC32 [Poly=0x04C11DB7, Init=0xFFFFFFFF, Xorout=0x00000000 Refin=False Refout=False]"},
+    { "crc32",       _crc32_crc32,              METH_VARARGS,   "Calculate CRC (WinRAR, File) of CRC32  [Poly=0xEDB88320, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]"},
 
-    { "table32",     _crc32_table,       METH_VARARGS, "" },
-    { "lcrack32",    _crc32_lcracker,    METH_VARARGS, "" },
-    { "rcrack32",    _crc32_rcracker,    METH_VARARGS, "" },
+    { "table32",     _crc32_table,              METH_VARARGS,   "" },
+
+    { "lcrack32",    _crc32_lcracker,           METH_VARARGS,   "" },
+    { "rcrack32",    _crc32_rcracker,           METH_VARARGS,   "" },
+    { "lclear32",    _crc32_lclear32,           METH_NOARGS,    "Clear lcrack32 table." },
+    { "rclear32",    _crc32_rclear32,           METH_NOARGS,    "Clear rcrack32 table." },
+    { "pltable32",   _crc32_lcracker_table,     METH_VARARGS,   "Print left shift crc32 table."  },
+    { "prtable32",   _crc32_rcracker_table,     METH_VARARGS,   "Print right shift crc32 table." },
     {NULL, NULL, 0, NULL}        /* Sentinel */
 };
 
@@ -448,3 +523,4 @@ init_crc32(void)
 }
 
 #endif /* PY_MAJOR_VERSION */
+
