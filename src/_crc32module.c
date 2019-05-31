@@ -1,27 +1,27 @@
 /*
- * *********************************************************************************************************
- * *                              		(c) Copyright 2006-2017, HZ, Studio
- * *                                           All Rights Reserved
- * * File    : _crc32module.c
- * * Author  : Heyn (heyunhuan@gmail.com)
- * * Version : V0.1.0
- * * Web	  : http://heyunhuan513.blog.163.com
- * *
- * * LICENSING TERMS:
- * * ---------------
- * *		New Create at 	2017-08-09 16:39PM
- * *                       2017-08-17 [Heyn] Optimized Code.
- * *                       2017-08-21 [Heyn] Optimization code for the C99 standard.
- * *                                         for ( unsigned int i=0; i<256; i++ ) -> for ( i=0; i<256; i++ )
- * *                       2017-09-22 [Heyn] Optimized Code.
- * *                                         New get crc32 table.
- * *                       2019-04-18 [Heyn] New creaker.
- * *                       2019-04-28 [Heyn] New add lclear32 \ rclear32 \ pltable32 \ prtable32 functions.
- * *
- * *Web : https://en.wikipedia.org/wiki/Polynomial_representations_of_cyclic_redundancy_checks
- * *
- * *********************************************************************************************************
- * */
+ ********************************************************************************************************
+ *                              		(c) Copyright 2006-2017, HZ, Studio
+ *                                           All Rights Reserved
+ * File    : _crc32module.c
+ * Author  : Heyn (heyunhuan@gmail.com)
+ * Version : V0.1.0
+ * Web	 : http://heyunhuan513.blog.163.com
+ *
+ * LICENSING TERMS:
+ * ---------------
+ *		New Create at 	2017-08-09 16:39PM
+ *                       2017-08-17 [Heyn] Optimized Code.
+ *                       2017-08-21 [Heyn] Optimization code for the C99 standard.
+ *                                         for ( unsigned int i=0; i<256; i++ ) -> for ( i=0; i<256; i++ )
+ *                       2017-09-22 [Heyn] Optimized Code.
+ *                                         New get crc32 table.
+ *                       2019-04-18 [Heyn] New creaker.
+ *                       2019-04-28 [Heyn] New add lclear32 \ rclear32 \ pltable32 \ prtable32 functions.
+ *
+ * Web : https://en.wikipedia.org/wiki/Polynomial_representations_of_cyclic_redundancy_checks
+ *
+ ********************************************************************************************************
+ */
 
 #include <Python.h>
 
@@ -45,10 +45,11 @@ static int              crc32_tab_shift_lcrack_init                     = FALSE;
 static int              crc32_tab_shift_rcrack_init                     = FALSE;
 
 /*
- * *********************************************************************************************************
- *                                     Cracker POLYNOMIAL [Shift Left]
- *                                     *********************************************************************************************************
- *                                     */
+*********************************************************************************************************
+                                    Cracker POLYNOMIAL [Shift Left]
+*********************************************************************************************************
+*/
+
 static void hexinClearLeftCrackTable( void )
 {
     crc32_tab_shift_lcrack_init = FALSE;
@@ -101,11 +102,10 @@ unsigned int hexinCRC32LeftCracker( const unsigned char *pSrc, unsigned int len,
 }
 
 /*
- * *********************************************************************************************************
- *                                     Cracker POLYNOMIAL [Shift Right]
- *                                     *********************************************************************************************************
- *                                     */
-
+*********************************************************************************************************
+                                    Cracker POLYNOMIAL [Shift Right]
+*********************************************************************************************************
+*/
 static void hexinClearRightCrackTable( void )
 {
     crc32_tab_shift_rcrack_init = FALSE;
@@ -155,10 +155,10 @@ unsigned int hexinCRC32RightCracker( const unsigned char *pSrc, unsigned int len
 }
 
 /*
- * *********************************************************************************************************
- *                                     POLY=0x04C11DB7L [FSC]
- *                                     *********************************************************************************************************
- *                                     */
+*********************************************************************************************************
+                                    POLY=0x04C11DB7L [FSC]
+*********************************************************************************************************
+*/
 
 static void _init_crc32_table_04c11db7( void ) 
 {
@@ -206,10 +206,10 @@ unsigned int hz_calc_crc32_04c11db7( const unsigned char *pSrc, unsigned int len
 }
 
 /*
- * *********************************************************************************************************
- *                                     POLY=0xEDB88320L [CRC32 for file]
- *                                     *********************************************************************************************************
- *                                     */
+*********************************************************************************************************
+                                    POLY=0xEDB88320L [CRC32 for file]
+*********************************************************************************************************
+*/
 static void _init_crc32_table_edb88320( void ) 
 {
     unsigned int i = 0, j = 0;
@@ -253,16 +253,16 @@ unsigned int hz_calc_crc32_edb88320( const unsigned char *pSrc, unsigned int len
 }
 
 /*
- * *********************************************************************************************************
- * *                                   POLY=0x4C11DB7 [MPEG2 ]
- * * Poly:    0x4C11DB7
- * * Init:    0xFFFFFFF
- * * Refin:   False
- * * Refout:  False
- * * Xorout:  0x00000000
- * *
- * *********************************************************************************************************
- * */
+ ********************************************************************************************************
+ *                                   POLY=0x4C11DB7 [MPEG2 ]
+ * Poly:    0x4C11DB7
+ * Init:    0xFFFFFFF
+ * Refin:   False
+ * Refout:  False
+ * Xorout:  0x00000000
+ *
+ ********************************************************************************************************
+ */
 
 static PyObject * _crc32_mpeg_2(PyObject *self, PyObject *args)
 {
@@ -285,17 +285,17 @@ static PyObject * _crc32_mpeg_2(PyObject *self, PyObject *args)
 }
 
 /*
- * *********************************************************************************************************
- * *                                   POLY=0x4C11DB7 [CRC_32 ADCCP ]
- * * Poly:    0x4C11DB7
- * * Init:    0xFFFFFFF
- * * Refin:   True
- * * Refout:  True
- * * Xorout:  0xFFFFFFFF
- * * Use:     WinRAR,ect
- * *
- * *********************************************************************************************************
- * */
+ ********************************************************************************************************
+ *                                   POLY=0x4C11DB7 [CRC_32 ADCCP ]
+ * Poly:    0x4C11DB7
+ * Init:    0xFFFFFFF
+ * Refin:   True
+ * Refout:  True
+ * Xorout:  0xFFFFFFFF
+ * Use:     WinRAR,ect
+ *
+ ********************************************************************************************************
+ */
 
 static PyObject * _crc32_crc32(PyObject *self, PyObject *args)
 {
