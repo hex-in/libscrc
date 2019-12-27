@@ -1,11 +1,10 @@
 /*
 *********************************************************************************************************
-*                              		(c) Copyright 2006-2017, HZ, Studio
+*                              		(c) Copyright 2006-2020, Hexin
 *                                           All Rights Reserved
 * File    : _crcxtables.c
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V0.1.0
-* Web	  : http://heyunhuan513.blog.163.com
+* Version : V0.1.6
 *
 * LICENSING TERMS:
 * ---------------

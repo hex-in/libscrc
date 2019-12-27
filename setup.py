@@ -38,7 +38,7 @@ setup(
     description='Library for calculating CRC8/CRC16/CRC32/CRC64',
     long_description=long_description,
 
-    url='',
+    url='https://github.com/hex-in/libscrc',
 
     author='Heyn',
     author_email='heyunhuan@gmail.com',
@@ -78,8 +78,8 @@ setup(
     keywords=['CRC4', 'CRC5', 'CRC6', 'CRC7', 'CRC8', 'CRC16', 'CRC32', 'CRC64'],
 
     packages=['libscrc'],
-    ext_modules=[Extension('libscrc._crcx', sources=['src/_crcxmodule.c', 'src/_crcxtables.c']),
-                 Extension('libscrc._crc8', sources=['src/_crc8module.c']),
+    ext_modules=[Extension('libscrc._crcx',  sources=['src/_crcxmodule.c', 'src/_crcxtables.c']),
+                 Extension('libscrc._crc8',  sources=['src/_crc8module.c']),
                  Extension('libscrc._crc16', sources=['src/_crc16module.c', 'src/_crc16tables.c']),
                  Extension('libscrc._crc32', sources=['src/_crc32module.c']),
                  Extension('libscrc._crc64', sources=['src/_crc64module.c']),
