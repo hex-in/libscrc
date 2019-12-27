@@ -27,4 +27,5 @@ jobs:
         python setup.py install
     - name: Test with testcrc16.py
       run: |
+        cd ..
         python -m libscrc.testcrc16
