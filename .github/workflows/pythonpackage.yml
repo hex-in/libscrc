@@ -23,7 +23,8 @@ jobs:
         pip install wheel
     - name: Compile source code and install
       run: |
-        pip install .
+        pip setup.py build
+        pip setup.py install
     - name: Test with testcrc16.py
       run: |
         python -m libscrc.testcrc16
