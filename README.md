@@ -119,8 +119,7 @@ Example
 
 NOTICE
 ------
-* (2020-01-20)
-* v1.6+ version will not support python2 series
+* v0.1.6+ version will not support python2 series (2020-01-20)
 
 
 **V0.1.5 (2017-09-22)**
