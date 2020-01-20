@@ -117,6 +117,12 @@ Example
     crc64 = libscrc.iso(b'1234')
     crc64 = libscrc.ecma182(b'1234')
 
+NOTICE
+------
+* (2020-01-20)
+* v1.6+ version will not support python2 series
+
+
 **V0.1.5 (2017-09-22)**
 
 ------------
