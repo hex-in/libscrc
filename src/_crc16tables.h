@@ -9,6 +9,7 @@
 * LICENSING TERMS:
 * ---------------
 *		New Create at 	2017-09-19 21:01PM [Heyn] New CRC16-X25 Table.
+*                       2020-03-13 16:10PM [Heyn] New add hacker code.
 *
 *********************************************************************************************************
 */
@@ -35,5 +36,7 @@ unsigned short hz_calc_crc16_8005( const unsigned char *pSrc, unsigned int len, 
 unsigned short hz_calc_crc16_sick( const unsigned char *pSrc, unsigned int len, unsigned short crc16 );
 unsigned short hz_calc_crc16_a6bc( const unsigned char *pSrc, unsigned int len, unsigned short crc16 );
 unsigned short hz_calc_crc16_91a0( const unsigned char *pSrc, unsigned int len, unsigned short crc16 );
+
+unsigned short hz_calc_crc16_hacker( const unsigned char *pSrc, unsigned int len, unsigned short crc16, unsigned short polynomial );
 
 #endif //__CRC16_TABLES_H__

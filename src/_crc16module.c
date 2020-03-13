@@ -20,6 +20,7 @@
 *                                               without overflow checking.
 *                       2017-09-19 [Heyn] New CRC16-X25 CRC16-USB CRC16-MAXIM16 CRC16-DECT. (V0.1.3)
 *                                         Optimized Code.
+*                       2020-03-13 [Heyn] New add hacker16 code.
 *
 *********************************************************************************************************
 */
@@ -85,7 +86,6 @@ static PyObject * _crc16_usb(PyObject *self, PyObject *args)
     result = result ^ 0xFFFF;
     return Py_BuildValue("H", result);
 }
-
 
 /*
 *********************************************************************************************************
@@ -378,6 +378,31 @@ static PyObject * _crc16_dect(PyObject *self, PyObject *args)
     return Py_BuildValue("H", result);
 }
 
+/*
+*********************************************************************************************************
+*                                   For hacker
+*********************************************************************************************************
+*/
+static PyObject * _crc16_hacker( PyObject *self, PyObject *args, PyObject* kws )
+{
+    const unsigned char *data = NULL;
+    unsigned int data_len = 0x00000000L;
+    unsigned short crc16  = 0x0000;
+    unsigned short result = 0x0000;
+    unsigned short polynomial = CRC16_POLYNOMIAL_1021;
+    static char* kwlist[]={ "data", "poly", "crc16", NULL };
+
+#if PY_MAJOR_VERSION >= 3
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y#|HH", kwlist, &data, &data_len, &polynomial, &crc16 ) )
+        return NULL;
+#else
+    return NULL;
+#endif /* PY_MAJOR_VERSION */
+
+    result = hz_calc_crc16_hacker( data, data_len, crc16, polynomial );
+    return Py_BuildValue( "H", result );
+}
+
 /* method table */
 static PyMethodDef _crc16Methods[] = {
     {"modbus",      _crc16_modbus, METH_VARARGS, "Calculate Modbus of CRC16              [Poly=0xA001, Init=0xFFFF Xorout=0x0000 Refin=True Refout=True]"},
@@ -392,6 +417,7 @@ static PyMethodDef _crc16Methods[] = {
     {"x25",         _crc16_x25,    METH_VARARGS, "Calculate X25  of CRC16                [Poly=0x1021, Init=0xFFFF Xorout=0xFFFF Refin=True Refout=True]"},
     {"maxim16",     _crc16_maxim,  METH_VARARGS, "Calculate MAXIM of CRC16               [Poly=0x8005, Init=0x0000 Xorout=0xFFFF Refin=True Refout=True]"},
     {"dect",        _crc16_dect,   METH_VARARGS, "Calculate DECT of CRC16                [Poly=0x0589, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]"},
+    {"hacker16",    _crc16_hacker, METH_KEYWORDS|METH_VARARGS, "Free calculation CRC16   [Poly=any,    Init=any    Xorout=0x0000 Refin=True Refout=True]"},
     {NULL, NULL, 0, NULL}        /* Sentinel */
 };
 
@@ -411,6 +437,7 @@ PyDoc_STRVAR(_crc16_doc,
 "libscrc.x25        -> Calculate X25  of CRC16                [Poly=0x1021, Init=0xFFFF Xorout=0xFFFF Refin=True Refout=True]\n"
 "libscrc.maxim16    -> Calculate MAXIM of CRC16               [Poly=0x8005, Init=0x0000 Xorout=0xFFFF Refin=True Refout=True]\n"
 "libscrc.dect       -> Calculate DECT of CRC16                [Poly=0x0589, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]\n"
+"libscrc.hacker16   -> Free calculation CRC16 (not support python2 series)\n"
 "\n");
 
 
