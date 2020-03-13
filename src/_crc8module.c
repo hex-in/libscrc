@@ -19,6 +19,7 @@
 *                                               checking, stored in a C unsigned char.
 *                       2017-09-21 [Heyn] Optimized code for _crc8_maxim
 *                                         New CRC8-MAXIM8 CRC8-ROHC CRC8-ITU8 CRC8
+*                       2020-02-17 [Heyn] New CRC8-SUM.
 *
 *********************************************************************************************************
 */
@@ -68,6 +69,17 @@ unsigned char hz_calc_crc8_lrc( const unsigned char *pSrc, unsigned int len, uns
 	}
     crc = (~crc) + 0x01;
 
+	return crc;
+}
+
+unsigned char hz_calc_crc8_sum( const unsigned char *pSrc, unsigned int len, unsigned char crc8 ) 
+{
+    unsigned int i = 0;
+    unsigned char crc = crc8;
+
+	for ( i=0; i<len; i++ ) {
+		crc += pSrc[i];
+	}
 	return crc;
 }
 
@@ -350,6 +362,26 @@ static PyObject * _crc8(PyObject *self, PyObject *args)
     return Py_BuildValue("B", result);
 }
 
+static PyObject * _crc8_sum( PyObject *self, PyObject *args )
+{
+    const unsigned char *data = NULL;
+    unsigned int data_len = 0x00;
+    unsigned char crc8    = 0x00;
+    unsigned char result  = 0x00;
+
+#if PY_MAJOR_VERSION >= 3
+    if (!PyArg_ParseTuple(args, "y#|B", &data, &data_len, &crc8))
+        return NULL;
+#else
+    if (!PyArg_ParseTuple(args, "s#|B", &data, &data_len, &crc8))
+        return NULL;
+#endif /* PY_MAJOR_VERSION */
+
+    result = hz_calc_crc8_sum( data, data_len, crc8 );
+
+    return Py_BuildValue( "B", result );
+}
+
 /* method table */
 static PyMethodDef _crc8Methods[] = {
     {"intel",   _crc8_intel,    METH_VARARGS, "Calculate Intel hexadecimal of CRC8 [Initial = 0x00]"},
@@ -359,6 +391,7 @@ static PyMethodDef _crc8Methods[] = {
     {"rohc",    _crc8_rohc,     METH_VARARGS, "Calculate ROHC of CRC8 [Poly = 0x07 Initial = 0xFF Xorout=0x00 Refin=True Refout=True]"},
     {"itu8",    _crc8_itu,      METH_VARARGS, "Calculate ITU  of CRC8 [Poly = 0x07 Initial = 0x00 Xorout=0x55 Refin=False Refout=False]"},
     {"crc8",    _crc8,          METH_VARARGS, "Calculate CRC  of CRC8 [Poly = 0x07 Initial = 0x00 Xorout=0x00 Refin=False Refout=False]"},
+    {"sum8",    _crc8_sum,      METH_VARARGS, "Calculate SUM  of CRC8 [Initial = 0x00]"},
     {NULL, NULL, 0, NULL}        /* Sentinel */
 };
 
@@ -373,6 +406,7 @@ PyDoc_STRVAR(_crc8_doc,
 "libscrc.rohc   -> Calculate ROHC of CRC8 [Poly = 0x07 Initial = 0xFF Xorout=0x00 Refin=True Refout=True]\n"
 "libscrc.itu8   -> Calculate ITU  of CRC8 [Poly = 0x07 Initial = 0x00 Xorout=0x55 Refin=False Refout=False]\n"
 "libscrc.crc8   -> Calculate CRC  of CRC8 [Poly = 0x07 Initial = 0x00 Xorout=0x00 Refin=False Refout=False]\n"
+"libscrc.sum8   -> Calculate SUM  of CRC8 [Initial = 0x00]\n"
 "\n");
 
 
@@ -398,7 +432,7 @@ PyInit__crc8(void)
         return NULL;
     }
 
-    PyModule_AddStringConstant(m, "__version__", "0.1.1");
+    PyModule_AddStringConstant(m, "__version__", "0.1.6");
     PyModule_AddStringConstant(m, "__author__",  "Heyn");
 
     return m;
