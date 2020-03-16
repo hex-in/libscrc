@@ -57,13 +57,13 @@ Installation
 Usage
 -----
 
-  In Python 3::
+  In Python 3
 
     import libscrc
     crc16 = libscrc.modbus(b'1234')  # Calculate ASCII of modbus
     crc16 = libscrc.modbus(b'\x01\x02')  # Calculate HEX of modbus
 
-  You can also calculate CRC gradually::
+  You can also calculate CRC gradually
 
     import libscrc
     crc16 = libscrc.xmodem(b'1234')
@@ -71,7 +71,7 @@ Usage
 
 Example
 -------
-* CRCx::
+  CRCx
 
     crc4 = libscrc.itu4(b'1234')
     crc5 = libscrc.itu5(b'1234')
@@ -80,7 +80,7 @@ Example
     crc6 = libscrc.itu6(b'1234')
     crc7 = libscrc.mmc(b'1234')
 
-* CRC8::
+  CRC8
 
     crc8 = libscrc.intel(b'1234')
     crc8 = libscrc.bcc(b'1234')  
@@ -90,7 +90,7 @@ Example
     crc8 = libscrc.itu8(b'1234')
     crc8 = libscrc.crc8(b'1234')
 
-* CRC16::
+  CRC16
 
     crc16 = libscrc.ibm(b'1234')            # poly=0xA001 (default Reversed)
     crc16 = libscrc.ibm(b'1234', 0x8005)    # poly=0x8005 (Normal)
@@ -105,14 +105,14 @@ Example
     crc16 = libscrc.usb16(b'1234')
     crc16 = libscrc.maxim16(b'1234')
     crc16 = libscrc.dect(b'1234')           # poly=0x0589 (Cordless Telephones)
+	
+  CRC32
 
-* CRC32::
-
-    crc32 = libscrc.fsc(b'1234')                 # Ethernet frame sequence (FSC)
+    crc32 = libscrc.fsc(b'1234')            # Ethernet frame sequence (FSC)
     crc32 = libscrc.mpeg2(b'1234')          # MPEG2
-    crc32 = libscrc.crc32(b'1234')             # WinRAR, File
-
-* CRC64::
+    crc32 = libscrc.crc32(b'1234')          # WinRAR, File
+	
+  CRC64
 
     crc64 = libscrc.iso(b'1234')
     crc64 = libscrc.ecma182(b'1234')
@@ -120,7 +120,6 @@ Example
 NOTICE
 ------
 * v0.1.6+ version will not support python2 series (2020-01-20)
-
 
 **V0.1.5 (2017-09-22)**
 
