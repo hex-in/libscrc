@@ -387,19 +387,21 @@ static PyObject * _crc16_hacker( PyObject *self, PyObject *args, PyObject* kws )
 {
     const unsigned char *data = NULL;
     unsigned int data_len = 0x00000000L;
-    unsigned short crc16  = 0x0000;
+    unsigned short crc16  = 0xFFFF;
+    unsigned short xorout = 0x0000;
     unsigned short result = 0x0000;
     unsigned short polynomial = CRC16_POLYNOMIAL_1021;
-    static char* kwlist[]={ "data", "poly", "crc16", NULL };
+    static char* kwlist[]={ "data", "poly", "crc16", "xorout", NULL };
 
 #if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y#|HH", kwlist, &data, &data_len, &polynomial, &crc16 ) )
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y#|HHH", kwlist, &data, &data_len, &polynomial, &crc16, &xorout ) )
         return NULL;
 #else
     return NULL;
 #endif /* PY_MAJOR_VERSION */
 
     result = hz_calc_crc16_hacker( data, data_len, crc16, polynomial );
+    result = result ^ xorout;
     return Py_BuildValue( "H", result );
 }
 

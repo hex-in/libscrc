@@ -351,19 +351,21 @@ static PyObject * _crc32_hacker( PyObject *self, PyObject *args, PyObject* kws )
 {
     const unsigned char *data = NULL;
     unsigned int data_len = 0x00000000L;
-    unsigned int crc32    = 0x00000000L;
+    unsigned int crc32    = 0xFFFFFFFFL;
+    unsigned int xorout   = 0x00000000L;
     unsigned int result   = 0x00000000L;
     unsigned int polynomial = CRC32_POLYNOMIAL_EDB88320;
-    static char* kwlist[]={ "data", "poly", "crc32", NULL };
+    static char* kwlist[]={ "data", "poly", "crc32", "xorout", NULL };
 
 #if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y#|II", kwlist, &data, &data_len, &polynomial, &crc32 ) )
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y#|III", kwlist, &data, &data_len, &polynomial, &crc32, &xorout ) )
         return NULL;
 #else
     return NULL;
 #endif /* PY_MAJOR_VERSION */
 
     result = hz_calc_crc32_hacker( data, data_len, crc32, polynomial );
+    result = result ^ xorout;
     return Py_BuildValue("I", result);
 }
 

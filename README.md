@@ -71,7 +71,7 @@ Usage
 
 Example
 -------
-* CRCx::
+  CRCx
 
     crc4 = libscrc.itu4(b'1234')
     crc5 = libscrc.itu5(b'1234')
@@ -80,7 +80,7 @@ Example
     crc6 = libscrc.itu6(b'1234')
     crc7 = libscrc.mmc(b'1234')
 
-* CRC8::
+  CRC8
 
     crc8 = libscrc.intel(b'1234')
     crc8 = libscrc.bcc(b'1234')  
@@ -90,7 +90,7 @@ Example
     crc8 = libscrc.itu8(b'1234')
     crc8 = libscrc.crc8(b'1234')
 
-* CRC16::
+  CRC16
 
     crc16 = libscrc.ibm(b'1234')            # poly=0xA001 (default Reversed)
     crc16 = libscrc.ibm(b'1234', 0x8005)    # poly=0x8005 (Normal)
@@ -105,14 +105,22 @@ Example
     crc16 = libscrc.usb16(b'1234')
     crc16 = libscrc.maxim16(b'1234')
     crc16 = libscrc.dect(b'1234')           # poly=0x0589 (Cordless Telephones)
+	
+	# crc16=0xFFFF(default) xorout=0x0000(default)
+	crc16 = libscrc.hacker16( b'123456789', poly=0xA001 )
+    crc16 = libscrc.hacker16( b'123456789', poly=0xA001, crc16=0x0000, xorout=0xFFFF )
 
-* CRC32::
+  CRC32
 
-    crc32 = libscrc.fsc(b'1234')                 # Ethernet frame sequence (FSC)
+    crc32 = libscrc.fsc(b'1234')            # Ethernet frame sequence (FSC)
     crc32 = libscrc.mpeg2(b'1234')          # MPEG2
-    crc32 = libscrc.crc32(b'1234')             # WinRAR, File
+    crc32 = libscrc.crc32(b'1234')          # WinRAR, File
+	
+	# crc32=0xFFFFFFFF(default) xorout=0x00000000(default)
+    crc32 = libscrc.hacker32( b'123456789', poly=0x04C11DB7 )
+    crc32 = libscrc.hacker32( b'123456789', poly=0x04C11DB7, crc32=0x00000000, xorout=0xFFFFFFFF )
 
-* CRC64::
+  CRC64
 
     crc64 = libscrc.iso(b'1234')
     crc64 = libscrc.ecma182(b'1234')
@@ -121,6 +129,12 @@ NOTICE
 ------
 * v0.1.6+ version will not support python2 series (2020-01-20)
 
+
+**V0.1.7b (2020-03-16)**
+
+------------
+* New hacker16
+* New hacker32
 
 **V0.1.5 (2017-09-22)**
 
