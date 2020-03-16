@@ -29,6 +29,8 @@
 #define                 CRC16_POLYNOMIAL_A6BC                   0xA6BC
 #define                 CRC16_POLYNOMIAL_91A0                   0x91A0
 
+unsigned short hexin_reverse16( unsigned short data );
+
 unsigned short hz_calc_crc16_8408( const unsigned char *pSrc, unsigned int len, unsigned short crc16 );
 unsigned short hz_calc_crc16_1021( const unsigned char *pSrc, unsigned int len, unsigned short crc16 );
 unsigned short hz_calc_crc16_a001( const unsigned char *pSrc, unsigned int len, unsigned short crc16 );

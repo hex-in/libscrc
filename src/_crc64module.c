@@ -34,6 +34,18 @@ static int				crc_tab64_iso_init		            = FALSE;
 static int				crc_tab64_ecma182_init	            = FALSE;
 unsigned long long      crc_tab64_xxxxxxx_init              = FALSE;
 
+
+
+static unsigned long long __hexin_reverse64( unsigned long long data )
+{
+    unsigned int i = 0;
+    unsigned long long t = 0;
+    for ( i=0; i<64; i++ ) {
+        t |= ( ( data >> i ) & 0x0000000000000001L ) << ( 63-i );
+    }
+    return t;
+}
+
 /*
 *********************************************************************************************************
 *                                   For hacker
@@ -133,18 +145,21 @@ static PyObject * _crc64_hacker( PyObject *self, PyObject *args, PyObject* kws )
     unsigned int data_len = 0x00000000L;
     unsigned long long init   = 0xFFFFFFFFFFFFFFFFL;
     unsigned long long xorout = 0x0000000000000000L;
+    unsigned int   ref        = 0x00000000L;
     unsigned long long result = 0x0000000000000000L;
     unsigned long long polynomial = HZ64_POLYNOMIAL_ECMA182;
 
-    static char* kwlist[]={ "data", "poly", "init", "xorout", NULL };
+    static char* kwlist[]={ "data", "poly", "init", "xorout", "ref", NULL };
 
 #if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y#|KKK", kwlist, &data, &data_len, &polynomial, &init, &xorout ) )
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y#|KKKp", kwlist, &data, &data_len, &polynomial, &init, &xorout, &ref ) )
         return NULL;
 #else
     return NULL;
 #endif /* PY_MAJOR_VERSION */
-
+    if ( ref == 0x00000001L ) {
+        polynomial = __hexin_reverse64( polynomial );
+    }
     result = hz_calc_crc64_hacker( data, data_len, init, polynomial );
     result = result ^ xorout;
     return Py_BuildValue( "K", result );

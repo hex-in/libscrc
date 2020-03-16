@@ -42,6 +42,17 @@ static int              crc32_tab_shift_04c11db7_init                   = FALSE;
 static int              crc32_tab_shift_edb88320_init                   = FALSE;
 static int              crc32_tab_shift_xxxxxxxx_init                   = FALSE;    // Default value.
 
+
+static unsigned int __hexin_reverse32( unsigned int data )
+{
+    unsigned int i = 0;
+    unsigned int t = 0;
+    for ( i=0; i<32; i++ ) {
+        t |= ( ( data >> i ) & 0x00000001 ) << ( 31-i );
+    }
+    return t;
+}
+
 /*
 *********************************************************************************************************
 *                                   For hacker
@@ -353,16 +364,21 @@ static PyObject * _crc32_hacker( PyObject *self, PyObject *args, PyObject* kws )
     unsigned int data_len = 0x00000000L;
     unsigned int init     = 0xFFFFFFFFL;
     unsigned int xorout   = 0x00000000L;
+    unsigned int ref      = 0x00000000L;
     unsigned int result   = 0x00000000L;
     unsigned int polynomial = CRC32_POLYNOMIAL_EDB88320;
-    static char* kwlist[]={ "data", "poly", "init", "xorout", NULL };
+    static char* kwlist[]={ "data", "poly", "init", "xorout", "ref", NULL };
 
 #if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y#|III", kwlist, &data, &data_len, &polynomial, &init, &xorout ) )
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y#|IIIp", kwlist, &data, &data_len, &polynomial, &init, &xorout, &ref ) )
         return NULL;
 #else
     return NULL;
 #endif /* PY_MAJOR_VERSION */
+
+    if ( ref == 0x00000001L ) {
+        polynomial = __hexin_reverse32( polynomial );
+    }
 
     result = hz_calc_crc32_hacker( data, data_len, init, polynomial );
     result = result ^ xorout;

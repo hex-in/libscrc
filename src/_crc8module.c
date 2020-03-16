@@ -39,6 +39,17 @@ static int              crc8_tab_shift_8c_init                  = FALSE;
 static int              crc8_tab_shift_e0_init                  = FALSE;
 static int              crc8_tab_shift_07_init                  = FALSE;
 
+
+static unsigned char __hexin_reverse8( unsigned char data )
+{
+    unsigned int  i = 0;
+    unsigned char t = 0;
+    for ( i=0; i<8; i++ ) {
+        t |= ( ( data >> i ) & 0x01 ) << ( 7-i );
+    }
+    return t;
+}
+
 /*
  * Width            = 8
  * InitValue(crc8)  = 0x00

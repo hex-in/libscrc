@@ -39,6 +39,17 @@ static int              crc16_tab_shift_91a0_init               = FALSE;
 static unsigned short   crc16_tab_shift_xxxx[MAX_TABLE_ARRAY]   = {0x0000};     // Used for hacker.
 static unsigned short   crc16_tab_shift_xxxx_init               = FALSE;        // Default value.
 
+
+unsigned short hexin_reverse16( unsigned short data )
+{
+    unsigned int   i = 0;
+    unsigned short t = 0;
+    for ( i=0; i<16; i++ ) {
+        t |= ( ( data >> i ) & 0x0001 ) << ( 15-i );
+    }
+    return t;
+}
+
 /*
 *********************************************************************************************************
                                     POLY=0x91A0 [Cordless Telephones]
