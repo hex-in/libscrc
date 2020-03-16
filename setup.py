@@ -82,6 +82,6 @@ setup(
                  Extension('libscrc._crc8',  sources=['src/_crc8module.c']),
                  Extension('libscrc._crc16', sources=['src/_crc16module.c', 'src/_crc16tables.c']),
                  Extension('libscrc._crc32', sources=['src/_crc32module.c']),
-                 Extension('libscrc._crc64', sources=['src/_crc64module.c']),
+                 Extension('libscrc._crc64', sources=['src/_crc64module.c', 'src/_crc64tables.c']),
                 ],
 )

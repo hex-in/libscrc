@@ -17,209 +17,7 @@
 */
 
 #include <Python.h>
-
-#define                 TRUE                                1
-#define                 FALSE                               0
-
-#define                 MAX_TABLE_ARRAY                     256
-
-#define		            HZ64_POLYNOMIAL_ISO                 0xD800000000000000L
-#define		            HZ64_POLYNOMIAL_ECMA182             0x42F0E1EBA9EA3693L
-
-unsigned long long	    crc_tab64_iso[MAX_TABLE_ARRAY]      = {0x00000000};
-unsigned long long      crc_tab64_ecma182[MAX_TABLE_ARRAY]  = {0x00000000};
-unsigned long long      crc_tab64_xxxxxxx[MAX_TABLE_ARRAY]  = {0x00000000};
-
-static int				crc_tab64_iso_init		            = FALSE;
-static int				crc_tab64_ecma182_init	            = FALSE;
-unsigned long long      crc_tab64_xxxxxxx_init              = FALSE;
-
-
-
-static unsigned long long __hexin_reverse64( unsigned long long data )
-{
-    unsigned int i = 0;
-    unsigned long long t = 0;
-    for ( i=0; i<64; i++ ) {
-        t |= ( ( data >> i ) & 0x0000000000000001L ) << ( 63-i );
-    }
-    return t;
-}
-
-/*
-*********************************************************************************************************
-*                                   For hacker
-*********************************************************************************************************
-*/
-static unsigned char _init_crc64_table_hacker( unsigned long long polynomial  ) 
-{
-    unsigned int i = 0, j = 0;
-	unsigned long long crc, c;
-
-    if ( crc_tab64_xxxxxxx_init == polynomial ) {
-        return FALSE;
-    }
-
-    if ( polynomial & 0x8000000000000000L ) {
-        for ( i=0; i<MAX_TABLE_ARRAY; i++ ) {
-            crc = (unsigned long long) i;
-            for ( j=0; j<8; j++ ) {
-                if ( crc & 0x0000000000000001L ) {
-                    crc = ( crc >> 1 ) ^ polynomial;
-                } else {
-                    crc =   crc >> 1;
-                }
-            }
-            crc_tab64_xxxxxxx[i] = crc;
-        }
-    } else {
-        for ( i=0; i<MAX_TABLE_ARRAY; i++ ) {
-            crc = 0;
-            c	= ((unsigned long long) i) << 56;
-            for ( j=0; j<8; j++ ) {
-                if ( (crc ^ c) & 0x8000000000000000L ) {
-                    crc = ( crc << 1 ) ^ polynomial;
-                } else {
-                    crc =   crc << 1;
-                }
-                c = c << 1;
-            }
-            crc_tab64_xxxxxxx[i] = crc;
-        }
-    }
-    crc_tab64_xxxxxxx_init = polynomial;
-    return TRUE;
-}
-
-unsigned long long _hz_update_crc64_hacker_right( unsigned long long crc64, unsigned char c ) 
-{
-    unsigned long long crc = crc64;
-    unsigned long long tmp, long_c;
-
-    long_c = 0x00000000000000FFL & (unsigned long long) c;
-    tmp = crc ^ long_c;
-    crc = (crc >> 8) ^ crc_tab64_xxxxxxx[ tmp & 0xFF ];
-
-    return crc;
-}
-
-unsigned long long _hz_update_crc64_hacker_left( unsigned long long crc64, unsigned char c ) 
-{
-    unsigned long long crc = crc64;
-    unsigned long long tmp, long_c;
-    
-    long_c = 0x00000000000000FFL & (unsigned long long) c;
-    tmp = (crc >> 56) ^ long_c;
-    crc = (crc << 8)  ^ crc_tab64_xxxxxxx[ tmp & 0xFF ];
-
-    return crc;
-}
-
-unsigned long long hz_calc_crc64_hacker( const unsigned char *pSrc, unsigned int len, unsigned long long crc64, unsigned long long polynomial )
-{
-    unsigned int i = 0;
-    unsigned long long crc = crc64;
-
-    _init_crc64_table_hacker( polynomial );
-
-    switch ( polynomial & 0x8000000000000000L ) {
-        case 0x8000000000000000L:
-            for ( i=0; i<len; i++ ) {
-                crc = _hz_update_crc64_hacker_right( crc, pSrc[i] );
-            }
-            break;
-        
-        default:
-            for ( i=0; i<len; i++ ) {
-                crc = _hz_update_crc64_hacker_left( crc, pSrc[i] );
-            }
-            break;
-    }
-
-	return crc;
-}
-
-static PyObject * _crc64_hacker( PyObject *self, PyObject *args, PyObject* kws )
-{
-    const unsigned char *data = NULL;
-    unsigned int data_len = 0x00000000L;
-    unsigned long long init   = 0xFFFFFFFFFFFFFFFFL;
-    unsigned long long xorout = 0x0000000000000000L;
-    unsigned int   ref        = 0x00000000L;
-    unsigned long long result = 0x0000000000000000L;
-    unsigned long long polynomial = HZ64_POLYNOMIAL_ECMA182;
-
-    static char* kwlist[]={ "data", "poly", "init", "xorout", "ref", NULL };
-
-#if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y#|KKKp", kwlist, &data, &data_len, &polynomial, &init, &xorout, &ref ) )
-        return NULL;
-#else
-    return NULL;
-#endif /* PY_MAJOR_VERSION */
-    if ( ref == 0x00000001L ) {
-        polynomial = __hexin_reverse64( polynomial );
-    }
-    result = hz_calc_crc64_hacker( data, data_len, init, polynomial );
-    result = result ^ xorout;
-    return Py_BuildValue( "K", result );
-}
-
-/*
-*********************************************************************************************************
-                                    POLY=0xD800000000000000L [ISO]
-*********************************************************************************************************
-*/
-
-void init_crc64_iso_table( void ) 
-{
-    unsigned int i = 0, j = 0;
-	unsigned long long crc;
-
-    for ( i=0; i<256; i++ ) {
-        crc = (unsigned long long) i;
-        for ( j=0; j<8; j++ ) {
-            if ( crc & 0x0000000000000001L ) {
-                crc = ( crc >> 1 ) ^ HZ64_POLYNOMIAL_ISO;
-            } else {
-                crc =   crc >> 1;
-            }
-        }
-        crc_tab64_iso[i] = crc;
-    }
-    crc_tab64_iso_init = TRUE;
-}
-
-unsigned long long hz_update_crc64_iso( unsigned long long crc64, unsigned char c ) 
-{
-    unsigned long long crc = crc64;
-    unsigned long long tmp, long_c;
-    long_c = 0x00000000000000FFL & (unsigned long long) c;
-    if ( ! crc_tab64_iso_init ) init_crc64_iso_table();
-
-    tmp = crc ^ long_c;
-    crc = (crc >> 8) ^ crc_tab64_iso[ tmp & 0xFF ];
-
-    return crc;
-}
-
-/*
- * Width            = 64
- * Poly             = 0xD800000000000000L
- * InitValue(crc64) = 0x0000000000000000L
- */
-
-unsigned long long hz_calc_crc64_iso( const unsigned char *pSrc, unsigned int len, unsigned long long crc64 ) 
-{
-    unsigned int i = 0;
-    unsigned long long crc = crc64;
-
-	for ( i=0; i<len; i++ ) {
-		crc = hz_update_crc64_iso(crc, pSrc[i]);
-    }
-
-	return crc;
-}
+#include "_crc64tables.h"
 
 static PyObject * _crc64_iso(PyObject *self, PyObject *args)
 {
@@ -236,69 +34,9 @@ static PyObject * _crc64_iso(PyObject *self, PyObject *args)
         return NULL;
 #endif /* PY_MAJOR_VERSION */
 
-    result = hz_calc_crc64_iso(data, data_len, crc64);
+    result = hexin_calc_crc64_iso(data, data_len, crc64);
 
     return Py_BuildValue("K", result);
-}
-
-
-/*
-*********************************************************************************************************
-                                    POLY=0x42F0E1EBA9EA3693L [ECMA182]
-*********************************************************************************************************
-*/
-void init_crc64_ecma182_table( void ) 
-{
-    unsigned int i = 0, j = 0;
-    unsigned long long crc,c;
-
-    for ( i=0; i<256; i++ ) {
-		crc = 0;
-		c	= ((unsigned long long) i) << 56;
-        for ( j=0; j<8; j++ ) {
-			if ( (crc ^ c) & 0x8000000000000000L ) {
-                crc = ( crc << 1 ) ^ HZ64_POLYNOMIAL_ECMA182;
-            } else {
-                crc =   crc << 1;
-            }
-			c = c << 1;
-        }
-		crc_tab64_ecma182[i] = crc;
-    }
-	crc_tab64_ecma182_init = TRUE;
-}
-
-unsigned long long hz_update_crc64_ecma182( unsigned long long crc64, unsigned char c ) 
-{
-    unsigned long long crc = crc64;
-    unsigned long long tmp, long_c;
-    
-    long_c = 0x00000000000000FFL & (unsigned long long) c;
-
-    if ( ! crc_tab64_ecma182_init ) init_crc64_ecma182_table();
-
-    tmp = (crc >> 56) ^ long_c;
-    crc = (crc << 8)  ^ crc_tab64_ecma182[ tmp & 0xFF ];
-
-    return crc;
-}
-
-/*
- * Width            = 64
- * Poly             = 0x42F0E1EBA9EA3693L
- * InitValue(crc64) = 0xFFFFFFFFFFFFFFFFL
- */
-
-unsigned long long hz_calc_crc64_ecma182( const unsigned char *pSrc, unsigned int len, unsigned long long crc64 ) 
-{
-    unsigned int i = 0;
-    unsigned long long crc = crc64;
-
-	for ( i=0; i<len; i++ ) {
-		crc = hz_update_crc64_ecma182(crc, pSrc[i]);
-	}
-	crc ^= 0xFFFFFFFFFFFFFFFF;
-	return crc;
 }
 
 static PyObject * _crc64_ecma182(PyObject *self, PyObject *args)
@@ -316,11 +54,36 @@ static PyObject * _crc64_ecma182(PyObject *self, PyObject *args)
         return NULL;
 #endif /* PY_MAJOR_VERSION */
 
-    result = hz_calc_crc64_ecma182(data, data_len, crc64);
+    result = hexin_calc_crc64_ecma182( data, data_len, crc64 );
 
-    return Py_BuildValue("K", result);
+    return Py_BuildValue( "K", result );
 }
 
+static PyObject * _crc64_hacker( PyObject *self, PyObject *args, PyObject* kws )
+{
+    const unsigned char *data = NULL;
+    unsigned int data_len = 0x00000000L;
+    unsigned long long init   = 0xFFFFFFFFFFFFFFFFL;
+    unsigned long long xorout = 0x0000000000000000L;
+    unsigned int   ref        = 0x00000000L;
+    unsigned long long result = 0x0000000000000000L;
+    unsigned long long polynomial = CRC64_POLYNOMIAL_ECMA182;
+
+    static char* kwlist[]={ "data", "poly", "init", "xorout", "ref", NULL };
+
+#if PY_MAJOR_VERSION >= 3
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y#|KKKp", kwlist, &data, &data_len, &polynomial, &init, &xorout, &ref ) )
+        return NULL;
+#else
+    return NULL;
+#endif /* PY_MAJOR_VERSION */
+    if ( ref == 0x00000001L ) {
+        polynomial = hexin_reverse64( polynomial );
+    }
+    result = hexin_calc_crc64_hacker( data, data_len, init, polynomial );
+    result = result ^ xorout;
+    return Py_BuildValue( "K", result );
+}
 
 /* method table */
 static PyMethodDef _crc64Methods[] = {
