@@ -11,24 +11,144 @@
 *		New Create at 	2017-08-19 13:17PM
 *                       2017-08-21 [Heyn] Optimization code for the C99 standard.
 *                                         for ( unsigned int i=0; i<256; i++ ) -> for ( i=0; i<256; i++ )
+*                       2020-03-16 [Heyn] New add hacker64 code.
 *
 *********************************************************************************************************
 */
 
 #include <Python.h>
 
-#define                 TRUE                    1
-#define                 FALSE                   0
+#define                 TRUE                                1
+#define                 FALSE                               0
 
-#define		            HZ64_POLYNOMIAL_ISO     0xD800000000000000L
-#define		            HZ64_POLYNOMIAL_ECMA182 0x42F0E1EBA9EA3693L
+#define                 MAX_TABLE_ARRAY                     256
 
-static int				crc_tab64_iso_init		= FALSE;
-static int				crc_tab64_ecma182_init	= FALSE;
+#define		            HZ64_POLYNOMIAL_ISO                 0xD800000000000000L
+#define		            HZ64_POLYNOMIAL_ECMA182             0x42F0E1EBA9EA3693L
 
-unsigned long long	    crc_tab64_iso[256]      = {0x00000000};
-unsigned long long      crc_tab64_ecma182[256]  = {0x00000000};
+unsigned long long	    crc_tab64_iso[MAX_TABLE_ARRAY]      = {0x00000000};
+unsigned long long      crc_tab64_ecma182[MAX_TABLE_ARRAY]  = {0x00000000};
+unsigned long long      crc_tab64_xxxxxxx[MAX_TABLE_ARRAY]  = {0x00000000};
 
+static int				crc_tab64_iso_init		            = FALSE;
+static int				crc_tab64_ecma182_init	            = FALSE;
+unsigned long long      crc_tab64_xxxxxxx_init              = FALSE;
+
+/*
+*********************************************************************************************************
+*                                   For hacker
+*********************************************************************************************************
+*/
+static unsigned char _init_crc64_table_hacker( unsigned long long polynomial  ) 
+{
+    unsigned int i = 0, j = 0;
+	unsigned long long crc, c;
+
+    if ( crc_tab64_xxxxxxx_init == polynomial ) {
+        return FALSE;
+    }
+
+    if ( polynomial & 0x8000000000000000L ) {
+        for ( i=0; i<MAX_TABLE_ARRAY; i++ ) {
+            crc = (unsigned long long) i;
+            for ( j=0; j<8; j++ ) {
+                if ( crc & 0x0000000000000001L ) {
+                    crc = ( crc >> 1 ) ^ polynomial;
+                } else {
+                    crc =   crc >> 1;
+                }
+            }
+            crc_tab64_xxxxxxx[i] = crc;
+        }
+    } else {
+        for ( i=0; i<MAX_TABLE_ARRAY; i++ ) {
+            crc = 0;
+            c	= ((unsigned long long) i) << 56;
+            for ( j=0; j<8; j++ ) {
+                if ( (crc ^ c) & 0x8000000000000000L ) {
+                    crc = ( crc << 1 ) ^ polynomial;
+                } else {
+                    crc =   crc << 1;
+                }
+                c = c << 1;
+            }
+            crc_tab64_xxxxxxx[i] = crc;
+        }
+    }
+    crc_tab64_xxxxxxx_init = polynomial;
+    return TRUE;
+}
+
+unsigned long long _hz_update_crc64_hacker_right( unsigned long long crc64, unsigned char c ) 
+{
+    unsigned long long crc = crc64;
+    unsigned long long tmp, long_c;
+
+    long_c = 0x00000000000000FFL & (unsigned long long) c;
+    tmp = crc ^ long_c;
+    crc = (crc >> 8) ^ crc_tab64_xxxxxxx[ tmp & 0xFF ];
+
+    return crc;
+}
+
+unsigned long long _hz_update_crc64_hacker_left( unsigned long long crc64, unsigned char c ) 
+{
+    unsigned long long crc = crc64;
+    unsigned long long tmp, long_c;
+    
+    long_c = 0x00000000000000FFL & (unsigned long long) c;
+    tmp = (crc >> 56) ^ long_c;
+    crc = (crc << 8)  ^ crc_tab64_xxxxxxx[ tmp & 0xFF ];
+
+    return crc;
+}
+
+unsigned long long hz_calc_crc64_hacker( const unsigned char *pSrc, unsigned int len, unsigned long long crc64, unsigned long long polynomial )
+{
+    unsigned int i = 0;
+    unsigned long long crc = crc64;
+
+    _init_crc64_table_hacker( polynomial );
+
+    switch ( polynomial & 0x8000000000000000L ) {
+        case 0x8000000000000000L:
+            for ( i=0; i<len; i++ ) {
+                crc = _hz_update_crc64_hacker_right( crc, pSrc[i] );
+            }
+            break;
+        
+        default:
+            for ( i=0; i<len; i++ ) {
+                crc = _hz_update_crc64_hacker_left( crc, pSrc[i] );
+            }
+            break;
+    }
+
+	return crc;
+}
+
+static PyObject * _crc64_hacker( PyObject *self, PyObject *args, PyObject* kws )
+{
+    const unsigned char *data = NULL;
+    unsigned int data_len = 0x00000000L;
+    unsigned long long init   = 0xFFFFFFFFFFFFFFFFL;
+    unsigned long long xorout = 0x0000000000000000L;
+    unsigned long long result = 0x0000000000000000L;
+    unsigned long long polynomial = HZ64_POLYNOMIAL_ECMA182;
+
+    static char* kwlist[]={ "data", "poly", "init", "xorout", NULL };
+
+#if PY_MAJOR_VERSION >= 3
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y#|KKK", kwlist, &data, &data_len, &polynomial, &init, &xorout ) )
+        return NULL;
+#else
+    return NULL;
+#endif /* PY_MAJOR_VERSION */
+
+    result = hz_calc_crc64_hacker( data, data_len, init, polynomial );
+    result = result ^ xorout;
+    return Py_BuildValue( "K", result );
+}
 
 /*
 *********************************************************************************************************
@@ -189,8 +309,9 @@ static PyObject * _crc64_ecma182(PyObject *self, PyObject *args)
 
 /* method table */
 static PyMethodDef _crc64Methods[] = {
-    {"iso",     _crc64_iso,    METH_VARARGS, "Calculate CRC (IOS) of CRC64 [Poly=0xD800000000000000L, Init=0x0000000000000000L]"},
-    {"ecma182", _crc64_ecma182,METH_VARARGS, "Calculate CRC (ECMA182) of CRC64 [Poly=0x42F0E1EBA9EA3693L, Init=0xFFFFFFFFFFFFFFFFL]"},
+    {"iso",         _crc64_iso,     METH_VARARGS, "Calculate CRC (IOS) of CRC64 [Poly=0xD800000000000000L, Init=0x0000000000000000L]"},
+    {"ecma182",     _crc64_ecma182, METH_VARARGS, "Calculate CRC (ECMA182) of CRC64 [Poly=0x42F0E1EBA9EA3693L, Init=0xFFFFFFFFFFFFFFFFL]"},
+    {"hacker64",    _crc64_hacker,  METH_KEYWORDS|METH_VARARGS, "libscrc.hacker64(data=b'123456789', poly=0x42F0E1EBA9EA3693L, init=0xFFFFFFFFFFFFFFFF) ### Xorout=0 Refin=True Refout=True "},
     {NULL, NULL, 0, NULL}        /* Sentinel */
 };
 
@@ -199,7 +320,8 @@ static PyMethodDef _crc64Methods[] = {
 PyDoc_STRVAR(_crc64_doc,
 "Calculation of CRC64 \n"
 "libscrc.iso -> Calculate CRC (IOS) of CRC64 [Poly=0xD800000000000000L, Init=0x0000000000000000L]\n"
-"libscrc.ecma182 -> Calculate CRC (ECMA182) of CRC64 [Poly=0x42F0E1EBA9EA3693L, Init=0xFFFFFFFFFFFFFFFFL]\n"
+"libscrc.ecma182  -> Calculate CRC (ECMA182) of CRC64 [Poly=0x42F0E1EBA9EA3693L, Init=0xFFFFFFFFFFFFFFFFL]\n"
+"libscrc.hacker64 -> Free calculation CRC64 (not support python2 series) Xorout=0 Refin=True Refout=True\n"
 "\n");
 
 
@@ -225,7 +347,7 @@ PyInit__crc64(void)
         return NULL;
     }
 
-    PyModule_AddStringConstant(m, "__version__", "0.0.2");
+    PyModule_AddStringConstant(m, "__version__", "0.1.6");
     PyModule_AddStringConstant(m, "__author__", "Heyn");
 
     return m;

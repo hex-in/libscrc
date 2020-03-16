@@ -351,20 +351,20 @@ static PyObject * _crc32_hacker( PyObject *self, PyObject *args, PyObject* kws )
 {
     const unsigned char *data = NULL;
     unsigned int data_len = 0x00000000L;
-    unsigned int crc32    = 0xFFFFFFFFL;
+    unsigned int init     = 0xFFFFFFFFL;
     unsigned int xorout   = 0x00000000L;
     unsigned int result   = 0x00000000L;
     unsigned int polynomial = CRC32_POLYNOMIAL_EDB88320;
-    static char* kwlist[]={ "data", "poly", "crc32", "xorout", NULL };
+    static char* kwlist[]={ "data", "poly", "init", "xorout", NULL };
 
 #if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y#|III", kwlist, &data, &data_len, &polynomial, &crc32, &xorout ) )
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y#|III", kwlist, &data, &data_len, &polynomial, &init, &xorout ) )
         return NULL;
 #else
     return NULL;
 #endif /* PY_MAJOR_VERSION */
 
-    result = hz_calc_crc32_hacker( data, data_len, crc32, polynomial );
+    result = hz_calc_crc32_hacker( data, data_len, init, polynomial );
     result = result ^ xorout;
     return Py_BuildValue("I", result);
 }
@@ -413,7 +413,7 @@ PyInit__crc32(void)
         return NULL;
     }
 
-    PyModule_AddStringConstant(m, "__version__", "0.1.0");
+    PyModule_AddStringConstant(m, "__version__", "0.1.6");
     PyModule_AddStringConstant(m, "__author__", "Heyn");
 
     return m;

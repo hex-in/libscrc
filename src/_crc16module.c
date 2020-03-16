@@ -387,20 +387,20 @@ static PyObject * _crc16_hacker( PyObject *self, PyObject *args, PyObject* kws )
 {
     const unsigned char *data = NULL;
     unsigned int data_len = 0x00000000L;
-    unsigned short crc16  = 0xFFFF;
+    unsigned short init   = 0xFFFF;
     unsigned short xorout = 0x0000;
     unsigned short result = 0x0000;
     unsigned short polynomial = CRC16_POLYNOMIAL_1021;
-    static char* kwlist[]={ "data", "poly", "crc16", "xorout", NULL };
+    static char* kwlist[]={ "data", "poly", "init", "xorout", NULL };
 
 #if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y#|HHH", kwlist, &data, &data_len, &polynomial, &crc16, &xorout ) )
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y#|HHH", kwlist, &data, &data_len, &polynomial, &init, &xorout ) )
         return NULL;
 #else
     return NULL;
 #endif /* PY_MAJOR_VERSION */
 
-    result = hz_calc_crc16_hacker( data, data_len, crc16, polynomial );
+    result = hz_calc_crc16_hacker( data, data_len, init, polynomial );
     result = result ^ xorout;
     return Py_BuildValue( "H", result );
 }
@@ -465,7 +465,7 @@ PyInit__crc16(void)
         return NULL;
     }
 
-    PyModule_AddStringConstant(m, "__version__", "0.1.3");
+    PyModule_AddStringConstant(m, "__version__", "0.1.6");
     PyModule_AddStringConstant(m, "__author__", "Heyn");
 
     return m;
