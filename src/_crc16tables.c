@@ -18,6 +18,7 @@
 *
 *********************************************************************************************************
 */
+
 #include "_crc16tables.h"
 
 static unsigned short   crc16_tab_shift_8408[MAX_TABLE_ARRAY]   = {0x0000};     // Used for X25 Kermit
@@ -378,24 +379,43 @@ unsigned short hz_calc_crc16_sick( const unsigned char *pSrc, unsigned int len, 
 *********************************************************************************************************
 */
 
-static void _init_crc16_table_hacker( unsigned short polynomial  ) 
+static unsigned char _init_crc16_table_hacker( unsigned short polynomial  ) 
 {
     unsigned int i = 0, j = 0;
     unsigned short crc = 0, c = 0;
 
-    for ( i=0; i<MAX_TABLE_ARRAY; i++ ) {
-        crc = 0;
-        c   = ( unsigned short ) i;
-        for ( j=0; j<8; j++ ) {
-            if ( (crc ^ c) & 0x0001 )   crc = ( crc >> 1 ) ^ polynomial;
-            else                        crc = crc >> 1;
-            c = c >> 1;
-        }
-        crc16_tab_shift_xxxx[i] = crc;
+    if ( crc16_tab_shift_xxxx_init == polynomial ) {
+        return FALSE;
     }
+
+    if ( polynomial & 0x8000 ) {
+        for ( i=0; i<MAX_TABLE_ARRAY; i++ ) {
+            crc = 0;
+            c   = ( unsigned short ) i;
+            for ( j=0; j<8; j++ ) {
+                if ( (crc ^ c) & 0x0001 )   crc = ( crc >> 1 ) ^ polynomial;
+                else                        crc = crc >> 1;
+                c = c >> 1;
+            }
+            crc16_tab_shift_xxxx[i] = crc;
+        }
+    } else {
+        for ( i=0; i<MAX_TABLE_ARRAY; i++ ) {
+            crc = 0;
+            c   = ((unsigned short) i) << 8;
+            for ( j=0; j<8; j++ ) {
+                if ( (crc ^ c) & 0x8000 ) crc = ( crc << 1 ) ^ polynomial;
+                else                      crc = crc << 1;
+                c = c << 1;
+            }
+            crc16_tab_shift_xxxx[i] = crc;
+        }
+    }
+    crc16_tab_shift_xxxx_init = polynomial;
+    return TRUE;
 }
 
-static unsigned short _hz_update_crc16_hacker( unsigned short crc16, unsigned char c ) 
+static unsigned short _hz_update_crc16_hacker_right( unsigned short crc16, unsigned char c ) 
 {
     unsigned short crc = crc16;
     unsigned short tmp, short_c;
@@ -407,19 +427,39 @@ static unsigned short _hz_update_crc16_hacker( unsigned short crc16, unsigned ch
     return crc;
 }
 
+static unsigned short _hz_update_crc16_hacker_left( unsigned short crc16, unsigned char c ) 
+{
+    unsigned short crc = crc16;
+    unsigned short tmp, short_c;
+
+    short_c  = 0x00FF & (unsigned short) c;
+    tmp = (crc >> 8) ^ short_c;
+    crc = (crc << 8) ^ crc16_tab_shift_xxxx[tmp];
+
+    return crc;
+}
+
 unsigned short hz_calc_crc16_hacker( const unsigned char *pSrc, unsigned int len, unsigned short crc16, unsigned short polynomial )
 {
     unsigned int i = 0;
     unsigned short crc = crc16;
 
-    if ( crc16_tab_shift_xxxx_init != polynomial ) {
-        _init_crc16_table_hacker( polynomial );
-        crc16_tab_shift_xxxx_init = polynomial;
+    _init_crc16_table_hacker( polynomial );
+
+    switch ( polynomial & 0x8000 ) {
+        case 0x8000:
+            for ( i=0; i<len; i++ ) {
+                crc = _hz_update_crc16_hacker_right( crc, pSrc[i] );
+            }
+            break;
+        
+        default:
+            for ( i=0; i<len; i++ ) {
+                crc = _hz_update_crc16_hacker_left( crc, pSrc[i] );
+            }
+            break;
     }
 
-	for ( i=0; i<len; i++ ) {
-		crc = _hz_update_crc16_hacker( crc, pSrc[i] );
-	}
 	return crc;
 }
 
