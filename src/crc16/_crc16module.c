@@ -1,6 +1,6 @@
 /*
 *********************************************************************************************************
-*                              		(c) Copyright 2006-2020, Hexin
+*                              		(c) Copyright 2018-2020, Hexin
 *                                           All Rights Reserved
 * File    : _crc16module.c
 * Author  : Heyn (heyunhuan@gmail.com)
@@ -34,7 +34,7 @@
 *********************************************************************************************************
 */
 
-static PyObject * _crc16_modbus(PyObject *self, PyObject *args)
+static PyObject * _crc16_modbus( PyObject *self, PyObject *args )
 {
     const unsigned char *data = NULL;
     unsigned int data_len = 0x00000000L;
@@ -42,16 +42,16 @@ static PyObject * _crc16_modbus(PyObject *self, PyObject *args)
     unsigned short result = 0x0000;
 
 #if PY_MAJOR_VERSION >= 3
-    if (!PyArg_ParseTuple(args, "y#|H", &data, &data_len, &crc16))
+    if ( !PyArg_ParseTuple( args, "y#|H", &data, &data_len, &crc16 ) )
         return NULL;
 #else
-    if (!PyArg_ParseTuple(args, "s#|H", &data, &data_len, &crc16))
+    if ( !PyArg_ParseTuple(args, "s#|H", &data, &data_len, &crc16 ) )
         return NULL;
 #endif /* PY_MAJOR_VERSION */
 
-    result = hz_calc_crc16_a001(data, data_len, crc16);
+    result = hexin_calc_crc16_a001( data, data_len, crc16 );
 
-    return Py_BuildValue("H", result);
+    return Py_BuildValue( "H", result );
 }
 
 /*
@@ -67,7 +67,7 @@ static PyObject * _crc16_modbus(PyObject *self, PyObject *args)
 * 0xA001 = reverse 0x8005
 *********************************************************************************************************
 */
-static PyObject * _crc16_usb(PyObject *self, PyObject *args)
+static PyObject * _crc16_usb( PyObject *self, PyObject *args )
 {
     const unsigned char *data = NULL;
     unsigned int data_len = 0x00000000L;
@@ -75,16 +75,16 @@ static PyObject * _crc16_usb(PyObject *self, PyObject *args)
     unsigned short result = 0x0000;
 
 #if PY_MAJOR_VERSION >= 3
-    if (!PyArg_ParseTuple(args, "y#|H", &data, &data_len, &crc16))
+    if ( !PyArg_ParseTuple( args, "y#|H", &data, &data_len, &crc16 ) )
         return NULL;
 #else
-    if (!PyArg_ParseTuple(args, "s#|H", &data, &data_len, &crc16))
+    if ( !PyArg_ParseTuple( args, "s#|H", &data, &data_len, &crc16 ) )
         return NULL;
 #endif /* PY_MAJOR_VERSION */
 
-    result = hz_calc_crc16_a001(data, data_len, crc16);
+    result = hexin_calc_crc16_a001( data, data_len, crc16 );
     result = result ^ 0xFFFF;
-    return Py_BuildValue("H", result);
+    return Py_BuildValue( "H", result );
 }
 
 /*
@@ -100,7 +100,7 @@ static PyObject * _crc16_usb(PyObject *self, PyObject *args)
 *********************************************************************************************************
 */
 
-static PyObject * _crc16_ibm(PyObject *self, PyObject *args)
+static PyObject * _crc16_ibm( PyObject *self, PyObject *args )
 {
     const unsigned char *data = NULL;
     unsigned int data_len = 0x00000000L;
@@ -109,20 +109,20 @@ static PyObject * _crc16_ibm(PyObject *self, PyObject *args)
     unsigned short result = 0x0000;
 
 #if PY_MAJOR_VERSION >= 3
-    if (!PyArg_ParseTuple(args, "y#|HH", &data, &data_len, &poly, &crc16))
+    if ( !PyArg_ParseTuple( args, "y#|HH", &data, &data_len, &poly, &crc16 ) )
         return NULL;
 #else
-    if (!PyArg_ParseTuple(args, "s#|HH", &data, &data_len, &poly, &crc16))
+    if ( !PyArg_ParseTuple( args, "s#|HH", &data, &data_len, &poly, &crc16 ) )
         return NULL;
 #endif /* PY_MAJOR_VERSION */
 
-    if (poly == CRC16_POLYNOMIAL_8005) {
-        result = hz_calc_crc16_8005(data, data_len, crc16);
+    if ( poly == CRC16_POLYNOMIAL_8005 ) {
+        result = hexin_calc_crc16_8005( data, data_len, crc16 );
     } else {
-        result = hz_calc_crc16_a001(data, data_len, crc16);
+        result = hexin_calc_crc16_a001( data, data_len, crc16 );
     }
 
-    return Py_BuildValue("H", result);
+    return Py_BuildValue( "H", result );
 }
 
 /*
@@ -136,7 +136,7 @@ static PyObject * _crc16_ibm(PyObject *self, PyObject *args)
 *********************************************************************************************************
 */
 
-static PyObject * _crc16_xmodem(PyObject *self, PyObject *args)
+static PyObject * _crc16_xmodem( PyObject *self, PyObject *args )
 {
     const unsigned char *data = NULL;
     unsigned int data_len = 0x00000000L;
@@ -144,16 +144,16 @@ static PyObject * _crc16_xmodem(PyObject *self, PyObject *args)
     unsigned short result = 0x0000;
 
 #if PY_MAJOR_VERSION >= 3
-    if (!PyArg_ParseTuple(args, "y#|H", &data, &data_len, &crc16))
+    if ( !PyArg_ParseTuple( args, "y#|H", &data, &data_len, &crc16 ) )
         return NULL;
 #else
-    if (!PyArg_ParseTuple(args, "s#|H", &data, &data_len, &crc16))
+    if ( !PyArg_ParseTuple( args, "s#|H", &data, &data_len, &crc16 ) )
         return NULL;
 #endif /* PY_MAJOR_VERSION */
 
-    result = hz_calc_crc16_1021(data, data_len, crc16);
+    result = hexin_calc_crc16_1021( data, data_len, crc16 );
 
-    return Py_BuildValue("H", result);
+    return Py_BuildValue( "H", result );
 }
 
 /*
@@ -166,7 +166,7 @@ static PyObject * _crc16_xmodem(PyObject *self, PyObject *args)
 * Xorout:  0x0000
 *********************************************************************************************************
 */
-static PyObject * _crc16_ccitt(PyObject *self, PyObject *args)
+static PyObject * _crc16_ccitt( PyObject *self, PyObject *args )
 {
     const unsigned char *data = NULL;
     unsigned int data_len = 0x00000000L;
@@ -174,16 +174,16 @@ static PyObject * _crc16_ccitt(PyObject *self, PyObject *args)
     unsigned short result = 0x0000;
 
 #if PY_MAJOR_VERSION >= 3
-    if (!PyArg_ParseTuple(args, "y#|H", &data, &data_len, &crc16))
+    if ( !PyArg_ParseTuple( args, "y#|H", &data, &data_len, &crc16 ) )
         return NULL;
 #else
-    if (!PyArg_ParseTuple(args, "s#|H", &data, &data_len, &crc16))
+    if ( !PyArg_ParseTuple( args, "s#|H", &data, &data_len, &crc16 ) )
         return NULL;
 #endif /* PY_MAJOR_VERSION */
 
-    result = hz_calc_crc16_1021(data, data_len, crc16);
+    result = hexin_calc_crc16_1021( data, data_len, crc16 );
 
-    return Py_BuildValue("H", result);
+    return Py_BuildValue( "H", result );
 }
 
 /*
@@ -200,7 +200,7 @@ static PyObject * _crc16_ccitt(PyObject *self, PyObject *args)
 *********************************************************************************************************
 */
 
-static PyObject * _crc16_kermit(PyObject *self, PyObject *args)
+static PyObject * _crc16_kermit( PyObject *self, PyObject *args )
 {
     const unsigned char *data = NULL;
     unsigned int data_len = 0x00000000L;
@@ -208,16 +208,16 @@ static PyObject * _crc16_kermit(PyObject *self, PyObject *args)
     unsigned short result = 0x0000;
 
 #if PY_MAJOR_VERSION >= 3
-    if (!PyArg_ParseTuple(args, "y#|H", &data, &data_len, &crc16))
+    if ( !PyArg_ParseTuple(args, "y#|H", &data, &data_len, &crc16 ) )
         return NULL;
 #else
-    if (!PyArg_ParseTuple(args, "s#|H", &data, &data_len, &crc16))
+    if ( !PyArg_ParseTuple(args, "s#|H", &data, &data_len, &crc16 ) )
         return NULL;
 #endif /* PY_MAJOR_VERSION */
 
-    result = hz_calc_crc16_8408(data, data_len, crc16);
+    result = hexin_calc_crc16_8408( data, data_len, crc16 );
 
-    return Py_BuildValue("H", result);
+    return Py_BuildValue( "H", result );
 }
 
 /*
@@ -232,7 +232,7 @@ static PyObject * _crc16_kermit(PyObject *self, PyObject *args)
 * 0x8408 = reverse 0x1021
 *********************************************************************************************************
 */
-static PyObject * _crc16_x25(PyObject *self, PyObject *args)
+static PyObject * _crc16_x25( PyObject *self, PyObject *args )
 {
     const unsigned char *data = NULL;
     unsigned int data_len = 0x00000000L;
@@ -240,16 +240,16 @@ static PyObject * _crc16_x25(PyObject *self, PyObject *args)
     unsigned short result = 0x0000;
 
 #if PY_MAJOR_VERSION >= 3
-    if (!PyArg_ParseTuple(args, "y#|H", &data, &data_len, &crc16))
+    if ( !PyArg_ParseTuple( args, "y#|H", &data, &data_len, &crc16 ) )
         return NULL;
 #else
-    if (!PyArg_ParseTuple(args, "s#|H", &data, &data_len, &crc16))
+    if ( !PyArg_ParseTuple( args, "s#|H", &data, &data_len, &crc16 ) )
         return NULL;
 #endif /* PY_MAJOR_VERSION */
 
-    result = hz_calc_crc16_8408(data, data_len, crc16);
-    result = ~result;
-    return Py_BuildValue("H", result);
+    result = hexin_calc_crc16_8408( data, data_len, crc16 );
+    result = result ^ 0xFFFF;
+    return Py_BuildValue( "H", result );
 }
 
 /*
@@ -258,7 +258,7 @@ static PyObject * _crc16_x25(PyObject *self, PyObject *args)
 *********************************************************************************************************
 */
 
-static PyObject * _crc16_sick(PyObject *self, PyObject *args)
+static PyObject * _crc16_sick( PyObject *self, PyObject *args )
 {
     const unsigned char *data = NULL;
     unsigned int data_len = 0x00000000L;
@@ -266,16 +266,16 @@ static PyObject * _crc16_sick(PyObject *self, PyObject *args)
     unsigned short result = 0x0000;
 
 #if PY_MAJOR_VERSION >= 3
-    if (!PyArg_ParseTuple(args, "y#|H", &data, &data_len, &crc16))
+    if ( !PyArg_ParseTuple( args, "y#|H", &data, &data_len, &crc16 ) )
         return NULL;
 #else
-    if (!PyArg_ParseTuple(args, "s#|H", &data, &data_len, &crc16))
+    if ( !PyArg_ParseTuple( args, "s#|H", &data, &data_len, &crc16 ) )
         return NULL;
 #endif /* PY_MAJOR_VERSION */
 
-    result = hz_calc_crc16_sick(data, data_len, crc16);
+    result = hexin_calc_crc16_sick( data, data_len, crc16 );
 
-    return Py_BuildValue("H", result);
+    return Py_BuildValue( "H", result );
 }
 
 /*
@@ -291,7 +291,7 @@ static PyObject * _crc16_sick(PyObject *self, PyObject *args)
 *********************************************************************************************************
 */
 
-static PyObject * _crc16_dnp(PyObject *self, PyObject *args)
+static PyObject * _crc16_dnp( PyObject *self, PyObject *args )
 {
     const unsigned char *data = NULL;
     unsigned int data_len = 0x00000000L;
@@ -299,16 +299,16 @@ static PyObject * _crc16_dnp(PyObject *self, PyObject *args)
     unsigned short result = 0x0000;
 
 #if PY_MAJOR_VERSION >= 3
-    if (!PyArg_ParseTuple(args, "y#|H", &data, &data_len, &crc16))
+    if ( !PyArg_ParseTuple( args, "y#|H", &data, &data_len, &crc16 ) )
         return NULL;
 #else
-    if (!PyArg_ParseTuple(args, "s#|H", &data, &data_len, &crc16))
+    if ( !PyArg_ParseTuple( args, "s#|H", &data, &data_len, &crc16 ) )
         return NULL;
 #endif /* PY_MAJOR_VERSION */
 
-    result = hz_calc_crc16_a6bc(data, data_len, crc16);
+    result = hexin_calc_crc16_a6bc( data, data_len, crc16 );
 
-    return Py_BuildValue("H", result);
+    return Py_BuildValue( "H", result );
 }
 
 
@@ -324,7 +324,7 @@ static PyObject * _crc16_dnp(PyObject *self, PyObject *args)
 * 0xA001 = reverse 0x8005
 *********************************************************************************************************
 */
-static PyObject * _crc16_maxim(PyObject *self, PyObject *args)
+static PyObject * _crc16_maxim( PyObject *self, PyObject *args )
 {
     const unsigned char *data = NULL;
     unsigned int data_len = 0x00000000L;
@@ -332,17 +332,17 @@ static PyObject * _crc16_maxim(PyObject *self, PyObject *args)
     unsigned short result = 0x0000;
 
 #if PY_MAJOR_VERSION >= 3
-    if (!PyArg_ParseTuple(args, "y#|H", &data, &data_len, &crc16))
+    if ( !PyArg_ParseTuple( args, "y#|H", &data, &data_len, &crc16 ) )
         return NULL;
 #else
-    if (!PyArg_ParseTuple(args, "s#|H", &data, &data_len, &crc16))
+    if ( !PyArg_ParseTuple( args, "s#|H", &data, &data_len, &crc16 ) )
         return NULL;
 #endif /* PY_MAJOR_VERSION */
 
-    result = hz_calc_crc16_a001(data, data_len, crc16);
+    result = hexin_calc_crc16_a001( data, data_len, crc16 );
     result = result ^ 0xFFFF;
 
-    return Py_BuildValue("H", result);
+    return Py_BuildValue( "H", result );
 }
 
 /*
@@ -358,7 +358,7 @@ static PyObject * _crc16_maxim(PyObject *self, PyObject *args)
 *********************************************************************************************************
 */
 
-static PyObject * _crc16_dect(PyObject *self, PyObject *args)
+static PyObject * _crc16_dect( PyObject *self, PyObject *args )
 {
     const unsigned char *data = NULL;
     unsigned int data_len = 0x00000000L;
@@ -366,16 +366,49 @@ static PyObject * _crc16_dect(PyObject *self, PyObject *args)
     unsigned short result = 0x0000;
 
 #if PY_MAJOR_VERSION >= 3
-    if (!PyArg_ParseTuple(args, "y#|H", &data, &data_len, &crc16))
+    if ( !PyArg_ParseTuple( args, "y#|H", &data, &data_len, &crc16 ) )
         return NULL;
 #else
-    if (!PyArg_ParseTuple(args, "s#|H", &data, &data_len, &crc16))
+    if ( !PyArg_ParseTuple( args, "s#|H", &data, &data_len, &crc16 ) )
         return NULL;
 #endif /* PY_MAJOR_VERSION */
 
-    result = hz_calc_crc16_91a0(data, data_len, crc16);
+    result = hexin_calc_crc16_91a0( data, data_len, crc16 );
 
-    return Py_BuildValue("H", result);
+    return Py_BuildValue( "H", result );
+}
+
+/*
+*********************************************************************************************************
+                                    Print CRC16 table.
+*********************************************************************************************************
+*/
+static PyObject * _crc16_table( PyObject *self, PyObject *args )
+{
+    unsigned int i = 0x00000000L;
+    unsigned short poly = CRC16_POLYNOMIAL_A001;
+    unsigned short table[MAX_TABLE_ARRAY] = { 0x0000 };
+    PyObject* plist = PyList_New( MAX_TABLE_ARRAY );
+
+#if PY_MAJOR_VERSION >= 3
+    if ( !PyArg_ParseTuple( args, "H", &poly ) )
+        return NULL;
+#else
+    if ( !PyArg_ParseTuple( args, "H", &poly ) )
+        return NULL;
+#endif /* PY_MAJOR_VERSION */
+
+    if ( HEXIN_POLYNOMIAL_IS_HIGH( poly ) ) {
+        hexin_crc16_init_table_poly_is_high( poly, table );
+    } else {
+        hexin_crc16_init_table_poly_is_low ( poly, table );
+    }
+
+    for ( i=0; i<MAX_TABLE_ARRAY; i++ ) {
+        PyList_SetItem( plist, i, Py_BuildValue( "H", table[i] ) );
+    }
+
+    return plist;
 }
 
 /*
@@ -398,39 +431,47 @@ static PyObject * _crc16_hacker( PyObject *self, PyObject *args, PyObject* kws )
     if ( !PyArg_ParseTupleAndKeywords( args, kws, "y#|HHHp", kwlist, &data, &data_len, &polynomial, &init, &xorout, &ref ) )
         return NULL;
 #else
-    return NULL;
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s#|HHHp", kwlist, &data, &data_len, &polynomial, &init, &xorout, &ref ) )
+        return NULL;
 #endif /* PY_MAJOR_VERSION */
 
-    if ( ref == 0x00000001L ) {
+    if ( HEXIN_REFIN_OR_REFOUT_IS_TRUE( ref ) ) {
         polynomial = hexin_reverse16( polynomial );
     }
 
-    result = hz_calc_crc16_hacker( data, data_len, init, polynomial );
+    result = hexin_calc_crc16_hacker( data, data_len, init, polynomial );
     result = result ^ xorout;
     return Py_BuildValue( "H", result );
 }
 
 /* method table */
 static PyMethodDef _crc16Methods[] = {
-    {"modbus",      _crc16_modbus, METH_VARARGS, "Calculate Modbus of CRC16              [Poly=0xA001, Init=0xFFFF Xorout=0x0000 Refin=True Refout=True]"},
-    {"usb16",       _crc16_usb,    METH_VARARGS, "Calculate USB    of CRC16              [Poly=0xA001, Init=0xFFFF Xorout=0xFFFF Refin=True Refout=True]"},
-    {"ibm",         _crc16_ibm,    METH_VARARGS, "Calculate IBM (Alias:ARC/LHA) of CRC16 [Poly=0x8005, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]"},
-    {"xmodem",      _crc16_xmodem, METH_VARARGS, "Calculate XMODEM of CRC16              [Poly=0x1021, Init=0x0000 Xorout=0x0000 Refin=False Refout=False]"},
-    {"ccitt",       _crc16_kermit, METH_VARARGS, "Calculate CCITT-TRUE of CRC16          [Poly=0x1021, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]"},
-    {"ccitt_false", _crc16_ccitt,  METH_VARARGS, "Calculate CCITT-FALSE of CRC16         [Poly=0x1021, Init=0xFFFF or 0x1D0F]"},
-    {"kermit",      _crc16_kermit, METH_VARARGS, "Calculate Kermit (CCITT-TRUE) of CRC16 [Poly=0x8408, Init=0x0000]"},
-    {"sick",        _crc16_sick,   METH_VARARGS, "Calculate Sick of CRC16                [Poly=0x8005, Init=0x0000]"},
-    {"dnp",         _crc16_dnp,    METH_VARARGS, "Calculate DNP (Ues:M-Bus, ICE870)  of CRC16    [Poly=0x3D65, Init=0x0000 Xorout=0xFFFF Refin=True Refout=True]"},
-    {"x25",         _crc16_x25,    METH_VARARGS, "Calculate X25  of CRC16                [Poly=0x1021, Init=0xFFFF Xorout=0xFFFF Refin=True Refout=True]"},
-    {"maxim16",     _crc16_maxim,  METH_VARARGS, "Calculate MAXIM of CRC16               [Poly=0x8005, Init=0x0000 Xorout=0xFFFF Refin=True Refout=True]"},
-    {"dect",        _crc16_dect,   METH_VARARGS, "Calculate DECT of CRC16                [Poly=0x0589, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]"},
-    {"hacker16",    _crc16_hacker, METH_KEYWORDS|METH_VARARGS, "Free calculation CRC16   [Poly=any,    Init=any    Xorout=0x0000 Refin=True Refout=True]"},
-    {NULL, NULL, 0, NULL}        /* Sentinel */
+    { "modbus",      _crc16_modbus, METH_VARARGS, "Calculate Modbus of CRC16              [Poly=0xA001, Init=0xFFFF Xorout=0x0000 Refin=False Refout=False]" },
+    { "usb16",       _crc16_usb,    METH_VARARGS, "Calculate USB    of CRC16              [Poly=0xA001, Init=0xFFFF Xorout=0xFFFF Refin=False Refout=False]" },
+    { "ibm",         _crc16_ibm,    METH_VARARGS, "Calculate IBM (Alias:ARC/LHA) of CRC16 [Poly=0x8005, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]" },
+    { "xmodem",      _crc16_xmodem, METH_VARARGS, "Calculate XMODEM of CRC16              [Poly=0x1021, Init=0x0000 Xorout=0x0000 Refin=False Refout=False]" },
+    { "ccitt",       _crc16_kermit, METH_VARARGS, "Calculate CCITT-TRUE of CRC16          [Poly=0x1021, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]" },
+    { "ccitt_false", _crc16_ccitt,  METH_VARARGS, "Calculate CCITT-FALSE of CRC16         [Poly=0x1021, Init=0xFFFF or 0x1D0F]" },
+    { "kermit",      _crc16_kermit, METH_VARARGS, "Calculate Kermit (CCITT-TRUE) of CRC16 [Poly=0x8408, Init=0x0000]" },
+    { "sick",        _crc16_sick,   METH_VARARGS, "Calculate Sick of CRC16                [Poly=0x8005, Init=0x0000]" },
+    { "dnp",         _crc16_dnp,    METH_VARARGS, "Calculate DNP (Ues:M-Bus, ICE870)  of CRC16    [Poly=0x3D65, Init=0x0000 Xorout=0xFFFF Refin=True Refout=True]" },
+    { "x25",         _crc16_x25,    METH_VARARGS, "Calculate X25  of CRC16                [Poly=0x1021, Init=0xFFFF Xorout=0xFFFF Refin=True Refout=True]" },
+    { "maxim16",     _crc16_maxim,  METH_VARARGS, "Calculate MAXIM of CRC16               [Poly=0x8005, Init=0x0000 Xorout=0xFFFF Refin=True Refout=True]" },
+    { "dect",        _crc16_dect,   METH_VARARGS, "Calculate DECT of CRC16                [Poly=0x0589, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]" },
+    { "table16",     _crc16_table,  METH_VARARGS, "Print CRC16 table to list. libscrc.table16( polynomial )" },
+    { "hacker16",    _crc16_hacker, METH_KEYWORDS|METH_VARARGS, "User calculation CRC16\n"
+                                                                "@data   : bytes\n"
+                                                                "@poly   : default=0x1021\n"
+                                                                "@init   : default=0xFFFF\n"
+                                                                "@xorout : default=0x0000\n"
+                                                                "@ref    : default=False" },
+
+    { NULL, NULL, 0, NULL }        /* Sentinel */
 };
 
 
 /* module documentation */
-PyDoc_STRVAR(_crc16_doc,
+PyDoc_STRVAR( _crc16_doc,
 "Calculation of CRC16 \n"
 "libscrc.modbus     -> Calculate Modbus of CRC16              [Poly=0xA001, Init=0xFFFF Xorout=0x0000 Refin=True Refout=True]\n"
 "libscrc.usb16      -> Calculate USB    of CRC16              [Poly=0xA001, Init=0xFFFF Xorout=0xFFFF Refin=True Refout=True]\n"
@@ -445,7 +486,7 @@ PyDoc_STRVAR(_crc16_doc,
 "libscrc.maxim16    -> Calculate MAXIM of CRC16               [Poly=0x8005, Init=0x0000 Xorout=0xFFFF Refin=True Refout=True]\n"
 "libscrc.dect       -> Calculate DECT of CRC16                [Poly=0x0589, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]\n"
 "libscrc.hacker16   -> Free calculation CRC16 (not support python2 series)\n"
-"\n");
+"\n" );
 
 
 #if PY_MAJOR_VERSION >= 3
@@ -461,17 +502,17 @@ static struct PyModuleDef _crc16module = {
 
 /* initialization function for Python 3 */
 PyMODINIT_FUNC
-PyInit__crc16(void)
+PyInit__crc16( void )
 {
     PyObject *m;
 
-    m = PyModule_Create(&_crc16module);
+    m = PyModule_Create( &_crc16module );
     if (m == NULL) {
         return NULL;
     }
 
-    PyModule_AddStringConstant(m, "__version__", "0.1.6");
-    PyModule_AddStringConstant(m, "__author__", "Heyn");
+    PyModule_AddStringConstant( m, "__version__", "0.1.6" );
+    PyModule_AddStringConstant( m, "__author__",  "Heyn"  );
 
     return m;
 }
@@ -480,9 +521,9 @@ PyInit__crc16(void)
 
 /* initialization function for Python 2 */
 PyMODINIT_FUNC
-init_crc16(void)
+init_crc16( void )
 {
-    (void) Py_InitModule3("_crc16", _crc16Methods, _crc16_doc);
+    (void) Py_InitModule3( "_crc16", _crc16Methods, _crc16_doc );
 }
 
 #endif /* PY_MAJOR_VERSION */

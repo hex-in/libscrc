@@ -102,38 +102,26 @@ static PyObject * _crc32_table( PyObject *self, PyObject *args )
 {
     unsigned int i = 0x00000000L;
     unsigned int poly = CRC32_POLYNOMIAL_04C11DB7;
+    unsigned int table[MAX_TABLE_ARRAY] = { 0x00000000L };
     PyObject* plist = PyList_New( MAX_TABLE_ARRAY );
 
 #if PY_MAJOR_VERSION >= 3
-    if (!PyArg_ParseTuple(args, "I", &poly))
+    if ( !PyArg_ParseTuple( args, "I", &poly ) )
         return NULL;
 #else
-    if (!PyArg_ParseTuple(args, "I", &poly))
+    if ( !PyArg_ParseTuple( args, "I", &poly ) )
         return NULL;
 #endif /* PY_MAJOR_VERSION */
 
-    // switch ( poly ) {
-    //     case CRC32_POLYNOMIAL_04C11DB7:
-    //         if ( ! crc32_tab_shift_04c11db7_init ) _init_crc32_table_04c11db7();
-    //         for ( i=0; i<MAX_TABLE_ARRAY; i++ ) {
-    //             PyList_SetItem(plist, i, Py_BuildValue("I", crc32_tab_shift_04c11db7[i]));
-    //         }
-    //         break;
+    if ( HEXIN_POLYNOMIAL_IS_HIGH( poly ) ) {
+        hexin_crc32_init_table_poly_is_high( poly, table );
+    } else {
+        hexin_crc32_init_table_poly_is_low ( poly, table );
+    }
 
-    //     case CRC32_POLYNOMIAL_EDB88320:
-    //         if ( ! crc32_tab_shift_edb88320_init ) _init_crc32_table_edb88320();
-    //         for ( i=0; i<MAX_TABLE_ARRAY; i++ ) {
-    //             PyList_SetItem(plist, i, Py_BuildValue("I", crc32_tab_shift_edb88320[i]));
-    //         }
-    //         break;
-        
-    //     default:
-    //         _init_crc32_table_hacker( poly );
-    //         for ( i=0; i<MAX_TABLE_ARRAY; i++ ) {
-    //             PyList_SetItem( plist, i, Py_BuildValue( "I", crc32_tab_shift_xxxxxxxx[i] ) );
-    //         }
-    //         break;
-    // }
+    for ( i=0; i<MAX_TABLE_ARRAY; i++ ) {
+        PyList_SetItem( plist, i, Py_BuildValue( "I", table[i] ) );
+    }
 
     return plist;
 }
@@ -159,7 +147,8 @@ static PyObject * _crc32_hacker( PyObject *self, PyObject *args, PyObject* kws )
     if ( !PyArg_ParseTupleAndKeywords( args, kws, "y#|IIIp", kwlist, &data, &data_len, &polynomial, &init, &xorout, &ref ) )
         return NULL;
 #else
-    return NULL;
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s#|IIIp", kwlist, &data, &data_len, &polynomial, &init, &xorout, &ref ) )
+        return NULL;
 #endif /* PY_MAJOR_VERSION */
 
     if ( HEXIN_REFIN_OR_REFOUT_IS_TRUE( ref ) ) {
@@ -177,7 +166,12 @@ static PyMethodDef _crc32Methods[] = {
     { "fsc",         _crc32_mpeg_2,     METH_VARARGS,   "Calculate CRC (Ethernt's FSC) of CRC32 [Poly=0x04C11DB7, Init=0xFFFFFFFF, Xorout=0x00000000 Refin=False Refout=False]"},
     { "crc32",       _crc32_crc32,      METH_VARARGS,   "Calculate CRC (WinRAR, File) of CRC32  [Poly=0xEDB88320, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]"},
     { "table32",     _crc32_table,      METH_VARARGS,   "Print CRC32 table to list. libscrc.table32( polynomial )" },
-    { "hacker32",    _crc32_hacker,     METH_KEYWORDS|METH_VARARGS, "libscrc.hacker32(data=b'123456789', poly=0x04C11DB7, init=0xFFFFFFFF) ### Xorout=0x00000000 Refin=True Refout=True "},
+    { "hacker32",    _crc32_hacker,     METH_KEYWORDS|METH_VARARGS, "User calculation CRC32\n"
+                                                                    "@data   : bytes\n"
+                                                                    "@poly   : default=0xEDB88320\n"
+                                                                    "@init   : default=0xFFFFFFFF\n"
+                                                                    "@xorout : default=0x00000000\n"
+                                                                    "@ref    : default=False" },
     { NULL, NULL, 0, NULL }        /* Sentinel */
 };
 
@@ -188,7 +182,7 @@ PyDoc_STRVAR( _crc32_doc,
 "libscrc.mpeg2    -> Calculate CRC for Media file (MPEG2) [Poly=0x04C11DB7, Init=0xFFFFFFFF, Xorout=0x00000000 Refin=False Refout=False]\n"
 "libscrc.crc32    -> Calculate CRC for file [Poly=0xEDB88320L, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]\n"
 "libscrc.table32  -> Print CRC32 table to list\n"
-"libscrc.hacker32 -> Free calculation CRC32 (not support python2 series) Xorout=0x00000000 Refin=True Refout=True\n"
+"libscrc.hacker32 -> Free calculation CRC32 (not support python2 series) Xorout=0x00000000 Refin=False Refout=False\n"
 "\n" );
 
 

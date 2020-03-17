@@ -1,6 +1,6 @@
 /*
 *********************************************************************************************************
-*                              		(c) Copyright 2006-2020, Hexin
+*                              		(c) Copyright 2018-2020, Hexin
 *                                           All Rights Reserved
 * File    : _crc8module.c
 * Author  : Heyn (heyunhuan@gmail.com)
@@ -25,214 +25,9 @@
 */
 
 #include <Python.h>
+#include "_crc8tables.h"
 
-#define                 TRUE                                    1
-#define                 FALSE                                   0
-
-#define                 MAX_TABLE_ARRAY                         256
-
-static unsigned char	crc8_tab_shift_8c[MAX_TABLE_ARRAY]      = {0x00};
-static unsigned char	crc8_tab_shift_e0[MAX_TABLE_ARRAY]      = {0x00};
-static unsigned char	crc8_tab_shift_07[MAX_TABLE_ARRAY]      = {0x00};
-
-static int              crc8_tab_shift_8c_init                  = FALSE;
-static int              crc8_tab_shift_e0_init                  = FALSE;
-static int              crc8_tab_shift_07_init                  = FALSE;
-
-
-static unsigned char __hexin_reverse8( unsigned char data )
-{
-    unsigned int  i = 0;
-    unsigned char t = 0;
-    for ( i=0; i<8; i++ ) {
-        t |= ( ( data >> i ) & 0x01 ) << ( 7-i );
-    }
-    return t;
-}
-
-/*
- * Width            = 8
- * InitValue(crc8)  = 0x00
- */
-unsigned char hz_calc_crc8_bcc( const unsigned char *pSrc, unsigned int len, unsigned char crc8 ) 
-{
-    unsigned int i = 0;
-    unsigned char crc = crc8;
-
-	for ( i=0; i<len; i++ ) {
-		crc ^= pSrc[i];
-    }
-
-	return crc;
-}
-
-/*
- * Width            = 8
- * InitValue(crc8)  = 0x00
- */
-unsigned char hz_calc_crc8_lrc( const unsigned char *pSrc, unsigned int len, unsigned char crc8 ) 
-{
-    unsigned int i = 0;
-    unsigned char crc = crc8;
-
-	for ( i=0; i<len; i++ ) {
-		crc += pSrc[i];
-	}
-    crc = (~crc) + 0x01;
-
-	return crc;
-}
-
-unsigned char hz_calc_crc8_sum( const unsigned char *pSrc, unsigned int len, unsigned char crc8 ) 
-{
-    unsigned int i = 0;
-    unsigned char crc = crc8;
-
-	for ( i=0; i<len; i++ ) {
-		crc += pSrc[i];
-	}
-	return crc;
-}
-
-/*
-*********************************************************************************************************
-*                                   POLY=0x31 [MAXIM8]
-* Poly:    0x31
-* Init:    0x00
-* Refin:   True
-* Refout:  True
-* Xorout:  0x00
-* Alias:   DOW-CRC,CRC-8/IBUTTON
-* Use:     Maxim(Dallas)'s some devices,e.g. DS18B20
-* 0x8C = reverse 0x31
-*********************************************************************************************************
-*/
-static void _init_crc8_table_8c( void )
-{
-    unsigned int i = 0, j = 0;
-    unsigned char crc, c;
-
-    for ( i=0; i<MAX_TABLE_ARRAY; i++ ) {
-        crc = 0;
-        c   = i;
-        for ( j=0; j<8; j++ ) {
-			if ( (crc ^ c) & 0x01 ) crc = ( crc >> 1 ) ^ 0x8C;
-			else                    crc =   crc >> 1;
-			c = c >> 1;
-        }
-        crc8_tab_shift_8c[i] = crc;
-    }
-	crc8_tab_shift_8c_init = TRUE;
-}
-
-static unsigned char _hz_update_crc8_8c( unsigned char crc8, unsigned char c ) 
-{
-    unsigned char crc = crc8;
-    if ( ! crc8_tab_shift_8c_init ) _init_crc8_table_8c();
-    crc = crc8_tab_shift_8c[ crc ^ c ];
-    return crc;
-}
-
-unsigned char hz_calc_crc8_8c( const unsigned char *pSrc, unsigned int len, unsigned char crc8 ) 
-{
-    unsigned int i = 0;
-    unsigned char crc = crc8;
-
-	for ( i=0; i<len; i++ ) {
-		crc = _hz_update_crc8_8c(crc, pSrc[i]);
-	}
-	return crc;
-}
-
-/*
-*********************************************************************************************************
-*                                   POLY=0x07 [ROHC]
-* Poly:    0x07
-* Init:    0xFF
-* Refin:   True
-* Refout:  True
-* Xorout:  0x00
-*
-* 0xE0 = reverse 0x07
-*********************************************************************************************************
-*/
-static void _init_crc8_table_e0( void )
-{
-    unsigned int i = 0, j = 0;
-    unsigned char crc, c;
-
-    for ( i=0; i<MAX_TABLE_ARRAY; i++ ) {
-        crc = 0;
-        c   = i;
-        for ( j=0; j<8; j++ ) {
-			if ( (crc ^ c) & 0x01 ) crc = ( crc >> 1 ) ^ 0xE0;
-			else                    crc =   crc >> 1;
-			c = c >> 1;
-        }
-        crc8_tab_shift_e0[i] = crc;
-    }
-	crc8_tab_shift_e0_init = TRUE;
-}
-
-static unsigned char _hz_update_crc8_e0( unsigned char crc8, unsigned char c ) 
-{
-    unsigned char crc = crc8;
-    if ( ! crc8_tab_shift_e0_init ) _init_crc8_table_e0();
-    crc = crc8_tab_shift_e0[ crc ^ c ];
-    return crc;
-}
-
-unsigned char hz_calc_crc8_e0( const unsigned char *pSrc, unsigned int len, unsigned char crc8 ) 
-{
-    unsigned int i = 0;
-    unsigned char crc = crc8;
-
-	for ( i=0; i<len; i++ ) {
-		crc = _hz_update_crc8_e0(crc, pSrc[i]);
-	}
-	return crc;
-}
-
-
-static void _init_crc8_table_07( void )
-{
-    unsigned int i = 0, j = 0;
-    unsigned char crc, c;
-
-    for ( i=0; i<MAX_TABLE_ARRAY; i++ ) {
-        crc = 0;
-        c   = i;
-        for ( j=0; j<8; j++ ) {
-			if ( (crc ^ c) & 0x80 ) crc = ( crc << 1 ) ^ 0x07;
-			else                    crc =   crc << 1;
-			c = c << 1;
-        }
-        crc8_tab_shift_07[i] = crc;
-    }
-	crc8_tab_shift_07_init = TRUE;
-}
-
-static unsigned char _hz_update_crc8_07( unsigned char crc8, unsigned char c ) 
-{
-    unsigned char crc = crc8;
-    if ( ! crc8_tab_shift_07_init ) _init_crc8_table_07();
-    crc = crc8_tab_shift_07[ crc ^ c ];
-    return crc;
-}
-
-unsigned char hz_calc_crc8_07( const unsigned char *pSrc, unsigned int len, unsigned char crc8 ) 
-{
-    unsigned int i = 0;
-    unsigned char crc = crc8;
-
-	for ( i=0; i<len; i++ ) {
-		crc = _hz_update_crc8_07(crc, pSrc[i]);
-	}
-	return crc;
-}
-
-
-static PyObject * _crc8_intel(PyObject *self, PyObject *args)
+static PyObject * _crc8_intel( PyObject *self, PyObject *args )
 {
     const unsigned char *data = NULL;
     unsigned int data_len = 0x00;
@@ -240,19 +35,19 @@ static PyObject * _crc8_intel(PyObject *self, PyObject *args)
     unsigned char result  = 0x00;
 
 #if PY_MAJOR_VERSION >= 3
-    if (!PyArg_ParseTuple(args, "y#|B", &data, &data_len, &crc8))
+    if ( !PyArg_ParseTuple( args, "y#|B", &data, &data_len, &crc8 ) )
         return NULL;
 #else
-    if (!PyArg_ParseTuple(args, "s#|B", &data, &data_len, &crc8))
+    if ( !PyArg_ParseTuple( args, "s#|B", &data, &data_len, &crc8 ) )
         return NULL;
 #endif /* PY_MAJOR_VERSION */
 
-    result = hz_calc_crc8_lrc(data, data_len, crc8);
+    result = hexin_calc_crc8_lrc( data, data_len, crc8 );
 
-    return Py_BuildValue("B", result);
+    return Py_BuildValue( "B", result );
 }
 
-static PyObject * _crc8_bcc(PyObject *self, PyObject *args)
+static PyObject * _crc8_bcc( PyObject *self, PyObject *args )
 {
     const unsigned char *data = NULL;
     unsigned int data_len = 0x00;
@@ -260,19 +55,19 @@ static PyObject * _crc8_bcc(PyObject *self, PyObject *args)
     unsigned char result  = 0x00;
 
 #if PY_MAJOR_VERSION >= 3
-    if (!PyArg_ParseTuple(args, "y#|B", &data, &data_len, &crc8))
+    if ( !PyArg_ParseTuple( args, "y#|B", &data, &data_len, &crc8 ) )
         return NULL;
 #else
-    if (!PyArg_ParseTuple(args, "s#|B", &data, &data_len, &crc8))
+    if ( !PyArg_ParseTuple( args, "s#|B", &data, &data_len, &crc8 ) )
         return NULL;
 #endif /* PY_MAJOR_VERSION */
 
-    result = hz_calc_crc8_bcc(data, data_len, crc8);
+    result = hexin_calc_crc8_bcc( data, data_len, crc8 );
 
-    return Py_BuildValue("B", result);
+    return Py_BuildValue( "B", result );
 }
 
-static PyObject * _crc8_lrc(PyObject *self, PyObject *args)
+static PyObject * _crc8_lrc( PyObject *self, PyObject *args )
 {
     const unsigned char *data = NULL;
     unsigned int data_len = 0x00;
@@ -280,19 +75,19 @@ static PyObject * _crc8_lrc(PyObject *self, PyObject *args)
     unsigned char result  = 0x00;
 
 #if PY_MAJOR_VERSION >= 3
-    if (!PyArg_ParseTuple(args, "y#|B", &data, &data_len, &crc8))
+    if ( !PyArg_ParseTuple( args, "y#|B", &data, &data_len, &crc8 ) )
         return NULL;
 #else
-    if (!PyArg_ParseTuple(args, "s#|B", &data, &data_len, &crc8))
+    if ( !PyArg_ParseTuple( args, "s#|B", &data, &data_len, &crc8 ) )
         return NULL;
 #endif /* PY_MAJOR_VERSION */
 
-    result = hz_calc_crc8_lrc(data, data_len, crc8);
+    result = hexin_calc_crc8_lrc( data, data_len, crc8 );
 
-    return Py_BuildValue("B", result);
+    return Py_BuildValue( "B", result );
 }
 
-static PyObject * _crc8_maxim(PyObject *self, PyObject *args)
+static PyObject * _crc8_maxim( PyObject *self, PyObject *args )
 {
     const unsigned char *data = NULL;
     unsigned int data_len = 0x00;
@@ -300,19 +95,19 @@ static PyObject * _crc8_maxim(PyObject *self, PyObject *args)
     unsigned char result  = 0x00;
 
 #if PY_MAJOR_VERSION >= 3
-    if (!PyArg_ParseTuple(args, "y#|B", &data, &data_len, &crc8))
+    if ( !PyArg_ParseTuple( args, "y#|B", &data, &data_len, &crc8 ) )
         return NULL;
 #else
-    if (!PyArg_ParseTuple(args, "s#|B", &data, &data_len, &crc8))
+    if ( !PyArg_ParseTuple( args, "s#|B", &data, &data_len, &crc8 ) )
         return NULL;
 #endif /* PY_MAJOR_VERSION */
 
-    result = hz_calc_crc8_8c(data, data_len, crc8);
+    result = hexin_calc_crc8_maxim( data, data_len, crc8 );
 
-    return Py_BuildValue("B", result);
+    return Py_BuildValue( "B", result );
 }
 
-static PyObject * _crc8_rohc(PyObject *self, PyObject *args)
+static PyObject * _crc8_rohc( PyObject *self, PyObject *args )
 {
     const unsigned char *data = NULL;
     unsigned int data_len = 0x00;
@@ -320,20 +115,20 @@ static PyObject * _crc8_rohc(PyObject *self, PyObject *args)
     unsigned char result  = 0x00;
 
 #if PY_MAJOR_VERSION >= 3
-    if (!PyArg_ParseTuple(args, "y#|B", &data, &data_len, &crc8))
+    if ( !PyArg_ParseTuple( args, "y#|B", &data, &data_len, &crc8 ) )
         return NULL;
 #else
-    if (!PyArg_ParseTuple(args, "s#|B", &data, &data_len, &crc8))
+    if ( !PyArg_ParseTuple( args, "s#|B", &data, &data_len, &crc8 ) )
         return NULL;
 #endif /* PY_MAJOR_VERSION */
 
-    result = hz_calc_crc8_e0(data, data_len, crc8);
+    result = hexin_calc_crc8_rohc( data, data_len, crc8 );
 
-    return Py_BuildValue("B", result);
+    return Py_BuildValue( "B", result );
 }
 
 
-static PyObject * _crc8_itu(PyObject *self, PyObject *args)
+static PyObject * _crc8_itu( PyObject *self, PyObject *args )
 {
     const unsigned char *data = NULL;
     unsigned int data_len = 0x00;
@@ -341,19 +136,19 @@ static PyObject * _crc8_itu(PyObject *self, PyObject *args)
     unsigned char result  = 0x00;
 
 #if PY_MAJOR_VERSION >= 3
-    if (!PyArg_ParseTuple(args, "y#|B", &data, &data_len, &crc8))
+    if ( !PyArg_ParseTuple( args, "y#|B", &data, &data_len, &crc8 ) )
         return NULL;
 #else
-    if (!PyArg_ParseTuple(args, "s#|B", &data, &data_len, &crc8))
+    if ( !PyArg_ParseTuple( args, "s#|B", &data, &data_len, &crc8 ) )
         return NULL;
 #endif /* PY_MAJOR_VERSION */
 
-    result = hz_calc_crc8_07(data, data_len, crc8);
+    result = hexin_calc_crc8_07( data, data_len, crc8 );
     result = result ^ 0x55;
-    return Py_BuildValue("B", result);
+    return Py_BuildValue( "B", result );
 }
 
-static PyObject * _crc8(PyObject *self, PyObject *args)
+static PyObject * _crc8( PyObject *self, PyObject *args )
 {
     const unsigned char *data = NULL;
     unsigned int data_len = 0x00;
@@ -361,16 +156,16 @@ static PyObject * _crc8(PyObject *self, PyObject *args)
     unsigned char result  = 0x00;
 
 #if PY_MAJOR_VERSION >= 3
-    if (!PyArg_ParseTuple(args, "y#|B", &data, &data_len, &crc8))
+    if ( !PyArg_ParseTuple( args, "y#|B", &data, &data_len, &crc8 ) )
         return NULL;
 #else
-    if (!PyArg_ParseTuple(args, "s#|B", &data, &data_len, &crc8))
+    if ( !PyArg_ParseTuple( args, "s#|B", &data, &data_len, &crc8 ) )
         return NULL;
 #endif /* PY_MAJOR_VERSION */
 
-    result = hz_calc_crc8_07(data, data_len, crc8);
+    result = hexin_calc_crc8_07( data, data_len, crc8 );
 
-    return Py_BuildValue("B", result);
+    return Py_BuildValue( "B", result );
 }
 
 static PyObject * _crc8_sum( PyObject *self, PyObject *args )
@@ -381,34 +176,107 @@ static PyObject * _crc8_sum( PyObject *self, PyObject *args )
     unsigned char result  = 0x00;
 
 #if PY_MAJOR_VERSION >= 3
-    if (!PyArg_ParseTuple(args, "y#|B", &data, &data_len, &crc8))
+    if ( !PyArg_ParseTuple( args, "y#|B", &data, &data_len, &crc8 ) )
         return NULL;
 #else
-    if (!PyArg_ParseTuple(args, "s#|B", &data, &data_len, &crc8))
+    if ( !PyArg_ParseTuple( args, "s#|B", &data, &data_len, &crc8 ) )
         return NULL;
 #endif /* PY_MAJOR_VERSION */
 
-    result = hz_calc_crc8_sum( data, data_len, crc8 );
+    result = hexin_calc_crc8_sum( data, data_len, crc8 );
 
+    return Py_BuildValue( "B", result );
+}
+
+/*
+*********************************************************************************************************
+                                    Print CRC8 table.
+*********************************************************************************************************
+*/
+static PyObject * _crc8_table( PyObject *self, PyObject *args )
+{
+    unsigned int i = 0x00000000L;
+    unsigned char poly = CRC8_POLYNOMIAL_31;
+    unsigned char table[MAX_TABLE_ARRAY] = { 0x00 };
+    PyObject* plist = PyList_New( MAX_TABLE_ARRAY );
+
+#if PY_MAJOR_VERSION >= 3
+    if ( !PyArg_ParseTuple( args, "B", &poly ) )
+        return NULL;
+#else
+    if ( !PyArg_ParseTuple( args, "B", &poly ) )
+        return NULL;
+#endif /* PY_MAJOR_VERSION */
+
+    if ( HEXIN_POLYNOMIAL_IS_HIGH( poly ) ) {
+        hexin_crc8_init_table_poly_is_high( poly, table );
+    } else {
+        hexin_crc8_init_table_poly_is_low ( poly, table );
+    }
+
+    for ( i=0; i<MAX_TABLE_ARRAY; i++ ) {
+        PyList_SetItem( plist, i, Py_BuildValue( "B", table[i] ) );
+    }
+
+    return plist;
+}
+
+/*
+*********************************************************************************************************
+*                                   For hacker
+*********************************************************************************************************
+*/
+static PyObject * _crc8_hacker( PyObject *self, PyObject *args, PyObject* kws )
+{
+    const unsigned char *data = NULL;
+    unsigned int data_len = 0x00000000L;
+    unsigned char init    = 0xFF;
+    unsigned char xorout  = 0x00;
+    unsigned int  ref     = 0x00000000L;
+    unsigned char result  = 0x00;
+    unsigned char polynomial = CRC8_POLYNOMIAL_31;
+    static char* kwlist[]={ "data", "poly", "init", "xorout", "ref", NULL };
+
+#if PY_MAJOR_VERSION >= 3
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y#|BBBp", kwlist, &data, &data_len, &polynomial, &init, &xorout, &ref ) )
+        return NULL;
+#else
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s#|BBBp", kwlist, &data, &data_len, &polynomial, &init, &xorout, &ref ) )
+        return NULL;
+#endif /* PY_MAJOR_VERSION */
+
+    if ( HEXIN_REFIN_OR_REFOUT_IS_TRUE( ref ) ) {
+        polynomial = hexin_reverse8( polynomial );
+    }
+
+    result = hexin_calc_crc8_hacker( data, data_len, init, polynomial );
+    result = result ^ xorout;
     return Py_BuildValue( "B", result );
 }
 
 /* method table */
 static PyMethodDef _crc8Methods[] = {
-    {"intel",   _crc8_intel,    METH_VARARGS, "Calculate Intel hexadecimal of CRC8 [Initial = 0x00]"},
-    {"bcc",     _crc8_bcc,      METH_VARARGS, "Calculate BCC of CRC8 [Initial = 0x00]"},
-    {"lrc",     _crc8_lrc,      METH_VARARGS, "Calculate LRC of CRC8 [Initial = 0x00]"},
-    {"maxim8",  _crc8_maxim,    METH_VARARGS, "Calculate MAXIM of CRC8 [Poly = 0x31 Initial = 0x00 Xorout=0x00 Refin=True Refout=True] e.g. DS18B20"},
-    {"rohc",    _crc8_rohc,     METH_VARARGS, "Calculate ROHC of CRC8 [Poly = 0x07 Initial = 0xFF Xorout=0x00 Refin=True Refout=True]"},
-    {"itu8",    _crc8_itu,      METH_VARARGS, "Calculate ITU  of CRC8 [Poly = 0x07 Initial = 0x00 Xorout=0x55 Refin=False Refout=False]"},
-    {"crc8",    _crc8,          METH_VARARGS, "Calculate CRC  of CRC8 [Poly = 0x07 Initial = 0x00 Xorout=0x00 Refin=False Refout=False]"},
-    {"sum8",    _crc8_sum,      METH_VARARGS, "Calculate SUM  of CRC8 [Initial = 0x00]"},
-    {NULL, NULL, 0, NULL}        /* Sentinel */
+    { "intel",   _crc8_intel,    METH_VARARGS, "Calculate Intel hexadecimal of CRC8 [Initial = 0x00]" },
+    { "bcc",     _crc8_bcc,      METH_VARARGS, "Calculate BCC of CRC8 [Initial = 0x00]" },
+    { "lrc",     _crc8_lrc,      METH_VARARGS, "Calculate LRC of CRC8 [Initial = 0x00]" },
+    { "maxim8",  _crc8_maxim,    METH_VARARGS, "Calculate MAXIM of CRC8 [Poly = 0x31 Initial = 0x00 Xorout=0x00 Refin=True Refout=True] e.g. DS18B20" },
+    { "rohc",    _crc8_rohc,     METH_VARARGS, "Calculate ROHC of CRC8 [Poly = 0x07 Initial = 0xFF Xorout=0x00 Refin=True Refout=True]" },
+    { "itu8",    _crc8_itu,      METH_VARARGS, "Calculate ITU  of CRC8 [Poly = 0x07 Initial = 0x00 Xorout=0x55 Refin=False Refout=False]" },
+    { "crc8",    _crc8,          METH_VARARGS, "Calculate CRC  of CRC8 [Poly = 0x07 Initial = 0x00 Xorout=0x00 Refin=False Refout=False]" },
+    { "sum8",    _crc8_sum,      METH_VARARGS, "Calculate SUM  of CRC8 [Initial = 0x00]" },
+    { "table8",  _crc8_table,    METH_VARARGS, "Print CRC8 table to list. libscrc.table8( polynomial )" },
+    { "hacker8", _crc8_hacker,   METH_KEYWORDS|METH_VARARGS, "User calculation CRC8\n"
+                                                             "@data   : bytes\n"
+                                                             "@poly   : default=0x31\n"
+                                                             "@init   : default=0xFF\n"
+                                                             "@xorout : default=0x00\n"
+                                                             "@ref    : default=False" },
+    { NULL, NULL, 0, NULL }        /* Sentinel */
 };
 
 
 /* module documentation */
-PyDoc_STRVAR(_crc8_doc,
+PyDoc_STRVAR( _crc8_doc,
 "Calculation of CRC8 \n"
 "libscrc.intel  -> Calculate Intel hexadecimal of CRC8 [Initial = 0x00]\n"
 "libscrc.bcc    -> Calculate BCC(XOR) of CRC8 [Initial = 0x00]\n"
@@ -418,7 +286,8 @@ PyDoc_STRVAR(_crc8_doc,
 "libscrc.itu8   -> Calculate ITU  of CRC8 [Poly = 0x07 Initial = 0x00 Xorout=0x55 Refin=False Refout=False]\n"
 "libscrc.crc8   -> Calculate CRC  of CRC8 [Poly = 0x07 Initial = 0x00 Xorout=0x00 Refin=False Refout=False]\n"
 "libscrc.sum8   -> Calculate SUM  of CRC8 [Initial = 0x00]\n"
-"\n");
+"libscrc.hacker8-> Free calculation CRC8 [poly=any(default=0x31), init=any(default=0xFF), xorout=0x00 Refin=False Refout=False]\n"
+"\n" );
 
 
 #if PY_MAJOR_VERSION >= 3
@@ -434,17 +303,17 @@ static struct PyModuleDef _crc8module = {
 
 /* initialization function for Python 3 */
 PyMODINIT_FUNC
-PyInit__crc8(void)
+PyInit__crc8( void )
 {
     PyObject *m = NULL;
 
-    m = PyModule_Create(&_crc8module);
-    if (m == NULL) {
+    m = PyModule_Create( &_crc8module );
+    if ( m == NULL ) {
         return NULL;
     }
 
-    PyModule_AddStringConstant(m, "__version__", "0.1.6");
-    PyModule_AddStringConstant(m, "__author__",  "Heyn");
+    PyModule_AddStringConstant( m, "__version__", "0.1.6" );
+    PyModule_AddStringConstant( m, "__author__",  "Heyn"  );
 
     return m;
 }
@@ -453,9 +322,9 @@ PyInit__crc8(void)
 
 /* initialization function for Python 2 */
 PyMODINIT_FUNC
-init_crc8(void)
+init_crc8( void )
 {
-    (void) Py_InitModule3("_crc8", _crc8Methods, _crc8_doc);
+    (void) Py_InitModule3( "_crc8", _crc8Methods, _crc8_doc );
 }
 
 #endif /* PY_MAJOR_VERSION */

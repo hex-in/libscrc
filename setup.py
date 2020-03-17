@@ -76,7 +76,7 @@ setup(
     include_package_data=True,
 
     ext_modules=[Extension('libscrc._crcx',  sources=['src/crcx/_crcxmodule.c',   'src/crcx/_crcxtables.c'  ]),
-                 Extension('libscrc._crc8',  sources=['src/crc8/_crc8module.c']),
+                 Extension('libscrc._crc8',  sources=['src/crc8/_crc8module.c',   'src/crc8/_crc8tables.c'  ]),
                  Extension('libscrc._crc16', sources=['src/crc16/_crc16module.c', 'src/crc16/_crc16tables.c']),
                  Extension('libscrc._crc32', sources=['src/crc32/_crc32module.c', 'src/crc32/_crc32tables.c']),
                  Extension('libscrc._crc64', sources=['src/crc64/_crc64module.c', 'src/crc64/_crc64tables.c']),

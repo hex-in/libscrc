@@ -1,6 +1,6 @@
 /*
 *********************************************************************************************************
-*                              		(c) Copyright 2006-2020, Hexin
+*                              		(c) Copyright 2018-2020, Hexin
 *                                           All Rights Reserved
 * File    : _crc16tables.c
 * Author  : Heyn (heyunhuan@gmail.com)
@@ -21,23 +21,23 @@
 
 #include "_crc16tables.h"
 
-static unsigned short   crc16_tab_shift_8408[MAX_TABLE_ARRAY]   = {0x0000};     // Used for X25 Kermit
-static unsigned short   crc16_tab_shift_1021[MAX_TABLE_ARRAY]   = {0x0000};     // Used for CCITT-FALSE XModem
-static unsigned short   crc16_tab_shift_a001[MAX_TABLE_ARRAY]   = {0x0000};     // Used for Modbus USB
-static unsigned short   crc16_tab_shift_8005[MAX_TABLE_ARRAY]   = {0x0000};     // Used for
-static unsigned short   crc16_tab_shift_a6bc[MAX_TABLE_ARRAY]   = {0x0000};     // Used for
-static unsigned short   crc16_tab_shift_91a0[MAX_TABLE_ARRAY]   = {0x0000};     // Used for Cordless Telephones
+static unsigned short   crc16_table_8408[MAX_TABLE_ARRAY]   = { 0x0000 };     // Used for X25 Kermit
+static unsigned short   crc16_table_1021[MAX_TABLE_ARRAY]   = { 0x0000 };     // Used for CCITT-FALSE XModem
+static unsigned short   crc16_table_a001[MAX_TABLE_ARRAY]   = { 0x0000 };     // Used for Modbus USB
+static unsigned short   crc16_table_8005[MAX_TABLE_ARRAY]   = { 0x0000 };     // Used for
+static unsigned short   crc16_table_a6bc[MAX_TABLE_ARRAY]   = { 0x0000 };     // Used for
+static unsigned short   crc16_table_91a0[MAX_TABLE_ARRAY]   = { 0x0000 };     // Used for Cordless Telephones
 
-static int              crc16_tab_shift_8408_init               = FALSE;
-static int              crc16_tab_shift_1021_init               = FALSE;
-static int              crc16_tab_shift_a001_init               = FALSE;
-static int              crc16_tab_shift_8005_init               = FALSE;
-static int              crc16_tab_shift_a6bc_init               = FALSE;
-static int              crc16_tab_shift_91a0_init               = FALSE;
+static unsigned int     crc16_table_8408_init               = FALSE;
+static unsigned int     crc16_table_1021_init               = FALSE;
+static unsigned int     crc16_table_a001_init               = FALSE;
+static unsigned int     crc16_table_8005_init               = FALSE;
+static unsigned int     crc16_table_a6bc_init               = FALSE;
+static unsigned int     crc16_table_91a0_init               = FALSE;
 
 
-static unsigned short   crc16_tab_shift_xxxx[MAX_TABLE_ARRAY]   = {0x0000};     // Used for hacker.
-static unsigned short   crc16_tab_shift_xxxx_init               = FALSE;        // Default value.
+static unsigned short   crc16_table_hacker[MAX_TABLE_ARRAY] = { 0x0000 };     // Used for hacker.
+static unsigned short   crc16_table_hacker_init             = FALSE;          // Default value.
 
 
 unsigned short hexin_reverse16( unsigned short data )
@@ -50,50 +50,83 @@ unsigned short hexin_reverse16( unsigned short data )
     return t;
 }
 
-/*
-*********************************************************************************************************
-                                    POLY=0x91A0 [Cordless Telephones]
-*********************************************************************************************************
-*/
-static void _init_crc16_table_91a0( void ) 
+unsigned int hexin_crc16_init_table_poly_is_high( unsigned short polynomial, unsigned short *table )
 {
     unsigned int i = 0, j = 0;
-    unsigned short crc, c;
+    unsigned short crc = 0, c = 0;
 
     for ( i=0; i<MAX_TABLE_ARRAY; i++ ) {
         crc = 0;
-        c   = (unsigned short) i;
+        c   = ( unsigned short ) i;
         for ( j=0; j<8; j++ ) {
-            if ( (crc ^ c) & 0x0001 ) crc = ( crc >> 1 ) ^ CRC16_POLYNOMIAL_91A0;
-            else                      crc =   crc >> 1;
+            if ( (crc ^ c) & 0x0001 )   crc = ( crc >> 1 ) ^ polynomial;
+            else                        crc = crc >> 1;
             c = c >> 1;
         }
-        crc16_tab_shift_91a0[i] = crc;
+        table[i] = crc;
     }
-    crc16_tab_shift_91a0_init = TRUE;
+    return TRUE;
 }
 
-static unsigned short _hz_update_crc16_91a0( unsigned short crc16, unsigned char c ) 
+unsigned int hexin_crc16_init_table_poly_is_low( unsigned short polynomial, unsigned short *table )
+{
+    unsigned int i = 0, j = 0;
+    unsigned short crc = 0, c = 0;
+
+    for ( i=0; i<MAX_TABLE_ARRAY; i++ ) {
+        crc = 0;
+        c   = ((unsigned short) i) << 8;
+        for ( j=0; j<8; j++ ) {
+            if ( (crc ^ c) & 0x8000 ) crc = ( crc << 1 ) ^ polynomial;
+            else                      crc = crc << 1;
+            c = c << 1;
+        }
+        table[i] = crc;
+    }
+    return TRUE;
+}
+
+unsigned short hexin_crc16_poly_is_high_calc( unsigned short crc16, unsigned char c, const unsigned short *table )
 {
     unsigned short crc = crc16;
     unsigned short tmp, short_c;
 
     short_c = 0x00FF & (unsigned short) c;
-    if ( ! crc16_tab_shift_91a0_init ) _init_crc16_table_91a0();
-
     tmp =  crc       ^ short_c;
-    crc = (crc >> 8) ^ crc16_tab_shift_91a0[ tmp & 0xFF ];
+    crc = (crc >> 8) ^ table[ tmp & 0xFF ];
 
     return crc;
 }
 
-unsigned short hz_calc_crc16_91a0( const unsigned char *pSrc, unsigned int len, unsigned short crc16 )
+unsigned short hexin_crc16_poly_is_low_calc( unsigned short crc16, unsigned char c, const unsigned short *table )
+{
+    unsigned short crc = crc16;
+    unsigned short tmp, short_c;
+
+    short_c  = 0x00FF & (unsigned short) c;
+    tmp = (crc >> 8) ^ short_c;
+    crc = (crc << 8) ^ table[tmp];
+
+    return crc;
+}
+
+/*
+*********************************************************************************************************
+                                    POLY=0x91A0 [Cordless Telephones]
+*********************************************************************************************************
+*/
+
+unsigned short hexin_calc_crc16_91a0( const unsigned char *pSrc, unsigned int len, unsigned short crc16 )
 {
     unsigned int i = 0;
     unsigned short crc = crc16;
 
+    if ( crc16_table_91a0_init == FALSE ) {
+        crc16_table_91a0_init = hexin_crc16_init_table_poly_is_high( CRC16_POLYNOMIAL_91A0, crc16_table_91a0 );
+    }
+
 	for ( i=0; i<len; i++ ) {
-		crc	= _hz_update_crc16_91a0(crc, pSrc[i]);
+		crc = hexin_crc16_poly_is_high_calc( crc, pSrc[i], crc16_table_91a0 );
 	}
 	return crc;
 }
@@ -104,45 +137,17 @@ unsigned short hz_calc_crc16_91a0( const unsigned char *pSrc, unsigned int len, 
 *********************************************************************************************************
 */
 
-static void _init_crc16_table_8408( void ) 
-{
-    unsigned int i = 0, j = 0;
-    unsigned short crc, c;
-
-    for ( i=0; i<MAX_TABLE_ARRAY; i++ ) {
-        crc = 0;
-        c   = (unsigned short) i;
-        for ( j=0; j<8; j++ ) {
-            if ( (crc ^ c) & 0x0001 ) crc = ( crc >> 1 ) ^ CRC16_POLYNOMIAL_8408;
-            else                      crc =   crc >> 1;
-            c = c >> 1;
-        }
-        crc16_tab_shift_8408[i] = crc;
-    }
-    crc16_tab_shift_8408_init = TRUE;
-}
-
-static unsigned short _hz_update_crc16_8408( unsigned short crc16, unsigned char c ) 
-{
-    unsigned short crc = crc16;
-    unsigned short tmp, short_c;
-
-    short_c = 0x00FF & (unsigned short) c;
-    if ( ! crc16_tab_shift_8408_init ) _init_crc16_table_8408();
-
-    tmp =  crc       ^ short_c;
-    crc = (crc >> 8) ^ crc16_tab_shift_8408[ tmp & 0xFF ];
-
-    return crc;
-}
-
-unsigned short hz_calc_crc16_8408( const unsigned char *pSrc, unsigned int len, unsigned short crc16 )
+unsigned short hexin_calc_crc16_8408( const unsigned char *pSrc, unsigned int len, unsigned short crc16 )
 {
     unsigned int i = 0;
     unsigned short crc = crc16;
 
+    if ( crc16_table_8408_init == FALSE ) {
+        crc16_table_8408_init = hexin_crc16_init_table_poly_is_high( CRC16_POLYNOMIAL_8408, crc16_table_8408 );
+    }
+
 	for ( i=0; i<len; i++ ) {
-		crc	= _hz_update_crc16_8408(crc, pSrc[i]);
+		crc = hexin_crc16_poly_is_high_calc( crc, pSrc[i], crc16_table_8408 );
 	}
 	return crc;
 }
@@ -153,46 +158,17 @@ unsigned short hz_calc_crc16_8408( const unsigned char *pSrc, unsigned int len, 
 *********************************************************************************************************
 */
 
-static void _init_crc16_table_1021( void ) 
-{
-    unsigned int i = 0, j = 0;
-    unsigned short crc, c;
-
-    for ( i=0; i<MAX_TABLE_ARRAY; i++ ) {
-        crc = 0;
-        c   = ((unsigned short) i) << 8;
-        for ( j=0; j<8; j++ ) {
-            if ( (crc ^ c) & 0x8000 ) crc = ( crc << 1 ) ^ CRC16_POLYNOMIAL_1021;
-            else                      crc =   crc << 1;
-            c = c << 1;
-        }
-        crc16_tab_shift_1021[i] = crc;
-    }
-    crc16_tab_shift_1021_init = TRUE;
-}
-
-static unsigned short _hz_update_crc16_1021( unsigned short crc16, unsigned char c )
-{
-    unsigned short crc = crc16;
-    unsigned short tmp, short_c;
-
-    short_c  = 0x00FF & (unsigned short) c;
-
-    if ( ! crc16_tab_shift_1021_init ) _init_crc16_table_1021();
-
-    tmp = (crc >> 8) ^ short_c;
-    crc = (crc << 8) ^ crc16_tab_shift_1021[tmp];
-
-    return crc;
-}
-
-unsigned short hz_calc_crc16_1021( const unsigned char *pSrc, unsigned int len, unsigned short crc16 )
+unsigned short hexin_calc_crc16_1021( const unsigned char *pSrc, unsigned int len, unsigned short crc16 )
 {
     unsigned int i = 0;
     unsigned short crc = crc16;
 
+    if ( crc16_table_1021_init == FALSE ) {
+        crc16_table_1021_init = hexin_crc16_init_table_poly_is_low( CRC16_POLYNOMIAL_1021, crc16_table_1021 );
+    }
+
 	for ( i=0; i<len; i++ ) {
-		crc = _hz_update_crc16_1021(crc, pSrc[i]);
+		crc = hexin_crc16_poly_is_low_calc( crc, pSrc[i], crc16_table_1021 );
 	}
 	return crc;
 }
@@ -203,45 +179,17 @@ unsigned short hz_calc_crc16_1021( const unsigned char *pSrc, unsigned int len, 
 *********************************************************************************************************
 */
 
-static void _init_crc16_table_a001( void ) 
-{
-    unsigned int i = 0, j = 0;
-    unsigned short crc, c;
-
-    for ( i=0; i<MAX_TABLE_ARRAY; i++ ) {
-        crc = 0;
-        c   = (unsigned short) i;
-        for ( j=0; j<8; j++ ) {
-            if ( (crc ^ c) & 0x0001 )   crc = ( crc >> 1 ) ^ CRC16_POLYNOMIAL_A001;
-            else                        crc = crc >> 1;
-            c = c >> 1;
-        }
-        crc16_tab_shift_a001[i] = crc;
-    }
-    crc16_tab_shift_a001_init = TRUE;
-}
-
-static unsigned short _hz_update_crc16_a001( unsigned short crc16, unsigned char c ) 
-{
-    unsigned short crc = crc16;
-    unsigned short tmp, short_c;
-
-    short_c = 0x00FF & (unsigned short) c;
-    if ( ! crc16_tab_shift_a001_init ) _init_crc16_table_a001();
-
-    tmp =  crc       ^ short_c;
-    crc = (crc >> 8) ^ crc16_tab_shift_a001[ tmp & 0xFF ];
-
-    return crc;
-}
-
-unsigned short hz_calc_crc16_a001( const unsigned char *pSrc, unsigned int len, unsigned short crc16 )
+unsigned short hexin_calc_crc16_a001( const unsigned char *pSrc, unsigned int len, unsigned short crc16 )
 {
     unsigned int i = 0;
     unsigned short crc = crc16;
 
+    if ( crc16_table_a001_init == FALSE ) {
+        crc16_table_a001_init = hexin_crc16_init_table_poly_is_high( CRC16_POLYNOMIAL_A001, crc16_table_a001 );
+    }
+
 	for ( i=0; i<len; i++ ) {
-		crc = _hz_update_crc16_a001(crc, pSrc[i]);
+		crc = hexin_crc16_poly_is_high_calc( crc, pSrc[i], crc16_table_a001 );
 	}
 	return crc;
 }
@@ -252,46 +200,17 @@ unsigned short hz_calc_crc16_a001( const unsigned char *pSrc, unsigned int len, 
 *********************************************************************************************************
 */
 
-static void _init_crc16_table_8005( void ) 
-{
-    unsigned int i = 0, j = 0;
-    unsigned short crc, c;
-
-    for ( i=0; i<MAX_TABLE_ARRAY; i++ ) {
-        crc = 0;
-        c   = (unsigned short) i;
-        for ( j=0; j<8; j++ ) {
-            if ( (crc ^ c) & 0x0001 )   crc = ( crc >> 1 ) ^ CRC16_POLYNOMIAL_8005;
-            else                        crc = crc >> 1;
-            c = c >> 1;
-        }
-        crc16_tab_shift_8005[i] = crc;
-    }
-    crc16_tab_shift_8005_init = TRUE;
-}
-
-static unsigned short _hz_update_crc16_8005( unsigned short crc16, unsigned char c ) 
-{
-    unsigned short crc = crc16;
-    unsigned short tmp, short_c;
-
-    short_c = 0x00FF & (unsigned short) c;
-
-    if ( ! crc16_tab_shift_8005_init ) _init_crc16_table_8005();
-
-    tmp =  crc       ^ short_c;
-    crc = (crc >> 8) ^ crc16_tab_shift_8005[ tmp & 0xFF ];
-
-    return crc;
-}
-
-unsigned short hz_calc_crc16_8005( const unsigned char *pSrc, unsigned int len, unsigned short crc16 )
+unsigned short hexin_calc_crc16_8005( const unsigned char *pSrc, unsigned int len, unsigned short crc16 )
 {
     unsigned int i = 0;
     unsigned short crc = crc16;
 
+    if ( crc16_table_8005_init == FALSE ) {
+        crc16_table_8005_init = hexin_crc16_init_table_poly_is_high( CRC16_POLYNOMIAL_8005, crc16_table_8005 );
+    }
+
 	for ( i=0; i<len; i++ ) {
-		crc = _hz_update_crc16_8005(crc, pSrc[i]);
+		crc = hexin_crc16_poly_is_high_calc( crc, pSrc[i], crc16_table_8005 );
 	}
 	return crc;
 }
@@ -302,48 +221,19 @@ unsigned short hz_calc_crc16_8005( const unsigned char *pSrc, unsigned int len, 
 *********************************************************************************************************
 */
 
-static void _init_crc16_table_a6bc( void ) 
-{
-    unsigned int i = 0, j = 0;
-    unsigned short crc, c;
-
-    for ( i=0; i<MAX_TABLE_ARRAY; i++ ) {
-        crc = 0;
-        c   = (unsigned short) i;
-        for ( j=0; j<8; j++ ) {
-            if ( (crc ^ c) & 0x0001 ) crc = ( crc >> 1 ) ^ CRC16_POLYNOMIAL_A6BC;
-            else                      crc =   crc >> 1;
-            c = c >> 1;
-        }
-        crc16_tab_shift_a6bc[i] = crc;
-    }
-    crc16_tab_shift_a6bc_init = TRUE;
-}
-
-static unsigned short _hz_update_crc16_a6bc( unsigned short crc16, unsigned char c ) 
-{
-    unsigned short crc = crc16;
-    unsigned short tmp, short_c;
-
-    short_c = 0x00FF & (unsigned short) c;
-
-    if ( ! crc16_tab_shift_a6bc_init ) _init_crc16_table_a6bc();
-
-    tmp =  crc       ^ short_c;
-    crc = (crc >> 8) ^ crc16_tab_shift_a6bc[ tmp & 0xFF ];
-
-    return crc;
-}
-
-unsigned short hz_calc_crc16_a6bc( const unsigned char *pSrc, unsigned int len, unsigned short crc16 )
+unsigned short hexin_calc_crc16_a6bc( const unsigned char *pSrc, unsigned int len, unsigned short crc16 )
 {
     unsigned int i = 0;
-	unsigned short crc = crc16;
-    
-    for ( i=0; i<len; i++ ) {
-        crc	= _hz_update_crc16_a6bc(crc, pSrc[i]);
+    unsigned short crc = crc16;
+
+    if ( crc16_table_a6bc_init == FALSE ) {
+        crc16_table_a6bc_init = hexin_crc16_init_table_poly_is_high( CRC16_POLYNOMIAL_A6BC, crc16_table_a6bc );
     }
-    return ~crc;
+
+	for ( i=0; i<len; i++ ) {
+		crc = hexin_crc16_poly_is_high_calc( crc, pSrc[i], crc16_table_a6bc );
+	}
+	return ~crc;
 }
 
 /*
@@ -352,13 +242,13 @@ unsigned short hz_calc_crc16_a6bc( const unsigned char *pSrc, unsigned int len, 
 *********************************************************************************************************
 */
 
-static unsigned short _hz_update_crc16_sick( unsigned short crc16, unsigned char c, char prev_byte ) 
+static unsigned short __hexin_crc16_sick( unsigned short crc16, unsigned char c, char prev_byte ) 
 {
     unsigned short crc = crc16;
     unsigned short short_c, short_p;
 
-    short_c  =   0x00FF & (unsigned short) c;
-    short_p  = ( 0x00FF & (unsigned short) prev_byte ) << 8;
+    short_c  =   0x00FF & ( unsigned short ) c;
+    short_p  = ( 0x00FF & ( unsigned short ) prev_byte ) << 8;
 
     if ( crc & 0x8000 ) crc = ( crc << 1 ) ^ CRC16_POLYNOMIAL_8005;
     else                crc =   crc << 1;
@@ -369,20 +259,19 @@ static unsigned short _hz_update_crc16_sick( unsigned short crc16, unsigned char
     return crc;
 }
 
-unsigned short hz_calc_crc16_sick( const unsigned char *pSrc, unsigned int len, unsigned short crc16 )
+unsigned short hexin_calc_crc16_sick( const unsigned char *pSrc, unsigned int len, unsigned short crc16 )
 {
     unsigned int   i            = 0;
 			 char  prev_byte	= 0x00;
 	unsigned short crc		    = crc16;
 
 	for ( i=0; i<len; i++ ) {
-		crc	        = _hz_update_crc16_sick(crc, pSrc[i], prev_byte);
+		crc	        = __hexin_crc16_sick( crc, pSrc[i], prev_byte );
 		prev_byte	= pSrc[i];
     }
 
 	return crc;
 }
-
 
 /*
 *********************************************************************************************************
@@ -390,87 +279,42 @@ unsigned short hz_calc_crc16_sick( const unsigned char *pSrc, unsigned int len, 
 *********************************************************************************************************
 */
 
-static unsigned char _init_crc16_table_hacker( unsigned short polynomial  ) 
+static unsigned char hexin_init_crc16_table_hacker( unsigned short polynomial  ) 
 {
-    unsigned int i = 0, j = 0;
-    unsigned short crc = 0, c = 0;
-
-    if ( crc16_tab_shift_xxxx_init == polynomial ) {
+    if ( crc16_table_hacker_init == polynomial ) {
         return FALSE;
     }
 
-    if ( polynomial & 0x8000 ) {
-        for ( i=0; i<MAX_TABLE_ARRAY; i++ ) {
-            crc = 0;
-            c   = ( unsigned short ) i;
-            for ( j=0; j<8; j++ ) {
-                if ( (crc ^ c) & 0x0001 )   crc = ( crc >> 1 ) ^ polynomial;
-                else                        crc = crc >> 1;
-                c = c >> 1;
-            }
-            crc16_tab_shift_xxxx[i] = crc;
-        }
+    if ( HEXIN_POLYNOMIAL_IS_HIGH( polynomial ) ) {
+        hexin_crc16_init_table_poly_is_high( polynomial, crc16_table_hacker );
     } else {
-        for ( i=0; i<MAX_TABLE_ARRAY; i++ ) {
-            crc = 0;
-            c   = ((unsigned short) i) << 8;
-            for ( j=0; j<8; j++ ) {
-                if ( (crc ^ c) & 0x8000 ) crc = ( crc << 1 ) ^ polynomial;
-                else                      crc = crc << 1;
-                c = c << 1;
-            }
-            crc16_tab_shift_xxxx[i] = crc;
-        }
+        hexin_crc16_init_table_poly_is_low(  polynomial, crc16_table_hacker );
     }
-    crc16_tab_shift_xxxx_init = polynomial;
+    crc16_table_hacker_init = polynomial;
+
     return TRUE;
 }
 
-static unsigned short _hz_update_crc16_hacker_right( unsigned short crc16, unsigned char c ) 
-{
-    unsigned short crc = crc16;
-    unsigned short tmp, short_c;
-
-    short_c = 0x00FF & (unsigned short) c;
-    tmp =  crc       ^ short_c;
-    crc = (crc >> 8) ^ crc16_tab_shift_xxxx[ tmp & 0xFF ];
-
-    return crc;
-}
-
-static unsigned short _hz_update_crc16_hacker_left( unsigned short crc16, unsigned char c ) 
-{
-    unsigned short crc = crc16;
-    unsigned short tmp, short_c;
-
-    short_c  = 0x00FF & (unsigned short) c;
-    tmp = (crc >> 8) ^ short_c;
-    crc = (crc << 8) ^ crc16_tab_shift_xxxx[tmp];
-
-    return crc;
-}
-
-unsigned short hz_calc_crc16_hacker( const unsigned char *pSrc, unsigned int len, unsigned short crc16, unsigned short polynomial )
+unsigned short hexin_calc_crc16_hacker( const unsigned char *pSrc, unsigned int len, unsigned short crc16, unsigned short polynomial )
 {
     unsigned int i = 0;
     unsigned short crc = crc16;
 
-    _init_crc16_table_hacker( polynomial );
+    hexin_init_crc16_table_hacker( polynomial );
 
-    switch ( polynomial & 0x8000 ) {
+    switch ( HEXIN_POLYNOMIAL_IS_HIGH( polynomial ) ) {
         case 0x8000:
             for ( i=0; i<len; i++ ) {
-                crc = _hz_update_crc16_hacker_right( crc, pSrc[i] );
+                crc = hexin_crc16_poly_is_high_calc( crc, pSrc[i], crc16_table_hacker );
             }
             break;
         
         default:
             for ( i=0; i<len; i++ ) {
-                crc = _hz_update_crc16_hacker_left( crc, pSrc[i] );
+                crc = hexin_crc16_poly_is_low_calc(  crc, pSrc[i], crc16_table_hacker );
             }
             break;
     }
 
 	return crc;
 }
-

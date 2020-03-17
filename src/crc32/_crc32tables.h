@@ -37,6 +37,9 @@
 
 unsigned int hexin_reverse32( unsigned int data );
 
+unsigned int hexin_crc32_init_table_poly_is_high( unsigned int polynomial, unsigned int *table );
+unsigned int hexin_crc32_init_table_poly_is_low(  unsigned int polynomial, unsigned int *table );
+
 unsigned int hexin_calc_crc32_04c11db7( const unsigned char *pSrc, unsigned int len, unsigned int crc32 );
 unsigned int hexin_calc_crc32_edb88320( const unsigned char *pSrc, unsigned int len, unsigned int crc32 );
 unsigned int hexin_calc_crc32_hacker(   const unsigned char *pSrc, unsigned int len, unsigned int crc32, unsigned int polynomial );
