@@ -28,4 +28,4 @@ jobs:
     - name: Test with testcrc16.py
       run: |
         cd ..
-        python -m libscrc.testcrc16
+        python -m libscrc.test.crc16

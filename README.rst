@@ -60,8 +60,8 @@ Installation
     
 * After installation you can run unit tests to make sure that the library works fine.  Execute::
 
-    python -m libscrc.testmodbus
-    python -m libscrc.testcrc64
+    python -m libscrc.test.modbus
+    python -m libscrc.test.crc64
 
 Usage
 -----
