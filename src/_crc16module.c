@@ -222,6 +222,38 @@ static PyObject * _crc16_kermit(PyObject *self, PyObject *args)
 
 /*
 *********************************************************************************************************
+*                                   POLY=0x1021 [MCRF4XX]
+* Poly:    0x1021
+* Init:    0xFFFF
+* Refin:   True
+* Refout:  True
+* Xorout:  0x0000
+*
+* 0x8408 = reverse 0x1021
+*********************************************************************************************************
+*/
+static PyObject * _crc16_mcrf4xx(PyObject *self, PyObject *args)
+{
+    const unsigned char *data = NULL;
+    unsigned int data_len = 0x00000000L;
+    unsigned short crc16  = 0xFFFF;
+    unsigned short result = 0x0000;
+
+#if PY_MAJOR_VERSION >= 3
+    if (!PyArg_ParseTuple(args, "y#|H", &data, &data_len, &crc16))
+        return NULL;
+#else
+    if (!PyArg_ParseTuple(args, "s#|H", &data, &data_len, &crc16))
+        return NULL;
+#endif /* PY_MAJOR_VERSION */
+
+    result = hz_calc_crc16_8408(data, data_len, crc16);
+
+    return Py_BuildValue("H", result);
+}
+
+/*
+*********************************************************************************************************
 *                                   POLY=0x1021 [X25]
 * Poly:    0x1021
 * Init:    0xFFFF
@@ -387,6 +419,7 @@ static PyMethodDef _crc16Methods[] = {
     {"ccitt",       _crc16_kermit, METH_VARARGS, "Calculate CCITT-TRUE of CRC16          [Poly=0x1021, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]"},
     {"ccitt_false", _crc16_ccitt,  METH_VARARGS, "Calculate CCITT-FALSE of CRC16         [Poly=0x1021, Init=0xFFFF or 0x1D0F]"},
     {"kermit",      _crc16_kermit, METH_VARARGS, "Calculate Kermit (CCITT-TRUE) of CRC16 [Poly=0x8408, Init=0x0000]"},
+    {"mcrf4xx",     _crc16_mcrf4xx,METH_VARARGS, "Calculate MCRF4XX of CRC16             [Poly=0x8408, Init=0xFFFF]"},
     {"sick",        _crc16_sick,   METH_VARARGS, "Calculate Sick of CRC16                [Poly=0x8005, Init=0x0000]"},
     {"dnp",         _crc16_dnp,    METH_VARARGS, "Calculate DNP (Ues:M-Bus, ICE870)  of CRC16    [Poly=0x3D65, Init=0x0000 Xorout=0xFFFF Refin=True Refout=True]"},
     {"x25",         _crc16_x25,    METH_VARARGS, "Calculate X25  of CRC16                [Poly=0x1021, Init=0xFFFF Xorout=0xFFFF Refin=True Refout=True]"},
@@ -406,6 +439,7 @@ PyDoc_STRVAR(_crc16_doc,
 "libscrc.ccitt      -> Calculate CCITT-TRUE of CRC16          [Poly=0x1021, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]\n"
 "libscrc.ccitt_false-> Calculate CCITT-FALSE of CRC16         [Poly=0x1021, Init=0xFFFF or 0x1D0F]\n"
 "libscrc.kermit     -> Calculate Kermit (CCITT-TRUE) of CRC16 [Poly=0x8408, Init=0x0000]\n"
+"libscrc.mcrf4xx    -> Calculate MCRF4XX of CRC16             [Poly=0x8408, Init=0xFFFF]\n"
 "libscrc.sick       -> Calculate Sick of CRC16                [Poly=0x8005, Init=0x0000]\n"
 "libscrc.dnp        -> Calculate DNP (Ues:M-Bus, ICE870)  of CRC16    [Poly=0x3D65, Init=0x0000 Xorout=0xFFFF Refin=True Refout=True]\n"
 "libscrc.x25        -> Calculate X25  of CRC16                [Poly=0x1021, Init=0xFFFF Xorout=0xFFFF Refin=True Refout=True]\n"
