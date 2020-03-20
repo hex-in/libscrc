@@ -9,6 +9,7 @@
 * LICENSING TERMS:
 * ---------------
 *		New Create at 	2020-03-17 [Heyn] Initialize
+*                       2020-03-20 [Heyn] New add hexin_calc_crc32_adler
 *
 *********************************************************************************************************
 */
@@ -180,4 +181,17 @@ unsigned int hexin_calc_crc32_hacker( const unsigned char *pSrc, unsigned int le
     }
 
 	return crc;
+}
+
+
+unsigned int hexin_calc_crc32_adler( const unsigned char *pSrc, unsigned int len )
+{
+    unsigned int a = 1, b = 0;
+    unsigned int i = 0x00000000L;
+
+    for ( i = 0; i < len; i++ ) {
+        a = ( a + pSrc[i] ) % HEXIN_MOD_ADLER;
+        b = ( b + a ) % HEXIN_MOD_ADLER;
+    }
+    return ( b << 16 ) | a;
 }

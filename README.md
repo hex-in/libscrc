@@ -8,8 +8,8 @@ libscrc is a library for calculating CRC4 CRC5 CRC6 CRC7 CRC8 CRC16 CRC32 CRC64.
 | :------------: | :------------: | :------------: | :------------: | :------------: |
 | CRC4-ITU | INTEL | MODBUS| FSC   | ISO    |
 | CRC5-ITU | BCC   | IBM   | CRC32 | ECMA182|
-| CRC5-EPC | LRC   | XModem| MPEG2 | TABLE64|
-| CRC5-USB | MAXIM8|CCITT  |TABLE32|        |
+| CRC5-EPC | LRC   | XModem| MPEG2 |        |
+| CRC5-USB | MAXIM8|CCITT  |ADLER32|        |
 | CRC6-ITU | ROHC  | KERMIT|       |        |
 | CRC7-MMC | ITU8  | SICK  |       |        |
 |          | CRC8  | DNP   |       |        |

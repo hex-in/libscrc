@@ -20,6 +20,7 @@
 *                       2017-09-21 [Heyn] Optimized code for _crc8_maxim
 *                                         New CRC8-MAXIM8 CRC8-ROHC CRC8-ITU8 CRC8
 *                       2020-02-17 [Heyn] New CRC8-SUM.
+*                       2020-03-20 [Heyn] New CRC8-FLETCHER8.
 *
 *********************************************************************************************************
 */
@@ -254,23 +255,43 @@ static PyObject * _crc8_hacker( PyObject *self, PyObject *args, PyObject* kws )
     return Py_BuildValue( "B", result );
 }
 
+static PyObject * _crc8_fletcher( PyObject *self, PyObject *args )
+{
+    const unsigned char *data = NULL;
+    unsigned int data_len = 0x00;
+    unsigned char result  = 0x00;
+
+#if PY_MAJOR_VERSION >= 3
+    if ( !PyArg_ParseTuple( args, "y#|B", &data, &data_len) )
+        return NULL;
+#else
+    if ( !PyArg_ParseTuple( args, "s#|B", &data, &data_len ) )
+        return NULL;
+#endif /* PY_MAJOR_VERSION */
+
+    result = hexin_calc_crc8_fletcher( data, data_len );
+
+    return Py_BuildValue( "B", result );
+}
+
 /* method table */
 static PyMethodDef _crc8Methods[] = {
-    { "intel",   _crc8_intel,    METH_VARARGS, "Calculate Intel hexadecimal of CRC8 [Initial = 0x00]" },
-    { "bcc",     _crc8_bcc,      METH_VARARGS, "Calculate BCC of CRC8 [Initial = 0x00]" },
-    { "lrc",     _crc8_lrc,      METH_VARARGS, "Calculate LRC of CRC8 [Initial = 0x00]" },
-    { "maxim8",  _crc8_maxim,    METH_VARARGS, "Calculate MAXIM of CRC8 [Poly = 0x31 Initial = 0x00 Xorout=0x00 Refin=True Refout=True] e.g. DS18B20" },
-    { "rohc",    _crc8_rohc,     METH_VARARGS, "Calculate ROHC of CRC8 [Poly = 0x07 Initial = 0xFF Xorout=0x00 Refin=True Refout=True]" },
-    { "itu8",    _crc8_itu,      METH_VARARGS, "Calculate ITU  of CRC8 [Poly = 0x07 Initial = 0x00 Xorout=0x55 Refin=False Refout=False]" },
-    { "crc8",    _crc8,          METH_VARARGS, "Calculate CRC  of CRC8 [Poly = 0x07 Initial = 0x00 Xorout=0x00 Refin=False Refout=False]" },
-    { "sum8",    _crc8_sum,      METH_VARARGS, "Calculate SUM  of CRC8 [Initial = 0x00]" },
-    { "table8",  _crc8_table,    METH_VARARGS, "Print CRC8 table to list. libscrc.table8( polynomial )" },
-    { "hacker8", _crc8_hacker,   METH_KEYWORDS|METH_VARARGS, "User calculation CRC8\n"
-                                                             "@data   : bytes\n"
-                                                             "@poly   : default=0x31\n"
-                                                             "@init   : default=0xFF\n"
-                                                             "@xorout : default=0x00\n"
-                                                             "@ref    : default=False" },
+    { "intel",      _crc8_intel,        METH_VARARGS, "Calculate Intel hexadecimal of CRC8 [Initial = 0x00]" },
+    { "bcc",        _crc8_bcc,          METH_VARARGS, "Calculate BCC of CRC8 [Initial = 0x00]" },
+    { "lrc",        _crc8_lrc,          METH_VARARGS, "Calculate LRC of CRC8 [Initial = 0x00]" },
+    { "maxim8",     _crc8_maxim,        METH_VARARGS, "Calculate MAXIM of CRC8 [Poly = 0x31 Initial = 0x00 Xorout=0x00 Refin=True Refout=True] e.g. DS18B20" },
+    { "rohc",       _crc8_rohc,         METH_VARARGS, "Calculate ROHC of CRC8 [Poly = 0x07 Initial = 0xFF Xorout=0x00 Refin=True Refout=True]" },
+    { "itu8",       _crc8_itu,          METH_VARARGS, "Calculate ITU  of CRC8 [Poly = 0x07 Initial = 0x00 Xorout=0x55 Refin=False Refout=False]" },
+    { "crc8",       _crc8,              METH_VARARGS, "Calculate CRC  of CRC8 [Poly = 0x07 Initial = 0x00 Xorout=0x00 Refin=False Refout=False]" },
+    { "sum8",       _crc8_sum,          METH_VARARGS, "Calculate SUM  of CRC8 [Initial = 0x00]" },
+    { "table8",     _crc8_table,        METH_VARARGS, "Print CRC8 table to list. libscrc.table8( polynomial )" },
+    { "hacker8",    _crc8_hacker,       METH_KEYWORDS|METH_VARARGS, "User calculation CRC8\n"
+                                                                    "@data   : bytes\n"
+                                                                    "@poly   : default=0x31\n"
+                                                                    "@init   : default=0xFF\n"
+                                                                    "@xorout : default=0x00\n"
+                                                                    "@ref    : default=False" },
+    { "fletcher8",  _crc8_fletcher,     METH_VARARGS, "Calculate fletcher8" },
     { NULL, NULL, 0, NULL }        /* Sentinel */
 };
 
@@ -278,15 +299,16 @@ static PyMethodDef _crc8Methods[] = {
 /* module documentation */
 PyDoc_STRVAR( _crc8_doc,
 "Calculation of CRC8 \n"
-"libscrc.intel  -> Calculate Intel hexadecimal of CRC8 [Initial = 0x00]\n"
-"libscrc.bcc    -> Calculate BCC(XOR) of CRC8 [Initial = 0x00]\n"
-"libscrc.lrc    -> Calculate LRC of CRC8 [Initial = 0x00]\n"
-"libscrc.maxim8 -> Calculate MAXIM of CRC8 [Poly = 0x31 Initial = 0x00 Xorout=0x00 Refin=True Refout=True] e.g. DS18B20\n"
-"libscrc.rohc   -> Calculate ROHC of CRC8 [Poly = 0x07 Initial = 0xFF Xorout=0x00 Refin=True Refout=True]\n"
-"libscrc.itu8   -> Calculate ITU  of CRC8 [Poly = 0x07 Initial = 0x00 Xorout=0x55 Refin=False Refout=False]\n"
-"libscrc.crc8   -> Calculate CRC  of CRC8 [Poly = 0x07 Initial = 0x00 Xorout=0x00 Refin=False Refout=False]\n"
-"libscrc.sum8   -> Calculate SUM  of CRC8 [Initial = 0x00]\n"
-"libscrc.hacker8-> Free calculation CRC8 [poly=any(default=0x31), init=any(default=0xFF), xorout=0x00 Refin=False Refout=False]\n"
+"libscrc.intel      -> Calculate Intel hexadecimal of CRC8 [Initial = 0x00]\n"
+"libscrc.bcc        -> Calculate BCC(XOR) of CRC8 [Initial = 0x00]\n"
+"libscrc.lrc        -> Calculate LRC of CRC8 [Initial = 0x00]\n"
+"libscrc.maxim8     -> Calculate MAXIM of CRC8 [Poly = 0x31 Initial = 0x00 Xorout=0x00 Refin=True Refout=True] e.g. DS18B20\n"
+"libscrc.rohc       -> Calculate ROHC of CRC8 [Poly = 0x07 Initial = 0xFF Xorout=0x00 Refin=True Refout=True]\n"
+"libscrc.itu8       -> Calculate ITU  of CRC8 [Poly = 0x07 Initial = 0x00 Xorout=0x55 Refin=False Refout=False]\n"
+"libscrc.crc8       -> Calculate CRC  of CRC8 [Poly = 0x07 Initial = 0x00 Xorout=0x00 Refin=False Refout=False]\n"
+"libscrc.sum8       -> Calculate SUM  of CRC8 [Initial = 0x00]\n"
+"libscrc.hacker8    -> Free calculation CRC8 [poly=any(default=0x31), init=any(default=0xFF), xorout=0x00 Refin=False Refout=False]\n"
+"libscrc.fletcher8  -> Calculate fletcher8 \n"
 "\n" );
 
 

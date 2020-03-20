@@ -18,6 +18,7 @@
  *                      2019-04-28 [Heyn] New add lclear32 \ rclear32 \ pltable32 \ prtable32 functions.
  *                      2020-03-16 [Heyn] New add hacker32 code.
  *                                        Removed lclear32 \ rclear32 \ pltable32 \ prtable32 functions.
+ *                      2020-03-20 [Heyn] New add adler32
  * 
  * Web : https://en.wikipedia.org/wiki/Polynomial_representations_of_cyclic_redundancy_checks
  *
@@ -160,6 +161,27 @@ static PyObject * _crc32_hacker( PyObject *self, PyObject *args, PyObject* kws )
     return Py_BuildValue( "I", result );
 }
 
+
+static PyObject * _crc32_adler32( PyObject *self, PyObject *args )
+{
+    const unsigned char *data = NULL;
+    unsigned int data_len = 0x00000000L;
+    unsigned int result   = 0x00000000L;
+
+#if PY_MAJOR_VERSION >= 3
+    if ( !PyArg_ParseTuple( args, "y#", &data, &data_len ) )
+        return NULL;
+#else
+    if ( !PyArg_ParseTuple( args, "s#", &data, &data_len ) )
+        return NULL;
+#endif /* PY_MAJOR_VERSION */
+
+    result = hexin_calc_crc32_adler( data, data_len );
+
+    return Py_BuildValue( "I", result );
+}
+
+
 /* method table */
 static PyMethodDef _crc32Methods[] = {
     { "mpeg2",       _crc32_mpeg_2,     METH_VARARGS,   "Calculate CRC (MPEG2) of CRC32 [Poly=0x04C11DB7, Init=0xFFFFFFFF, Xorout=0x00000000 Refin=False Refout=False]"},
@@ -172,6 +194,7 @@ static PyMethodDef _crc32Methods[] = {
                                                                     "@init   : default=0xFFFFFFFF\n"
                                                                     "@xorout : default=0x00000000\n"
                                                                     "@ref    : default=False" },
+    { "adler32",    _crc32_adler32,     METH_VARARGS,   "Calculate adler32 (MOD=65521)" },
     { NULL, NULL, 0, NULL }        /* Sentinel */
 };
 
@@ -183,6 +206,7 @@ PyDoc_STRVAR( _crc32_doc,
 "libscrc.crc32    -> Calculate CRC for file [Poly=0xEDB88320L, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]\n"
 "libscrc.table32  -> Print CRC32 table to list\n"
 "libscrc.hacker32 -> Free calculation CRC32 (not support python2 series) Xorout=0x00000000 Refin=False Refout=False\n"
+"libscrc.adler32  -> Calculate adler32 (MOD=65521)\n"
 "\n" );
 
 

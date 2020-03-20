@@ -28,6 +28,8 @@
 #define                 MAX_TABLE_ARRAY                         256
 #endif
 
+#define                 HEXIN_MOD_ADLER                         65521
+
 #define                 HEXIN_POLYNOMIAL_IS_HIGH(x)             ( x & 0x80000000L )
 #define                 HEXIN_REFIN_OR_REFOUT_IS_TRUE(x)        ( x == 0x00000001L ? TRUE : FALSE )
 
@@ -43,5 +45,7 @@ unsigned int hexin_crc32_init_table_poly_is_low(  unsigned int polynomial, unsig
 unsigned int hexin_calc_crc32_04c11db7( const unsigned char *pSrc, unsigned int len, unsigned int crc32 );
 unsigned int hexin_calc_crc32_edb88320( const unsigned char *pSrc, unsigned int len, unsigned int crc32 );
 unsigned int hexin_calc_crc32_hacker(   const unsigned char *pSrc, unsigned int len, unsigned int crc32, unsigned int polynomial );
+
+unsigned int hexin_calc_crc32_adler(    const unsigned char *pSrc, unsigned int len );
 
 #endif //__CRC32_TABLES_H__

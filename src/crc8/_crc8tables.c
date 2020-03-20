@@ -9,6 +9,7 @@
 * LICENSING TERMS:
 * ---------------
 *		New Create at 	2020-03-17 [Heyn] Initialize
+*                       2020-03-20 [Heyn] New add hexin_calc_crc8_fletcher
 *
 *********************************************************************************************************
 */
@@ -228,4 +229,16 @@ unsigned char hexin_calc_crc8_hacker( const unsigned char *pSrc, unsigned int le
     }
 
 	return crc;
+}
+
+unsigned char hexin_calc_crc8_fletcher( const unsigned char *pSrc, unsigned int len )
+{
+    unsigned int i = 0;
+    unsigned char sum1 = 0, sum2 = 0;
+
+    for ( i = 0; i < len; i++ ){
+        sum1 += pSrc[i];
+        sum2 += sum1;
+    }
+    return ( sum1 & 0xF ) | ( sum2 << 4 );    
 }
