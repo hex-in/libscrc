@@ -28,7 +28,10 @@ libscrc is a library for calculating CRC4 CRC5 CRC6 CRC7 CRC8 CRC16 CRC32 CRC64.
 +------------+------------+------------+-----------+-----------+
 |            |            | DECT       |           |           |
 +------------+------------+------------+-----------+-----------+
-
+|            |            | TCP        |           |           |
++------------+------------+------------+-----------+-----------+
+|            |            | UDP        |           |           |
++------------+------------+------------+-----------+-----------+
 
 Installation
 ------------
@@ -114,6 +117,9 @@ Example
     crc16 = libscrc.usb16(b'1234')  
     crc16 = libscrc.maxim16(b'1234')  
     crc16 = libscrc.dect(b'1234')           # poly=0x0589 (Cordless Telephones)
+    data  = b'\x45\x00\x00\x3c\x00\x00\x00\x00\x40\x11\x00\x00\xc0\xa8\x2b\xc3\x08\x08\x08\x08\x11'
+    crc16 = libscrc.tcp( data )             # 13933
+    crc16 = libscrc.udp( data )             # 13933
 
 * CRC32::
     
@@ -130,6 +136,12 @@ NOTICE
 ------
 * v0.1.6+ version will not support python2 series (2020-01-20)
 
+V0.1.7b (2020-03-16)
+++++++++++++++++++++
+* New hacker8
+* New hacker16
+* New hacker32
+* New hacker64
 
 V0.1.5 (2017-09-22)
 +++++++++++++++++++

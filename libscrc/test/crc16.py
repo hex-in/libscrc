@@ -32,6 +32,7 @@ class TestCRC16( unittest.TestCase ):
         self.assertEqual( module.usb16(b'123456789'),       0xB4C8 )
         self.assertEqual( module.maxim16(b'123456789'),     0x44C2 )
         self.assertEqual( module.dect(b'123456789'),        0xCAB0 )
+        self.assertEqual( module.udp(b'\x45\x00\x00\x3c\x00\x00\x00\x00\x40\x11\x00\x00\xc0\xa8\x2b\xc3\x08\x08\x08\x08\x11'), 0x366D )
 
         # the same in two steps
         crc = module.x25( b'12345' )

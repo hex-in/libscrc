@@ -8,17 +8,17 @@ libscrc is a library for calculating CRC4 CRC5 CRC6 CRC7 CRC8 CRC16 CRC32 CRC64.
 | :------------: | :------------: | :------------: | :------------: | :------------: |
 | CRC4-ITU | INTEL | MODBUS| FSC   | ISO    |
 | CRC5-ITU | BCC   | IBM   | CRC32 | ECMA182|
-| CRC5-EPC | LRC   | XModem| MPEG2 |        |
-| CRC5-USB | MAXIM8|CCITT  |       |        |
+| CRC5-EPC | LRC   | XModem| MPEG2 | TABLE64|
+| CRC5-USB | MAXIM8|CCITT  |TABLE32|        |
 | CRC6-ITU | ROHC  | KERMIT|       |        |
 | CRC7-MMC | ITU8  | SICK  |       |        |
 |          | CRC8  | DNP   |       |        |
 |          | SUM8  | X25   |       |        |
 |          |       | USB   |       |        |
 |          |       | MAXIM16|      |        |
-|          |       | DECT  |       |        ||
-
-
+|          |       | DECT  |       |        |
+|          |       | TCP   |       |        |
+|          |       | UDP   |       |        ||
 
 
 Installation
@@ -106,8 +106,12 @@ Example
     crc16 = libscrc.maxim16(b'1234')
     crc16 = libscrc.dect(b'1234')           # poly=0x0589 (Cordless Telephones)
 	
-	# init=0xFFFF(default) xorout=0x0000(default)
-	  crc16 = libscrc.hacker16( b'123456789', poly=0xA001 )
+    data  = b'\x45\x00\x00\x3c\x00\x00\x00\x00\x40\x11\x00\x00\xc0\xa8\x2b\xc3\x08\x08\x08\x08\x11'
+    crc16 = libscrc.tcp( data )             # 13933
+    crc16 = libscrc.udp( data )             # 13933
+	
+    # init=0xFFFF(default) xorout=0x0000(default)
+    crc16 = libscrc.hacker16( b'123456789', poly=0xA001 )
     crc16 = libscrc.hacker16( b'123456789', poly=0xA001, init=0x0000, xorout=0xFFFF )
 
   CRC32
@@ -136,6 +140,7 @@ NOTICE
 **V0.1.7b (2020-03-16)**
 
 ------------
+* New hacker8
 * New hacker16
 * New hacker32
 * New hacker64

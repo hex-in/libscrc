@@ -15,6 +15,7 @@
 *                       http://www.ip33.com/crc.html
 *                       
 *                       2020-03-13 [Heyn] New add hacker code.
+*                       2020-03-20 [Heyn] New add hexin_calc_crc16_network.
 *
 *********************************************************************************************************
 */
@@ -317,4 +318,31 @@ unsigned short hexin_calc_crc16_hacker( const unsigned char *pSrc, unsigned int 
     }
 
 	return crc;
+}
+
+/*
+*********************************************************************************************************
+                                    For network(UDP/TCP) checksum
+*********************************************************************************************************
+*/
+
+unsigned short hexin_calc_crc16_network( const unsigned char *pSrc, unsigned int len )
+{
+    unsigned int sum = 0;
+
+    while ( len > 1 ) {
+        sum  += *( unsigned short * )pSrc;
+        len  -= 2;
+        pSrc += 2;
+    }
+ 
+    if ( len ) {
+        sum += *(unsigned char *) pSrc;
+    }
+ 
+    while ( sum >> 16 ) {
+        sum = ( sum >> 16 ) + ( sum & 0xFFFF );
+    }
+ 
+    return ( unsigned short )( ~sum );
 }

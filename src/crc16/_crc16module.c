@@ -21,6 +21,7 @@
 *                       2017-09-19 [Heyn] New CRC16-X25 CRC16-USB CRC16-MAXIM16 CRC16-DECT. (V0.1.3)
 *                                         Optimized Code.
 *                       2020-03-13 [Heyn] New add hacker16 code.
+*                       2020-03-20 [Heyn] New add UDP and TCP checksum.
 *
 *********************************************************************************************************
 */
@@ -444,6 +445,30 @@ static PyObject * _crc16_hacker( PyObject *self, PyObject *args, PyObject* kws )
     return Py_BuildValue( "H", result );
 }
 
+/*
+*********************************************************************************************************
+                                    For network(UDP/TCP) checksum
+*********************************************************************************************************
+*/
+static PyObject * _crc16_network( PyObject *self, PyObject *args )
+{
+    const unsigned char *data = NULL;
+    unsigned int data_len = 0x00000000L;
+    unsigned short result = 0x0000;
+
+#if PY_MAJOR_VERSION >= 3
+    if ( !PyArg_ParseTuple( args, "y#|H", &data, &data_len ) )
+        return NULL;
+#else
+    if ( !PyArg_ParseTuple(args, "s#", &data, &data_len ) )
+        return NULL;
+#endif /* PY_MAJOR_VERSION */
+
+    result = hexin_calc_crc16_network( data, data_len );
+
+    return Py_BuildValue( "H", result );
+}
+
 /* method table */
 static PyMethodDef _crc16Methods[] = {
     { "modbus",      _crc16_modbus, METH_VARARGS, "Calculate Modbus of CRC16              [Poly=0xA001, Init=0xFFFF Xorout=0x0000 Refin=False Refout=False]" },
@@ -465,7 +490,8 @@ static PyMethodDef _crc16Methods[] = {
                                                                 "@init   : default=0xFFFF\n"
                                                                 "@xorout : default=0x0000\n"
                                                                 "@ref    : default=False" },
-
+    { "udp",         _crc16_network,METH_VARARGS, "Calculate UDP checksum." },
+    { "tcp",         _crc16_network,METH_VARARGS, "Calculate TCP checksum." },
     { NULL, NULL, 0, NULL }        /* Sentinel */
 };
 
