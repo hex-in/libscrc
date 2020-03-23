@@ -11,9 +11,10 @@ libscrc is a library for calculating CRC4 CRC5 CRC6 CRC7 CRC8 CRC16 CRC32 CRC64.
 | CRC5-EPC | LRC   | XModem| MPEG2 |        |
 | CRC5-USB | MAXIM8|CCITT  |       |        |
 | CRC6-ITU | ROHC  | KERMIT|       |        |
-| CRC7-MMC | ITU8  | SICK  |       |        |
-|          | CRC8  | DNP   |       |        |
-|          | SUM8  | X25   |       |        |
+| CRC7-MMC | ITU8  |MCRF4XX|       |        |
+|          | CRC8  | SICK  |       |        |
+|          | SUM8  | DNP   |       |        |
+|          |       | X25   |       |        |
 |          |       | USB   |       |        |
 |          |       | MAXIM16|      |        |
 |          |       | DECT  |       |        ||
@@ -99,6 +100,7 @@ Example
     crc16 = libscrc.ccitt(b'1234')
     crc16 = libscrc.ccitt_false(b'1234')
     crc16 = libscrc.kermit(b'1234')
+    crc16 = libscrc.mcrf4xx(b'1234')
     crc16 = libscrc.sick(b'1234')
     crc16 = libscrc.dnp(b'1234')
     crc16 = libscrc.x25(b'1234')
