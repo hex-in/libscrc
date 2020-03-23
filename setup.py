@@ -28,7 +28,7 @@ setup(
     name='libscrc',
     version='1.0',
 
-    description='Library for calculating CRC8/CRC16/CRC32/CRC64',
+    description='Library for calculating CRC4/CRC8/CRC16/CRC32/CRC64',
     long_description=long_description,
 
     url='https://github.com/hex-in/libscrc',

@@ -115,6 +115,10 @@ NOTICE
 ------
 * v0.1.6+ version will not support python2 series (2020-01-20)
 
+V1.0 (2020-03-23)
+++++++++++++++++++
+* New hacker8 \ hacker16 \ hacker32 \ hacker64
+* New FLETCHER8 \ FLETCHER16 \ FLETCHER32
 
 V0.1.5 (2017-09-22)
 +++++++++++++++++++
