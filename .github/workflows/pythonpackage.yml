@@ -9,7 +9,7 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.5, 3.6, 3.7]
+        python-version: [2.7, 3.5, 3.6, 3.7]
 
     steps:
     - uses: actions/checkout@v1
@@ -28,4 +28,4 @@ jobs:
     - name: Test with crc16.py
       run: |
         cd ..
-        python -m libscrc.test.modbus
+        python -m libscrc.test.crc16
