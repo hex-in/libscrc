@@ -205,7 +205,6 @@ unsigned int hexin_calc_crc32_adler( const unsigned char *pSrc, unsigned int len
 
 unsigned int hexin_calc_crc32_fletcher( const unsigned char *pSrc, unsigned int len )
 {
-    unsigned int i = 0;
     unsigned long sum1 = 0xFFFF, sum2 = 0xFFFF;
 
     while ( len > 1 ) {
