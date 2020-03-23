@@ -181,6 +181,30 @@ static PyObject * _crc32_adler32( PyObject *self, PyObject *args )
     return Py_BuildValue( "I", result );
 }
 
+/*
+*********************************************************************************************************
+                                    For fletcher32 checksum
+*********************************************************************************************************
+*/
+
+static PyObject * _crc32_fletcher32( PyObject *self, PyObject *args )
+{
+    const unsigned char *data = NULL;
+    unsigned int data_len = 0x00000000L;
+    unsigned int result   = 0x00000000L;
+
+#if PY_MAJOR_VERSION >= 3
+    if ( !PyArg_ParseTuple( args, "y#", &data, &data_len ) )
+        return NULL;
+#else
+    if ( !PyArg_ParseTuple( args, "s#", &data, &data_len ) )
+        return NULL;
+#endif /* PY_MAJOR_VERSION */
+
+    result = hexin_calc_crc32_fletcher( data, data_len );
+
+    return Py_BuildValue( "I", result );
+}
 
 /* method table */
 static PyMethodDef _crc32Methods[] = {
@@ -195,18 +219,20 @@ static PyMethodDef _crc32Methods[] = {
                                                                     "@xorout : default=0x00000000\n"
                                                                     "@ref    : default=False" },
     { "adler32",    _crc32_adler32,     METH_VARARGS,   "Calculate adler32 (MOD=65521)" },
+    { "fletcher32", _crc32_fletcher32,  METH_VARARGS,   "Calculate fletcher32" },
     { NULL, NULL, 0, NULL }        /* Sentinel */
 };
 
 /* module documentation */
 PyDoc_STRVAR( _crc32_doc,
 "Calculation of CRC32 \n"
-"libscrc.fsc      -> Calculate CRC for Ethernet frame sequence (FSC) [Poly=0x04C11DB7, Init=0xFFFFFFFF, Xorout=0x00000000 Refin=False Refout=False]\n"
-"libscrc.mpeg2    -> Calculate CRC for Media file (MPEG2) [Poly=0x04C11DB7, Init=0xFFFFFFFF, Xorout=0x00000000 Refin=False Refout=False]\n"
-"libscrc.crc32    -> Calculate CRC for file [Poly=0xEDB88320L, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]\n"
-"libscrc.table32  -> Print CRC32 table to list\n"
-"libscrc.hacker32 -> Free calculation CRC32 (not support python2 series) Xorout=0x00000000 Refin=False Refout=False\n"
-"libscrc.adler32  -> Calculate adler32 (MOD=65521)\n"
+"libscrc.fsc        -> Calculate CRC for Ethernet frame sequence (FSC) [Poly=0x04C11DB7, Init=0xFFFFFFFF, Xorout=0x00000000 Refin=False Refout=False]\n"
+"libscrc.mpeg2      -> Calculate CRC for Media file (MPEG2) [Poly=0x04C11DB7, Init=0xFFFFFFFF, Xorout=0x00000000 Refin=False Refout=False]\n"
+"libscrc.crc32      -> Calculate CRC for file [Poly=0xEDB88320L, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]\n"
+"libscrc.table32    -> Print CRC32 table to list\n"
+"libscrc.hacker32   -> Free calculation CRC32 (not support python2 series) Xorout=0x00000000 Refin=False Refout=False\n"
+"libscrc.adler32    -> Calculate adler32 (MOD=65521)\n"
+"libscrc.fletcher32 -> Calculate fletcher32\n"
 "\n" );
 
 

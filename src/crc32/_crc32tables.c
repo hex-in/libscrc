@@ -10,6 +10,7 @@
 * ---------------
 *		New Create at 	2020-03-17 [Heyn] Initialize
 *                       2020-03-20 [Heyn] New add hexin_calc_crc32_adler
+*                       2020-03-23 [Heyn] New add hexin_calc_crc32_fletcher
 *
 *********************************************************************************************************
 */
@@ -186,12 +187,42 @@ unsigned int hexin_calc_crc32_hacker( const unsigned char *pSrc, unsigned int le
 
 unsigned int hexin_calc_crc32_adler( const unsigned char *pSrc, unsigned int len )
 {
-    unsigned int a = 1, b = 0;
+    unsigned int sum1 = 1, sum2 = 0;
     unsigned int i = 0x00000000L;
 
     for ( i = 0; i < len; i++ ) {
-        a = ( a + pSrc[i] ) % HEXIN_MOD_ADLER;
-        b = ( b + a ) % HEXIN_MOD_ADLER;
+        sum1 = ( sum1 + pSrc[i] ) % HEXIN_MOD_ADLER;
+        sum2 = ( sum2 + sum1 ) % HEXIN_MOD_ADLER;
     }
-    return ( b << 16 ) | a;
+    return ( sum2 << 16 ) | sum1;
+}
+
+/*
+*********************************************************************************************************
+                                    For fletcher32 checksum
+*********************************************************************************************************
+*/
+
+unsigned int hexin_calc_crc32_fletcher( const unsigned char *pSrc, unsigned int len )
+{
+    unsigned int i = 0;
+    unsigned long sum1 = 0xFFFF, sum2 = 0xFFFF;
+
+    while ( len > 1 ) {
+        sum1 += *( unsigned short * )pSrc;
+        sum2 += sum1;
+        sum1 = ( sum1 & 0xFFFF ) + ( sum1 >> 16 );
+        sum2 = ( sum2 & 0xFFFF ) + ( sum2 >> 16 );
+        len  -= 2;
+        pSrc += 2;
+    }
+
+    if ( len ) {
+        sum1 += *(unsigned char *) pSrc;
+        sum2 += sum1;
+        sum1 = ( sum1 & 0xFFFF ) + ( sum1 >> 16 );
+        sum2 = ( sum2 & 0xFFFF ) + ( sum2 >> 16 );
+    }
+
+    return ( sum1 & 0xFFFF ) | ( sum2 << 16 );
 }

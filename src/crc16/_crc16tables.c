@@ -346,3 +346,21 @@ unsigned short hexin_calc_crc16_network( const unsigned char *pSrc, unsigned int
  
     return ( unsigned short )( ~sum );
 }
+
+/*
+*********************************************************************************************************
+                                    For fletcher16 checksum
+*********************************************************************************************************
+*/
+
+unsigned short hexin_calc_crc16_fletcher( const unsigned char *pSrc, unsigned int len )
+{
+    unsigned int i = 0;
+    unsigned short sum1 = 0, sum2 = 0;
+
+    for ( i = 0; i < len; i++ ) {
+        sum1 = ( sum1 + pSrc[i] ) % 255;
+        sum2 = ( sum2 + sum1 ) % 255;
+    }
+    return ( sum1 & 0xFF ) | ( sum2 << 8 );
+}

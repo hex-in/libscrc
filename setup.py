@@ -26,7 +26,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name='libscrc',
-    version='0.1.6',
+    version='1.0',
 
     description='Library for calculating CRC8/CRC16/CRC32/CRC64',
     long_description=long_description,

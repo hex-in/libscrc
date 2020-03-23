@@ -47,5 +47,6 @@ unsigned int hexin_calc_crc32_edb88320( const unsigned char *pSrc, unsigned int 
 unsigned int hexin_calc_crc32_hacker(   const unsigned char *pSrc, unsigned int len, unsigned int crc32, unsigned int polynomial );
 
 unsigned int hexin_calc_crc32_adler(    const unsigned char *pSrc, unsigned int len );
+unsigned int hexin_calc_crc32_fletcher( const unsigned char *pSrc, unsigned int len );
 
 #endif //__CRC32_TABLES_H__

@@ -24,8 +24,9 @@ class TestCRC32( unittest.TestCase ):
         self.assertEqual( module.crc32(b'123456789'),   0xCBF43926 )
         self.assertEqual( module.mpeg2(b'123456789'),   0x0376E6E7 )
 
-        self.assertEqual( module.crc32( b'A' * 4096),      0xFEA63440 )
-        self.assertEqual( module.crc32( b'A' * 4096 * 10), 0x1521C066 )
+        self.assertEqual( module.crc32( b'A' * 4096),           0xFEA63440 )
+        self.assertEqual( module.crc32( b'A' * 4096 * 10),      0x1521C066 )
+        self.assertEqual( module.fletcher32( b'123456789' ),    0xDF09D509 )
 
         # test when there are no data
         self.assertEqual( module.crc32( b'' ),          0x00000000 )

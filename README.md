@@ -6,20 +6,21 @@ libscrc is a library for calculating CRC4 CRC5 CRC6 CRC7 CRC8 CRC16 CRC32 CRC64.
 
 |  CRCx |  CRC8 | CRC16  |   CRC32| CRC64  |
 | :------------: | :------------: | :------------: | :------------: | :------------: |
-| CRC4-ITU | INTEL | MODBUS| FSC   | ISO    |
-| CRC5-ITU | BCC   | IBM   | CRC32 | ECMA182|
-| CRC5-EPC | LRC   | XModem| MPEG2 |        |
-| CRC5-USB | MAXIM8|CCITT  |ADLER32|        |
-| CRC6-ITU | ROHC  | KERMIT|       |        |
-| CRC7-MMC | ITU8  |MCRF4XX|       |        |
-|          | CRC8  | SICK  |       |        |
-|          | SUM8  | DNP   |       |        |
-|          |       | X25   |       |        |
-|          |       | USB   |       |        |
-|          |       | MAXIM16|      |        |
-|          |       | DECT  |       |        |
-|          |       | TCP   |       |        |
-|          |       | UDP   |       |        ||
+| CRC4-ITU | INTEL   | MODBUS   | FSC      | ISO    |
+| CRC5-ITU | BCC     | IBM      | CRC32    | ECMA182|
+| CRC5-EPC | LRC     | XModem   | MPEG2    |        |
+| CRC5-USB | MAXIM8  | CCITT    |ADLER32   |        |
+| CRC6-ITU | ROHC    | KERMIT   |FLETCHER32|        |
+| CRC7-MMC | ITU8    |MCRF4XX   |          |        |
+|          | CRC8    | SICK     |          |        |
+|          | SUM8    | DNP      |          |        |
+|          |FLETCHER8| X25      |          |        |
+|          |         | USB      |          |        |
+|          |         | MAXIM16  |          |        |
+|          |         | DECT     |          |        |
+|          |         | TCP      |          |        |
+|          |         | UDP      |          |        |
+|          |         |FLETCHER16|          |        ||
 
 
 Installation

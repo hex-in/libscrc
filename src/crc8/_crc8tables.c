@@ -236,7 +236,7 @@ unsigned char hexin_calc_crc8_fletcher( const unsigned char *pSrc, unsigned int 
     unsigned int i = 0;
     unsigned char sum1 = 0, sum2 = 0;
 
-    for ( i = 0; i < len; i++ ){
+    for ( i = 0; i < len; i++ ) {
         sum1 += pSrc[i];
         sum2 += sum1;
     }
