@@ -1,6 +1,6 @@
-=====================================================
-Python library for calculating CRC8 CRC16 CRC32 CRC64
-=====================================================
+=========================================================================
+Python library for calculating CRC4 CRC5 CRC6 CRC7 CRC8 CRC16 CRC32 CRC64
+=========================================================================
 
 ------------
 Installation
@@ -89,17 +89,17 @@ Other Example:
   
     crc16 = libscrc.ibm(b'1234')            # poly=0xA001 (default Reversed)  
     crc16 = libscrc.ibm(b'1234', 0x8005)    # poly=0x8005 (Normal)
-    crc16 = libscrc.modbus(b'1234')
-    crc16 = libscrc.xmodem(b'1234')
-    crc16 = libscrc.ccitt(b'1234')
-    crc16 = libscrc.ccitt_false(b'1234')
-    crc16 = libscrc.kermit(b'1234')
-    crc16 = libscrc.mcrf4xx(b'1234')
-    crc16 = libscrc.sick(b'1234')
-    crc16 = libscrc.dnp(b'1234')
-    crc16 = libscrc.x25(b'1234')
-    crc16 = libscrc.usb16(b'1234')
-    crc16 = libscrc.maxim16(b'1234')
+    crc16 = libscrc.modbus(b'1234')  
+    crc16 = libscrc.xmodem(b'1234')  
+    crc16 = libscrc.ccitt(b'1234')  
+    crc16 = libscrc.ccitt_false(b'1234')  
+    crc16 = libscrc.kermit(b'1234')  
+    crc16 = libscrc.mcrf4xx(b'1234')  
+    crc16 = libscrc.sick(b'1234')  
+    crc16 = libscrc.dnp(b'1234')  
+    crc16 = libscrc.x25(b'1234')  
+    crc16 = libscrc.usb16(b'1234')  
+    crc16 = libscrc.maxim16(b'1234')  
     crc16 = libscrc.dect(b'1234')           # poly=0x0589 (Cordless Telephones)
  
   

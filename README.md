@@ -6,20 +6,21 @@ libscrc is a library for calculating CRC4 CRC5 CRC6 CRC7 CRC8 CRC16 CRC32 CRC64.
 
 |  CRCx |  CRC8 | CRC16  |   CRC32| CRC64  |
 | :------------: | :------------: | :------------: | :------------: | :------------: |
-| CRC4-ITU | INTEL | MODBUS| FSC   | ISO    |
-| CRC5-ITU | BCC   | IBM   | CRC32 | ECMA182|
-| CRC5-EPC | LRC   | XModem| MPEG2 |        |
-| CRC5-USB | MAXIM8|CCITT  |       |        |
-| CRC6-ITU | ROHC  | KERMIT|       |        |
-| CRC7-MMC | ITU8  |MCRF4XX|       |        |
-|          | CRC8  | SICK  |       |        |
-|          | SUM8  | DNP   |       |        |
-|          |       | X25   |       |        |
-|          |       | USB   |       |        |
-|          |       | MAXIM16|      |        |
-|          |       | DECT  |       |        ||
-
-
+| CRC4-ITU | INTEL   | MODBUS   | FSC      | ISO    |
+| CRC5-ITU | BCC     | IBM      | CRC32    | ECMA182|
+| CRC5-EPC | LRC     | XModem   | MPEG2    |        |
+| CRC5-USB | MAXIM8  | CCITT    |ADLER32   |        |
+| CRC6-ITU | ROHC    | KERMIT   |FLETCHER32|        |
+| CRC7-MMC | ITU8    |MCRF4XX   |          |        |
+|          | CRC8    | SICK     |          |        |
+|          | SUM8    | DNP      |          |        |
+|          |FLETCHER8| X25      |          |        |
+|          |         | USB      |          |        |
+|          |         | MAXIM16  |          |        |
+|          |         | DECT     |          |        |
+|          |         | TCP      |          |        |
+|          |         | UDP      |          |        |
+|          |         |FLETCHER16|          |        ||
 
 
 Installation
@@ -52,8 +53,8 @@ Installation
     
 * After installation you can run unit tests to make sure that the library works fine.  Execute::
 
-    python -m libscrc.testmodbus
-    python -m libscrc.testcrc64
+    python -m libscrc.test.modbus
+    python -m libscrc.test.crc64
 
 Usage
 -----
@@ -102,26 +103,51 @@ Example
     crc16 = libscrc.kermit(b'1234')
     crc16 = libscrc.mcrf4xx(b'1234')
     crc16 = libscrc.sick(b'1234')
+    crc16 = libscrc.mcrf4xx(b'1234')
     crc16 = libscrc.dnp(b'1234')
     crc16 = libscrc.x25(b'1234')
     crc16 = libscrc.usb16(b'1234')
     crc16 = libscrc.maxim16(b'1234')
     crc16 = libscrc.dect(b'1234')           # poly=0x0589 (Cordless Telephones)
 	
+    data  = b'\x45\x00\x00\x3c\x00\x00\x00\x00\x40\x11\x00\x00\xc0\xa8\x2b\xc3\x08\x08\x08\x08\x11'
+    crc16 = libscrc.tcp( data )             # 13933
+    crc16 = libscrc.udp( data )             # 13933
+	
+    # init=0xFFFF(default) xorout=0x0000(default)
+    crc16 = libscrc.hacker16( b'123456789', poly=0xA001 )
+    crc16 = libscrc.hacker16( b'123456789', poly=0xA001, init=0x0000, xorout=0xFFFF )
+
   CRC32
 
     crc32 = libscrc.fsc(b'1234')            # Ethernet frame sequence (FSC)
     crc32 = libscrc.mpeg2(b'1234')          # MPEG2
     crc32 = libscrc.crc32(b'1234')          # WinRAR, File
 	
+	# init=0xFFFFFFFF(default) xorout=0x00000000(default)
+    crc32 = libscrc.hacker32( b'123456789', poly=0x04C11DB7 )
+    crc32 = libscrc.hacker32( b'123456789', poly=0x04C11DB7, init=0x00000000, xorout=0xFFFFFFFF )
+
   CRC64
 
     crc64 = libscrc.iso(b'1234')
     crc64 = libscrc.ecma182(b'1234')
+	
+	# init=0xFFFFFFFFFFFFFFFF(default) xorout=0x0000000000000000(default)
+    crc64 = libscrc.hacker64( b'123456789', poly=0xD800000000000000, init=0 )
 
 NOTICE
 ------
 * v0.1.6+ version will not support python2 series (2020-01-20)
+
+
+**V0.1.7b (2020-03-16)**
+
+------------
+* New hacker8
+* New hacker16
+* New hacker32
+* New hacker64
 
 **V0.1.5 (2017-09-22)**
 

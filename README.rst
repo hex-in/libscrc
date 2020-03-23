@@ -12,25 +12,30 @@ libscrc is a library for calculating CRC4 CRC5 CRC6 CRC7 CRC8 CRC16 CRC32 CRC64.
 +------------+------------+------------+-----------+-----------+ 
 | CRC5-EPC   | LRC        | XModem     | MPEG2     |           |
 +------------+------------+------------+-----------+-----------+ 
-| CRC5-USB   | MAXIM8     | CCITT      |           |           |
+| CRC5-USB   | MAXIM8     | CCITT      | ADLER32   |           |
 +------------+------------+------------+-----------+-----------+ 
-| CRC6-ITU   | ROHC       | KERMIT     |           |           |
+| CRC6-ITU   | ROHC       | KERMIT     | FLETCHER32|           |
 +------------+------------+------------+-----------+-----------+
 | CRC7-MMC   | ITU8       | MCRF4XX    |           |           |
 +------------+------------+------------+-----------+-----------+
 |            | CRC8       | SICK       |           |           |
-+------------+------------+------------+-----------+-----------+
++------------+------------+------------+-----------+-----------+ 
 |            | SUM8       | DNP        |           |           |
-+------------+------------+------------+-----------+-----------+
-|            |            | X25        |           |           |
-+------------+------------+------------+-----------+-----------+
++------------+------------+------------+-----------+-----------+ 
+|            | FLETCHER8  | X25        |           |           |
++------------+------------+------------+-----------+-----------+ 
 |            |            | USB        |           |           |
 +------------+------------+------------+-----------+-----------+
 |            |            | MAXIM16    |           |           |
 +------------+------------+------------+-----------+-----------+
 |            |            | DECT       |           |           |
 +------------+------------+------------+-----------+-----------+
-
+|            |            | TCP        |           |           |
++------------+------------+------------+-----------+-----------+
+|            |            | UDP        |           |           |
++------------+------------+------------+-----------+-----------+
+|            |            | FLETCHER16 |           |           |
++------------+------------+------------+-----------+-----------+
 
 Installation
 ------------
@@ -62,8 +67,8 @@ Installation
     
 * After installation you can run unit tests to make sure that the library works fine.  Execute::
 
-    python -m libscrc.testmodbus
-    python -m libscrc.testcrc64
+    python -m libscrc.test.modbus
+    python -m libscrc.test.crc64
 
 Usage
 -----
@@ -108,15 +113,18 @@ Example
     crc16 = libscrc.modbus(b'1234')  
     crc16 = libscrc.xmodem(b'1234')  
     crc16 = libscrc.ccitt(b'1234')  
-    crc16 = libscrc.ccitt_false(b'1234')
-    crc16 = libscrc.kermit(b'1234')
-    crc16 = libscrc.mcrf4xx(b'1234')
-    crc16 = libscrc.sick(b'1234')
-    crc16 = libscrc.dnp(b'1234')
-    crc16 = libscrc.x25(b'1234')
-    crc16 = libscrc.usb16(b'1234')
-    crc16 = libscrc.maxim16(b'1234')
+    crc16 = libscrc.ccitt_false(b'1234')  
+    crc16 = libscrc.kermit(b'1234')  
+    crc16 = libscrc.mcrf4xx(b'1234')  
+    crc16 = libscrc.sick(b'1234')  
+    crc16 = libscrc.dnp(b'1234')  
+    crc16 = libscrc.x25(b'1234')  
+    crc16 = libscrc.usb16(b'1234')  
+    crc16 = libscrc.maxim16(b'1234')  
     crc16 = libscrc.dect(b'1234')           # poly=0x0589 (Cordless Telephones)
+    data  = b'\x45\x00\x00\x3c\x00\x00\x00\x00\x40\x11\x00\x00\xc0\xa8\x2b\xc3\x08\x08\x08\x08\x11'
+    crc16 = libscrc.tcp( data )             # 13933
+    crc16 = libscrc.udp( data )             # 13933
 
 * CRC32::
     
@@ -133,6 +141,12 @@ NOTICE
 ------
 * v0.1.6+ version will not support python2 series (2020-01-20)
 
+V0.1.7b (2020-03-16)
+++++++++++++++++++++
+* New hacker8
+* New hacker16
+* New hacker32
+* New hacker64
 
 V0.1.5 (2017-09-22)
 +++++++++++++++++++
