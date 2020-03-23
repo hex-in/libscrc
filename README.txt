@@ -94,6 +94,7 @@ Other Example:
     crc16 = libscrc.ccitt(b'1234')  
     crc16 = libscrc.ccitt_false(b'1234')  
     crc16 = libscrc.kermit(b'1234')  
+    crc16 = libscrc.mcrf4xx(b'1234')  
     crc16 = libscrc.sick(b'1234')  
     crc16 = libscrc.dnp(b'1234')  
     crc16 = libscrc.x25(b'1234')  

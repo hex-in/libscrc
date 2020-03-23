@@ -24,6 +24,7 @@ class TestCRC16( unittest.TestCase ):
         self.assertEqual(module.xmodem(b'123456789'),       0x31C3 )
         self.assertEqual( module.ccitt(b'123456789'),       0x2189 )
         self.assertEqual( module.kermit(b'123456789'),      0x2189 )
+        self.assertEqual( module.mcrf4xx(b'123456789'),     0x6F91 )
         self.assertEqual( module.ccitt_false(b'123456789'), 0x29B1 )
         self.assertEqual( module.sick(b'123456789'),        0xA656 )
         self.assertEqual( module.dnp(b'123456789'),         0xEA82 )
