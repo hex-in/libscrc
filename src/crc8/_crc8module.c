@@ -276,22 +276,22 @@ static PyObject * _crc8_fletcher( PyObject *self, PyObject *args )
 
 /* method table */
 static PyMethodDef _crc8Methods[] = {
-    { "intel",      _crc8_intel,        METH_VARARGS, "Calculate Intel hexadecimal of CRC8 [Initial = 0x00]" },
-    { "bcc",        _crc8_bcc,          METH_VARARGS, "Calculate BCC of CRC8 [Initial = 0x00]" },
-    { "lrc",        _crc8_lrc,          METH_VARARGS, "Calculate LRC of CRC8 [Initial = 0x00]" },
-    { "maxim8",     _crc8_maxim,        METH_VARARGS, "Calculate MAXIM of CRC8 [Poly = 0x31 Initial = 0x00 Xorout=0x00 Refin=True Refout=True] e.g. DS18B20" },
-    { "rohc",       _crc8_rohc,         METH_VARARGS, "Calculate ROHC of CRC8 [Poly = 0x07 Initial = 0xFF Xorout=0x00 Refin=True Refout=True]" },
-    { "itu8",       _crc8_itu,          METH_VARARGS, "Calculate ITU  of CRC8 [Poly = 0x07 Initial = 0x00 Xorout=0x55 Refin=False Refout=False]" },
-    { "crc8",       _crc8,              METH_VARARGS, "Calculate CRC  of CRC8 [Poly = 0x07 Initial = 0x00 Xorout=0x00 Refin=False Refout=False]" },
-    { "sum8",       _crc8_sum,          METH_VARARGS, "Calculate SUM  of CRC8 [Initial = 0x00]" },
-    { "table8",     _crc8_table,        METH_VARARGS, "Print CRC8 table to list. libscrc.table8( polynomial )" },
-    { "hacker8",    _crc8_hacker,       METH_KEYWORDS|METH_VARARGS, "User calculation CRC8\n"
-                                                                    "@data   : bytes\n"
-                                                                    "@poly   : default=0x31\n"
-                                                                    "@init   : default=0xFF\n"
-                                                                    "@xorout : default=0x00\n"
-                                                                    "@ref    : default=False" },
-    { "fletcher8",  _crc8_fletcher,     METH_VARARGS, "Calculate fletcher8" },
+    { "intel",      (PyCFunction)_crc8_intel,        METH_VARARGS, "Calculate Intel hexadecimal of CRC8 [Initial = 0x00]" },
+    { "bcc",        (PyCFunction)_crc8_bcc,          METH_VARARGS, "Calculate BCC of CRC8 [Initial = 0x00]" },
+    { "lrc",        (PyCFunction)_crc8_lrc,          METH_VARARGS, "Calculate LRC of CRC8 [Initial = 0x00]" },
+    { "maxim8",     (PyCFunction)_crc8_maxim,        METH_VARARGS, "Calculate MAXIM of CRC8 [Poly = 0x31 Initial = 0x00 Xorout=0x00 Refin=True Refout=True] e.g. DS18B20" },
+    { "rohc",       (PyCFunction)_crc8_rohc,         METH_VARARGS, "Calculate ROHC of CRC8 [Poly = 0x07 Initial = 0xFF Xorout=0x00 Refin=True Refout=True]" },
+    { "itu8",       (PyCFunction)_crc8_itu,          METH_VARARGS, "Calculate ITU  of CRC8 [Poly = 0x07 Initial = 0x00 Xorout=0x55 Refin=False Refout=False]" },
+    { "crc8",       (PyCFunction)_crc8,              METH_VARARGS, "Calculate CRC  of CRC8 [Poly = 0x07 Initial = 0x00 Xorout=0x00 Refin=False Refout=False]" },
+    { "sum8",       (PyCFunction)_crc8_sum,          METH_VARARGS, "Calculate SUM  of CRC8 [Initial = 0x00]" },
+    { "table8",     (PyCFunction)_crc8_table,        METH_VARARGS, "Print CRC8 table to list. libscrc.table8( polynomial )" },
+    { "hacker8",    (PyCFunction)_crc8_hacker,       METH_KEYWORDS|METH_VARARGS, "User calculation CRC8\n"
+                                                                                 "@data   : bytes\n"
+                                                                                 "@poly   : default=0x31\n"
+                                                                                 "@init   : default=0xFF\n"
+                                                                                 "@xorout : default=0x00\n"
+                                                                                 "@ref    : default=False" },
+    { "fletcher8",  (PyCFunction)_crc8_fletcher,     METH_VARARGS, "Calculate fletcher8" },
     { NULL, NULL, 0, NULL }        /* Sentinel */
 };
 

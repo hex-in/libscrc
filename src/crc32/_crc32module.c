@@ -208,18 +208,18 @@ static PyObject * _crc32_fletcher32( PyObject *self, PyObject *args )
 
 /* method table */
 static PyMethodDef _crc32Methods[] = {
-    { "mpeg2",       _crc32_mpeg_2,     METH_VARARGS,   "Calculate CRC (MPEG2) of CRC32 [Poly=0x04C11DB7, Init=0xFFFFFFFF, Xorout=0x00000000 Refin=False Refout=False]"},
-    { "fsc",         _crc32_mpeg_2,     METH_VARARGS,   "Calculate CRC (Ethernt's FSC) of CRC32 [Poly=0x04C11DB7, Init=0xFFFFFFFF, Xorout=0x00000000 Refin=False Refout=False]"},
-    { "crc32",       _crc32_crc32,      METH_VARARGS,   "Calculate CRC (WinRAR, File) of CRC32  [Poly=0xEDB88320, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]"},
-    { "table32",     _crc32_table,      METH_VARARGS,   "Print CRC32 table to list. libscrc.table32( polynomial )" },
-    { "hacker32",    _crc32_hacker,     METH_KEYWORDS|METH_VARARGS, "User calculation CRC32\n"
-                                                                    "@data   : bytes\n"
-                                                                    "@poly   : default=0xEDB88320\n"
-                                                                    "@init   : default=0xFFFFFFFF\n"
-                                                                    "@xorout : default=0x00000000\n"
-                                                                    "@ref    : default=False" },
-    { "adler32",    _crc32_adler32,     METH_VARARGS,   "Calculate adler32 (MOD=65521)" },
-    { "fletcher32", _crc32_fletcher32,  METH_VARARGS,   "Calculate fletcher32" },
+    { "mpeg2",       (PyCFunction)_crc32_mpeg_2,     METH_VARARGS,   "Calculate CRC (MPEG2) of CRC32 [Poly=0x04C11DB7, Init=0xFFFFFFFF, Xorout=0x00000000 Refin=False Refout=False]"},
+    { "fsc",         (PyCFunction)_crc32_mpeg_2,     METH_VARARGS,   "Calculate CRC (Ethernt's FSC) of CRC32 [Poly=0x04C11DB7, Init=0xFFFFFFFF, Xorout=0x00000000 Refin=False Refout=False]"},
+    { "crc32",       (PyCFunction)_crc32_crc32,      METH_VARARGS,   "Calculate CRC (WinRAR, File) of CRC32  [Poly=0xEDB88320, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]"},
+    { "table32",     (PyCFunction)_crc32_table,      METH_VARARGS,   "Print CRC32 table to list. libscrc.table32( polynomial )" },
+    { "hacker32",    (PyCFunction)_crc32_hacker,     METH_KEYWORDS|METH_VARARGS, "User calculation CRC32\n"
+                                                                                 "@data   : bytes\n"
+                                                                                 "@poly   : default=0xEDB88320\n"
+                                                                                 "@init   : default=0xFFFFFFFF\n"
+                                                                                 "@xorout : default=0x00000000\n"
+                                                                                 "@ref    : default=False" },
+    { "adler32",    (PyCFunction)_crc32_adler32,     METH_VARARGS,   "Calculate adler32 (MOD=65521)" },
+    { "fletcher32", (PyCFunction)_crc32_fletcher32,  METH_VARARGS,   "Calculate fletcher32" },
     { NULL, NULL, 0, NULL }        /* Sentinel */
 };
 

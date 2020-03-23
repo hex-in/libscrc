@@ -163,7 +163,7 @@ static unsigned char hexin_init_crc32_table_hacker( unsigned int polynomial )
 unsigned int hexin_calc_crc32_hacker( const unsigned char *pSrc, unsigned int len, unsigned int crc32, unsigned int polynomial )
 {
     unsigned int i = 0;
-    unsigned long long crc = crc32;
+    unsigned int crc = crc32;
 
     hexin_init_crc32_table_hacker( polynomial );
 

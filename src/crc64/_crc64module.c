@@ -121,15 +121,15 @@ static PyObject * _crc64_hacker( PyObject *self, PyObject *args, PyObject* kws )
 
 /* method table */
 static PyMethodDef _crc64Methods[] = {
-    { "iso",         _crc64_iso,     METH_VARARGS, "Calculate CRC (IOS) of CRC64 [Poly=0xD800000000000000L, Init=0x0000000000000000L]"},
-    { "ecma182",     _crc64_ecma182, METH_VARARGS, "Calculate CRC (ECMA182) of CRC64 [Poly=0x42F0E1EBA9EA3693L, Init=0xFFFFFFFFFFFFFFFFL]"},
-    { "table64",     _crc64_table,   METH_VARARGS, "Print CRC64 table to list. libscrc.table64( polynomial )" },
-    { "hacker64",    _crc64_hacker,  METH_KEYWORDS|METH_VARARGS, "User calculation CRC64\n"
-                                                                 "@data   : bytes\n"
-                                                                 "@poly   : default=0x42F0E1EBA9EA3693\n"
-                                                                 "@init   : default=0xFFFFFFFFFFFFFFFF\n"
-                                                                 "@xorout : default=0x0000000000000000\n"
-                                                                 "@ref    : default=False" },
+    { "iso",         (PyCFunction)_crc64_iso,     METH_VARARGS, "Calculate CRC (IOS) of CRC64 [Poly=0xD800000000000000L, Init=0x0000000000000000L]"},
+    { "ecma182",     (PyCFunction)_crc64_ecma182, METH_VARARGS, "Calculate CRC (ECMA182) of CRC64 [Poly=0x42F0E1EBA9EA3693L, Init=0xFFFFFFFFFFFFFFFFL]"},
+    { "table64",     (PyCFunction)_crc64_table,   METH_VARARGS, "Print CRC64 table to list. libscrc.table64( polynomial )" },
+    { "hacker64",    (PyCFunction)_crc64_hacker,  METH_KEYWORDS|METH_VARARGS, "User calculation CRC64\n"
+                                                                              "@data   : bytes\n"
+                                                                              "@poly   : default=0x42F0E1EBA9EA3693\n"
+                                                                              "@init   : default=0xFFFFFFFFFFFFFFFF\n"
+                                                                              "@xorout : default=0x0000000000000000\n"
+                                                                              "@ref    : default=False" },
     {NULL, NULL, 0, NULL}        /* Sentinel */
 };
 

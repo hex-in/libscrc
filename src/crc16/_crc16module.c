@@ -530,29 +530,29 @@ static PyObject * _crc16_fletcher( PyObject *self, PyObject *args )
 
 /* method table */
 static PyMethodDef _crc16Methods[] = {
-    { "modbus",      _crc16_modbus, METH_VARARGS, "Calculate Modbus of CRC16              [Poly=0xA001, Init=0xFFFF Xorout=0x0000 Refin=False Refout=False]" },
-    { "usb16",       _crc16_usb,    METH_VARARGS, "Calculate USB    of CRC16              [Poly=0xA001, Init=0xFFFF Xorout=0xFFFF Refin=False Refout=False]" },
-    { "ibm",         _crc16_ibm,    METH_VARARGS, "Calculate IBM (Alias:ARC/LHA) of CRC16 [Poly=0x8005, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]" },
-    { "xmodem",      _crc16_xmodem, METH_VARARGS, "Calculate XMODEM of CRC16              [Poly=0x1021, Init=0x0000 Xorout=0x0000 Refin=False Refout=False]" },
-    { "ccitt",       _crc16_kermit, METH_VARARGS, "Calculate CCITT-TRUE of CRC16          [Poly=0x1021, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]" },
-    { "ccitt_false", _crc16_ccitt,  METH_VARARGS, "Calculate CCITT-FALSE of CRC16         [Poly=0x1021, Init=0xFFFF or 0x1D0F]" },
-    { "kermit",      _crc16_kermit, METH_VARARGS, "Calculate Kermit (CCITT-TRUE) of CRC16 [Poly=0x8408, Init=0x0000]" },
-    { "mcrf4xx",     _crc16_mcrf4xx,METH_VARARGS, "Calculate MCRF4XX of CRC16             [Poly=0x8408, Init=0xFFFF]" },
-    { "sick",        _crc16_sick,   METH_VARARGS, "Calculate Sick of CRC16                [Poly=0x8005, Init=0x0000]" },
-    { "dnp",         _crc16_dnp,    METH_VARARGS, "Calculate DNP (Ues:M-Bus, ICE870)  of CRC16    [Poly=0x3D65, Init=0x0000 Xorout=0xFFFF Refin=True Refout=True]" },
-    { "x25",         _crc16_x25,    METH_VARARGS, "Calculate X25  of CRC16                [Poly=0x1021, Init=0xFFFF Xorout=0xFFFF Refin=True Refout=True]" },
-    { "maxim16",     _crc16_maxim,  METH_VARARGS, "Calculate MAXIM of CRC16               [Poly=0x8005, Init=0x0000 Xorout=0xFFFF Refin=True Refout=True]" },
-    { "dect",        _crc16_dect,   METH_VARARGS, "Calculate DECT of CRC16                [Poly=0x0589, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]" },
-    { "table16",     _crc16_table,  METH_VARARGS, "Print CRC16 table to list. libscrc.table16( polynomial )" },
-    { "hacker16",    _crc16_hacker, METH_KEYWORDS|METH_VARARGS, "User calculation CRC16\n"
-                                                                "@data   : bytes\n"
-                                                                "@poly   : default=0x1021\n"
-                                                                "@init   : default=0xFFFF\n"
-                                                                "@xorout : default=0x0000\n"
-                                                                "@ref    : default=False" },
-    { "udp",         _crc16_network,    METH_VARARGS, "Calculate UDP checksum." },
-    { "tcp",         _crc16_network,    METH_VARARGS, "Calculate TCP checksum." },
-    { "fletcher16",  _crc16_fletcher,   METH_VARARGS, "Calculate fletcher16" },
+    { "modbus",      (PyCFunction)_crc16_modbus, METH_VARARGS, "Calculate Modbus of CRC16              [Poly=0xA001, Init=0xFFFF Xorout=0x0000 Refin=False Refout=False]" },
+    { "usb16",       (PyCFunction)_crc16_usb,    METH_VARARGS, "Calculate USB    of CRC16              [Poly=0xA001, Init=0xFFFF Xorout=0xFFFF Refin=False Refout=False]" },
+    { "ibm",         (PyCFunction)_crc16_ibm,    METH_VARARGS, "Calculate IBM (Alias:ARC/LHA) of CRC16 [Poly=0x8005, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]" },
+    { "xmodem",      (PyCFunction)_crc16_xmodem, METH_VARARGS, "Calculate XMODEM of CRC16              [Poly=0x1021, Init=0x0000 Xorout=0x0000 Refin=False Refout=False]" },
+    { "ccitt",       (PyCFunction)_crc16_kermit, METH_VARARGS, "Calculate CCITT-TRUE of CRC16          [Poly=0x1021, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]" },
+    { "ccitt_false", (PyCFunction)_crc16_ccitt,  METH_VARARGS, "Calculate CCITT-FALSE of CRC16         [Poly=0x1021, Init=0xFFFF or 0x1D0F]" },
+    { "kermit",      (PyCFunction)_crc16_kermit, METH_VARARGS, "Calculate Kermit (CCITT-TRUE) of CRC16 [Poly=0x8408, Init=0x0000]" },
+    { "mcrf4xx",     (PyCFunction)_crc16_mcrf4xx,METH_VARARGS, "Calculate MCRF4XX of CRC16             [Poly=0x8408, Init=0xFFFF]" },
+    { "sick",        (PyCFunction)_crc16_sick,   METH_VARARGS, "Calculate Sick of CRC16                [Poly=0x8005, Init=0x0000]" },
+    { "dnp",         (PyCFunction)_crc16_dnp,    METH_VARARGS, "Calculate DNP (Ues:M-Bus, ICE870)  of CRC16    [Poly=0x3D65, Init=0x0000 Xorout=0xFFFF Refin=True Refout=True]" },
+    { "x25",         (PyCFunction)_crc16_x25,    METH_VARARGS, "Calculate X25  of CRC16                [Poly=0x1021, Init=0xFFFF Xorout=0xFFFF Refin=True Refout=True]" },
+    { "maxim16",     (PyCFunction)_crc16_maxim,  METH_VARARGS, "Calculate MAXIM of CRC16               [Poly=0x8005, Init=0x0000 Xorout=0xFFFF Refin=True Refout=True]" },
+    { "dect",        (PyCFunction)_crc16_dect,   METH_VARARGS, "Calculate DECT of CRC16                [Poly=0x0589, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]" },
+    { "table16",     (PyCFunction)_crc16_table,  METH_VARARGS, "Print CRC16 table to list. libscrc.table16( polynomial )" },
+    { "hacker16",    (PyCFunction)_crc16_hacker, METH_KEYWORDS|METH_VARARGS, "User calculation CRC16\n"
+                                                                             "@data   : bytes\n"
+                                                                             "@poly   : default=0x1021\n"
+                                                                             "@init   : default=0xFFFF\n"
+                                                                             "@xorout : default=0x0000\n"
+                                                                             "@ref    : default=False" },
+    { "udp",         (PyCFunction)_crc16_network,    METH_VARARGS, "Calculate UDP checksum." },
+    { "tcp",         (PyCFunction)_crc16_network,    METH_VARARGS, "Calculate TCP checksum." },
+    { "fletcher16",  (PyCFunction)_crc16_fletcher,   METH_VARARGS, "Calculate fletcher16" },
     { NULL, NULL, 0, NULL }        /* Sentinel */
 };
 
