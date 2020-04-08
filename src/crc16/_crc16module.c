@@ -528,6 +528,26 @@ static PyObject * _crc16_fletcher( PyObject *self, PyObject *args )
     return Py_BuildValue( "H", result );
 }
 
+static PyObject * _crc16_rfid_epc( PyObject *self, PyObject *args )
+{
+    const unsigned char *data = NULL;
+    unsigned int data_len = 0x00000000L;
+    unsigned short crc16  = 0xFFFF;
+    unsigned short result = 0x0000;
+
+#if PY_MAJOR_VERSION >= 3
+    if ( !PyArg_ParseTuple( args, "y#|H", &data, &data_len, &crc16 ) )
+        return NULL;
+#else
+    if ( !PyArg_ParseTuple( args, "s#|H", &data, &data_len, &crc16 ) )
+        return NULL;
+#endif /* PY_MAJOR_VERSION */
+
+    result = hexin_calc_crc16_1021( data, data_len, crc16 );
+    result = result ^ 0xFFFF;
+    return Py_BuildValue( "H", result );
+}
+
 /* method table */
 static PyMethodDef _crc16Methods[] = {
     { "modbus",      (PyCFunction)_crc16_modbus, METH_VARARGS, "Calculate Modbus of CRC16              [Poly=0xA001, Init=0xFFFF Xorout=0x0000 Refin=False Refout=False]" },
@@ -553,6 +573,7 @@ static PyMethodDef _crc16Methods[] = {
     { "udp",         (PyCFunction)_crc16_network,    METH_VARARGS, "Calculate UDP checksum." },
     { "tcp",         (PyCFunction)_crc16_network,    METH_VARARGS, "Calculate TCP checksum." },
     { "fletcher16",  (PyCFunction)_crc16_fletcher,   METH_VARARGS, "Calculate fletcher16" },
+    { "epc",         (PyCFunction)_crc16_rfid_epc,   METH_VARARGS, "Calculate RFID EPC CRC" },
     { NULL, NULL, 0, NULL }        /* Sentinel */
 };
 
@@ -575,6 +596,7 @@ PyDoc_STRVAR( _crc16_doc,
 "libscrc.dect       -> Calculate DECT of CRC16                [Poly=0x0589, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]\n"
 "libscrc.hacker16   -> Free calculation CRC16 (not support python2 series)\n"
 "libscrc.fletcher16 -> Calculate fletcher16\n"
+"libscrc.epc        -> Calculate rfid epc crc\n"
 "\n" );
 
 

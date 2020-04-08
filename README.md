@@ -21,6 +21,8 @@ libscrc is a library for calculating CRC4 CRC5 CRC6 CRC7 CRC8 CRC16 CRC32 CRC64.
 |          |         | TCP      |          |        |
 |          |         | UDP      |          |        |
 |          |         |FLETCHER16|          |        |
+|          |         |EPC       |          |        |
+
 
 
 Installation
@@ -39,9 +41,21 @@ Installation
 #python3 setup.py install
 ```
 
-You will need the administrative privileges to execute the last command.
+**You will need the administrative privileges to execute the last command.**
 
-2. After installation you can run unit tests to make sure that the library works fine.  Execute
+2. Cross-compile ( Linux for ARM )
+
+```
+#export PATH=/mnt/tools/gcc-linaro-6.2.1/bin/:$PATH
+#export CROSS_COMPILE=arm-linux-gnueabihf-
+#export CC='${CROSS_COMPILE}gcc -pthread'
+#export LDSHARED='${CROSS_COMPILE}gcc -shared'
+#export CFLAGS='-I/usr/include/python3 -I/usr/include/'
+
+#python3 setup.py bdist_wheel
+```
+
+4. After installation you can run unit tests to make sure that the library works fine.  Execute
 
 ```
 #python3 -m libscrc.test.modbus
@@ -123,6 +137,8 @@ crc16 = libscrc.udp( data )             # 13933
 
 crc16 = libscrc.hacker16( b'123456789', poly=0xA001 )
 crc16 = libscrc.hacker16( b'123456789', poly=0xA001, init=0, xorout=0xFFFF )
+
+crc16 = libscrc.epc(b'123456789')		# RFID EPC(CRC16-PC-EPC)
 ```
 
 4. CRC32
