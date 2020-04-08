@@ -4,7 +4,7 @@
 *                                           All Rights Reserved
 * File    : _crc16module.c
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V0.1.6
+* Version : V1.0
 *
 * LICENSING TERMS:
 * ---------------
@@ -23,6 +23,7 @@
 *                       2020-03-13 [Heyn] New add hacker16 code.
 *                       2020-03-20 [Heyn] New add UDP and TCP checksum.
 *                       2020-03-23 [Blazin64] Adds support for the CRC method used by MCRF4XX RFID hardware.
+*                       2020-04-08 [Heyn] New add libscrc.epc16() for RFID tag EPC
 *
 *********************************************************************************************************
 */
@@ -573,7 +574,7 @@ static PyMethodDef _crc16Methods[] = {
     { "udp",         (PyCFunction)_crc16_network,    METH_VARARGS, "Calculate UDP checksum." },
     { "tcp",         (PyCFunction)_crc16_network,    METH_VARARGS, "Calculate TCP checksum." },
     { "fletcher16",  (PyCFunction)_crc16_fletcher,   METH_VARARGS, "Calculate fletcher16" },
-    { "epc",         (PyCFunction)_crc16_rfid_epc,   METH_VARARGS, "Calculate RFID EPC CRC" },
+    { "epc16",       (PyCFunction)_crc16_rfid_epc,   METH_VARARGS, "Calculate RFID EPC CRC16" },
     { NULL, NULL, 0, NULL }        /* Sentinel */
 };
 
@@ -596,7 +597,7 @@ PyDoc_STRVAR( _crc16_doc,
 "libscrc.dect       -> Calculate DECT of CRC16                [Poly=0x0589, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]\n"
 "libscrc.hacker16   -> Free calculation CRC16 (not support python2 series)\n"
 "libscrc.fletcher16 -> Calculate fletcher16\n"
-"libscrc.epc        -> Calculate rfid epc crc\n"
+"libscrc.epc16      -> Calculate rfid epc crc16\n"
 "\n" );
 
 
@@ -622,7 +623,7 @@ PyInit__crc16( void )
         return NULL;
     }
 
-    PyModule_AddStringConstant( m, "__version__", "0.1.6" );
+    PyModule_AddStringConstant( m, "__version__", "1.0"   );
     PyModule_AddStringConstant( m, "__author__",  "Heyn"  );
 
     return m;

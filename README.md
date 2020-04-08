@@ -21,7 +21,7 @@ libscrc is a library for calculating CRC4 CRC5 CRC6 CRC7 CRC8 CRC16 CRC32 CRC64.
 |          |         | TCP      |          |        |
 |          |         | UDP      |          |        |
 |          |         |FLETCHER16|          |        |
-|          |         |EPC       |          |        |
+|          |         |EPC16     |          |        |
 
 
 
@@ -138,7 +138,7 @@ crc16 = libscrc.udp( data )             # 13933
 crc16 = libscrc.hacker16( b'123456789', poly=0xA001 )
 crc16 = libscrc.hacker16( b'123456789', poly=0xA001, init=0, xorout=0xFFFF )
 
-crc16 = libscrc.epc(b'123456789')		# RFID EPC(CRC16-PC-EPC)
+crc16 = libscrc.epc16(b'123456789')		# RFID EPC(CRC16-PC-EPC)
 ```
 
 4. CRC32
