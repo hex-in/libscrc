@@ -35,6 +35,7 @@
 #define                 CRC16_POLYNOMIAL_8005                   0x8005
 #define                 CRC16_POLYNOMIAL_A6BC                   0xA6BC
 #define                 CRC16_POLYNOMIAL_91A0                   0x91A0
+#define                 CRC16_POLYNOMIAL_1DCF                   0x1DCF
 
 #define                 HEXIN_POLYNOMIAL_IS_HIGH(x)             ( x & 0x8000 )
 #define                 HEXIN_REFIN_OR_REFOUT_IS_TRUE(x)        ( x == 0x0001 ? TRUE : FALSE )
@@ -56,5 +57,7 @@ unsigned short hexin_calc_crc16_sick( const unsigned char *pSrc, unsigned int le
 unsigned short hexin_calc_crc16_hacker(   const unsigned char *pSrc, unsigned int len, unsigned short crc16, unsigned short polynomial );
 unsigned short hexin_calc_crc16_network(  const unsigned char *pSrc, unsigned int len, unsigned short crc16 /*reserved*/ );
 unsigned short hexin_calc_crc16_fletcher( const unsigned char *pSrc, unsigned int len, unsigned short crc16 /*reserved*/ );
+
+unsigned short hexin_calc_crc16_1dcf( const unsigned char *pSrc, unsigned int len, unsigned short crc16 );
 
 #endif //__CRC16_TABLES_H__

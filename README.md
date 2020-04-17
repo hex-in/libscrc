@@ -4,24 +4,25 @@ libscrc
 =======
 libscrc is a library for calculating CRC4 CRC5 CRC6 CRC7 CRC8 CRC16 CRC32 CRC64.
 
-|  CRCx |  CRC8 | CRC16  |   CRC32| CRC64  |
-| :------------: | :------------: | :------------: | :------------: | :------------: |
-| CRC4-ITU | INTEL   | MODBUS   | FSC      | ISO    |
-| CRC5-ITU | BCC     | IBM      | CRC32    | ECMA182|
-| CRC5-EPC | LRC     | XMODEM | MPEG2    |        |
-| CRC5-USB | MAXIM8  | CCITT    |ADLER32   |        |
-| CRC6-ITU | ROHC    | KERMIT   |FLETCHER32|        |
-| CRC7-MMC | ITU8    |MCRF4XX   |          |        |
-|          | CRC8    | SICK     |          |        |
-|          | SUM8    | DNP      |          |        |
-|          |FLETCHER8| X25      |          |        |
-|          |         | USB      |          |        |
-|          |         | MAXIM16  |          |        |
-|          |         | DECT     |          |        |
-|          |         | TCP      |          |        |
-|          |         | UDP      |          |        |
-|          |         |FLETCHER16|          |        |
-|          |         |EPC16     |          |        |
+|  CRCx |  CRC8 | CRC16  | CRC24 |   CRC32| CRC64  |
+| :------------: | :------------: | :------------: | :------------: | :------------: | :------------: |
+| CRC4-ITU | INTEL   | MODBUS   | BLE* | FSC      | ISO    |
+| CRC5-ITU | BCC     | IBM      | OPENPGP* | CRC32    | ECMA182|
+| CRC5-EPC | LRC     | XMODEM | LTEA* | MPEG2    |        |
+| CRC5-USB | MAXIM8  | CCITT    | LTEB* |ADLER32   |        |
+| CRC6-ITU | ROHC    | KERMIT   | OS9* |FLETCHER32|        |
+| CRC7-MMC | ITU8    |MCRF4XX   |   |          |        |
+|          | CRC8    | SICK     |      |          |        |
+|          | SUM8    | DNP      |       |          |        |
+|          |FLETCHER8| X25      |       |          |        |
+|          |         | USB      |       |          |        |
+|          |         | MAXIM16  |   |          |        |
+|          |         | DECT     |      |          |        |
+|          |         | TCP      |       |          |        |
+|          |         | UDP      |       |          |        |
+|          |         |FLETCHER16||          |        |
+|          |         |EPC16     |     |          |        |
+| | |PROFIBUS | | | |
 
 
 
@@ -139,6 +140,7 @@ crc16 = libscrc.hacker16( b'123456789', poly=0xA001 )
 crc16 = libscrc.hacker16( b'123456789', poly=0xA001, init=0, xorout=0xFFFF )
 
 crc16 = libscrc.epc16(b'123456789')		# RFID EPC(CRC16-PC-EPC)
+crc16 = libscrc.profibus(b'123456789')
 ```
 
 4. CRC32

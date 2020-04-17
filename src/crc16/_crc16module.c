@@ -470,6 +470,24 @@ static PyObject * _crc16_rfid_epc( PyObject *self, PyObject *args )
     return Py_BuildValue( "H", result ^ 0xFFFF );
 }
 
+/*
+*********************************************************************************************************
+                                    POLY=0x1DCF [PROFIBUS]
+*********************************************************************************************************
+*/
+static PyObject * _crc16_profibus( PyObject *self, PyObject *args )
+{
+    unsigned short result = 0x0000;
+    unsigned short init   = 0xFFFF;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_1dcf, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "H", result ^ 0xFFFF );
+}
+
+
 /* method table */
 static PyMethodDef _crc16Methods[] = {
     { "modbus",      (PyCFunction)_crc16_modbus, METH_VARARGS, "Calculate Modbus of CRC16              [Poly=0xA001, Init=0xFFFF Xorout=0x0000 Refin=False Refout=False]" },
@@ -496,6 +514,7 @@ static PyMethodDef _crc16Methods[] = {
     { "tcp",         (PyCFunction)_crc16_network,    METH_VARARGS, "Calculate TCP checksum." },
     { "fletcher16",  (PyCFunction)_crc16_fletcher,   METH_VARARGS, "Calculate fletcher16" },
     { "epc16",       (PyCFunction)_crc16_rfid_epc,   METH_VARARGS, "Calculate RFID EPC CRC16" },
+    { "profibus",    (PyCFunction)_crc16_profibus,   METH_VARARGS, "Calculate PROFIBUS checksum" },
     { NULL, NULL, 0, NULL }        /* Sentinel */
 };
 
@@ -519,6 +538,7 @@ PyDoc_STRVAR( _crc16_doc,
 "libscrc.hacker16   -> Free calculation CRC16 (not support python2 series)\n"
 "libscrc.fletcher16 -> Calculate fletcher16\n"
 "libscrc.epc16      -> Calculate rfid epc crc16\n"
+"libscrc.profibus   -> Calculate PROFIBUS checksum\n"
 "\n" );
 
 

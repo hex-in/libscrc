@@ -28,6 +28,7 @@ static unsigned short   crc16_table_a001[MAX_TABLE_ARRAY]   = { 0x0000 };     //
 static unsigned short   crc16_table_8005[MAX_TABLE_ARRAY]   = { 0x0000 };     // Used for
 static unsigned short   crc16_table_a6bc[MAX_TABLE_ARRAY]   = { 0x0000 };     // Used for
 static unsigned short   crc16_table_91a0[MAX_TABLE_ARRAY]   = { 0x0000 };     // Used for Cordless Telephones
+static unsigned short   crc16_table_1dcf[MAX_TABLE_ARRAY]   = { 0x0000 };     // Used for profibus
 
 static unsigned int     crc16_table_8408_init               = FALSE;
 static unsigned int     crc16_table_1021_init               = FALSE;
@@ -35,7 +36,7 @@ static unsigned int     crc16_table_a001_init               = FALSE;
 static unsigned int     crc16_table_8005_init               = FALSE;
 static unsigned int     crc16_table_a6bc_init               = FALSE;
 static unsigned int     crc16_table_91a0_init               = FALSE;
-
+static unsigned int     crc16_table_1dcf_init               = FALSE;
 
 static unsigned short   crc16_table_hacker[MAX_TABLE_ARRAY] = { 0x0000 };     // Used for hacker.
 static unsigned short   crc16_table_hacker_init             = FALSE;          // Default value.
@@ -363,4 +364,24 @@ unsigned short hexin_calc_crc16_fletcher( const unsigned char *pSrc, unsigned in
         sum2 = ( sum2 + sum1 ) % 255;
     }
     return ( sum1 & 0xFF ) | ( sum2 << 8 );
+}
+
+/*
+*********************************************************************************************************
+                                    POLY=0x1DCF [PROFIBUS]
+*********************************************************************************************************
+*/
+unsigned short hexin_calc_crc16_1dcf( const unsigned char *pSrc, unsigned int len, unsigned short crc16 )
+{
+    unsigned int i = 0;
+    unsigned short crc = crc16;
+
+    if ( crc16_table_1dcf_init == FALSE ) {
+        crc16_table_1dcf_init = hexin_crc16_init_table_poly_is_low( CRC16_POLYNOMIAL_1DCF, crc16_table_1dcf );
+    }
+
+	for ( i=0; i<len; i++ ) {
+		crc = hexin_crc16_poly_is_low_calc( crc, pSrc[i], crc16_table_1dcf );
+	}
+	return crc;
 }
