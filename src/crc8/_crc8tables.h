@@ -49,6 +49,6 @@ unsigned char hexin_calc_crc8_rohc(  const unsigned char *pSrc, unsigned int len
 unsigned char hexin_calc_crc8_07(    const unsigned char *pSrc, unsigned int len, unsigned char crc8 );
 unsigned char hexin_calc_crc8_hacker(const unsigned char *pSrc, unsigned int len, unsigned char crc8, unsigned char polynomial );
 
-unsigned char hexin_calc_crc8_fletcher( const unsigned char *pSrc, unsigned int len );
+unsigned char hexin_calc_crc8_fletcher( const unsigned char *pSrc, unsigned int len, unsigned char crc8 /*reserved*/ );
 
 #endif //__CRC8_TABLES_H__

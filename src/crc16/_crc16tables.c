@@ -4,7 +4,7 @@
 *                                           All Rights Reserved
 * File    : _crc16tables.c
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V0.1.6
+* Version : V1.1
 *
 * LICENSING TERMS:
 * ---------------
@@ -326,7 +326,7 @@ unsigned short hexin_calc_crc16_hacker( const unsigned char *pSrc, unsigned int 
 *********************************************************************************************************
 */
 
-unsigned short hexin_calc_crc16_network( const unsigned char *pSrc, unsigned int len )
+unsigned short hexin_calc_crc16_network( const unsigned char *pSrc, unsigned int len, unsigned short crc16 /*reserved*/ )
 {
     unsigned int sum = 0;
 
@@ -353,7 +353,7 @@ unsigned short hexin_calc_crc16_network( const unsigned char *pSrc, unsigned int
 *********************************************************************************************************
 */
 
-unsigned short hexin_calc_crc16_fletcher( const unsigned char *pSrc, unsigned int len )
+unsigned short hexin_calc_crc16_fletcher( const unsigned char *pSrc, unsigned int len, unsigned short crc16 /*reserved*/ )
 {
     unsigned int i = 0;
     unsigned short sum1 = 0, sum2 = 0;

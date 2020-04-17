@@ -17,6 +17,7 @@ from codecs import open
 #           2017-08-22 Wheel Ver:0.1.2 [Heyn] Optimization code for the C99 standard.
 #           2017-09-19 Wheel Ver:0.1.3 [Heyn] New CRC16-X25.
 #           2020-03-17 Wheel Ver:1.0   [Heyn] New hacker16 / hacker32 / hacker64
+#           2020-04-17 Wheel Ver:1.1   [Heyn] Issues #1
 
 here = path.abspath(path.dirname(__file__))
 
@@ -26,7 +27,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name='libscrc',
-    version='1.0',
+    version='1.1',
 
     description='Library for calculating CRC4/CRC8/CRC16/CRC32/CRC64',
     long_description=long_description,

@@ -185,7 +185,7 @@ unsigned int hexin_calc_crc32_hacker( const unsigned char *pSrc, unsigned int le
 }
 
 
-unsigned int hexin_calc_crc32_adler( const unsigned char *pSrc, unsigned int len )
+unsigned int hexin_calc_crc32_adler( const unsigned char *pSrc, unsigned int len, unsigned int crc32 /*reserved*/ )
 {
     unsigned int sum1 = 1, sum2 = 0;
     unsigned int i = 0x00000000L;
@@ -203,7 +203,7 @@ unsigned int hexin_calc_crc32_adler( const unsigned char *pSrc, unsigned int len
 *********************************************************************************************************
 */
 
-unsigned int hexin_calc_crc32_fletcher( const unsigned char *pSrc, unsigned int len )
+unsigned int hexin_calc_crc32_fletcher( const unsigned char *pSrc, unsigned int len, unsigned int crc32 /*reserved*/ )
 {
     unsigned long sum1 = 0xFFFF, sum2 = 0xFFFF;
 

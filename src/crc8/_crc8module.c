@@ -4,7 +4,7 @@
 *                                           All Rights Reserved
 * File    : _crc8module.c
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V0.1.6
+* Version : V1.1
 *
 * LICENSING TERMS:
 * ---------------
@@ -21,6 +21,7 @@
 *                                         New CRC8-MAXIM8 CRC8-ROHC CRC8-ITU8 CRC8
 *                       2020-02-17 [Heyn] New CRC8-SUM.
 *                       2020-03-20 [Heyn] New CRC8-FLETCHER8.
+*                       2020-04-17 [Heyn] Issues #1
 *
 *********************************************************************************************************
 */
@@ -28,102 +29,95 @@
 #include <Python.h>
 #include "_crc8tables.h"
 
-static PyObject * _crc8_intel( PyObject *self, PyObject *args )
+static unsigned char hexin_PyArg_ParseTuple( PyObject *self, PyObject *args,
+                                             unsigned char init,
+                                             unsigned char (*function)( unsigned char *,
+                                                                        unsigned int,
+                                                                        unsigned char ),
+                                             unsigned char *result )
 {
-    const unsigned char *data = NULL;
-    unsigned int data_len = 0x00;
-    unsigned char crc8    = 0x00;
-    unsigned char result  = 0x00;
+    Py_buffer data = { NULL, NULL };
 
 #if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTuple( args, "y#|B", &data, &data_len, &crc8 ) )
-        return NULL;
+    if ( !PyArg_ParseTuple( args, "y*|B", &data, &init ) ) {
+        if ( data.obj ) {
+            PyBuffer_Release( &data );
+        }
+        return FALSE;
+    }
 #else
-    if ( !PyArg_ParseTuple( args, "s#|B", &data, &data_len, &crc8 ) )
-        return NULL;
+    if ( !PyArg_ParseTuple( args, "s*|B", &data, &init ) ) {
+        if ( data.obj ) {
+            PyBuffer_Release( &data );
+        }
+        return FALSE;
+    }
 #endif /* PY_MAJOR_VERSION */
 
-    result = hexin_calc_crc8_lrc( data, data_len, crc8 );
+    *result = function( (unsigned char *)data.buf, (unsigned int)data.len, init );
+
+    if ( data.obj )
+       PyBuffer_Release( &data );
+
+    return TRUE;
+}
+
+static PyObject * _crc8_intel( PyObject *self, PyObject *args )
+{
+    unsigned char result = 0x00;
+    unsigned char init   = 0x00;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc8_lrc, &result ) ) {
+        return NULL;
+    }
 
     return Py_BuildValue( "B", result );
 }
 
 static PyObject * _crc8_bcc( PyObject *self, PyObject *args )
 {
-    const unsigned char *data = NULL;
-    unsigned int data_len = 0x00;
-    unsigned char crc8    = 0x00;
-    unsigned char result  = 0x00;
-
-#if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTuple( args, "y#|B", &data, &data_len, &crc8 ) )
+    unsigned char result = 0x00;
+    unsigned char init   = 0x00;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc8_bcc, &result ) ) {
         return NULL;
-#else
-    if ( !PyArg_ParseTuple( args, "s#|B", &data, &data_len, &crc8 ) )
-        return NULL;
-#endif /* PY_MAJOR_VERSION */
-
-    result = hexin_calc_crc8_bcc( data, data_len, crc8 );
+    }
 
     return Py_BuildValue( "B", result );
 }
 
 static PyObject * _crc8_lrc( PyObject *self, PyObject *args )
 {
-    const unsigned char *data = NULL;
-    unsigned int data_len = 0x00;
-    unsigned char crc8    = 0x00;
-    unsigned char result  = 0x00;
-
-#if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTuple( args, "y#|B", &data, &data_len, &crc8 ) )
+    unsigned char result = 0x00;
+    unsigned char init   = 0x00;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc8_lrc, &result ) ) {
         return NULL;
-#else
-    if ( !PyArg_ParseTuple( args, "s#|B", &data, &data_len, &crc8 ) )
-        return NULL;
-#endif /* PY_MAJOR_VERSION */
-
-    result = hexin_calc_crc8_lrc( data, data_len, crc8 );
+    }
 
     return Py_BuildValue( "B", result );
 }
 
 static PyObject * _crc8_maxim( PyObject *self, PyObject *args )
 {
-    const unsigned char *data = NULL;
-    unsigned int data_len = 0x00;
-    unsigned char crc8    = 0x00;
-    unsigned char result  = 0x00;
-
-#if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTuple( args, "y#|B", &data, &data_len, &crc8 ) )
+    unsigned char result = 0x00;
+    unsigned char init   = 0x00;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc8_maxim, &result ) ) {
         return NULL;
-#else
-    if ( !PyArg_ParseTuple( args, "s#|B", &data, &data_len, &crc8 ) )
-        return NULL;
-#endif /* PY_MAJOR_VERSION */
-
-    result = hexin_calc_crc8_maxim( data, data_len, crc8 );
+    }
 
     return Py_BuildValue( "B", result );
 }
 
 static PyObject * _crc8_rohc( PyObject *self, PyObject *args )
 {
-    const unsigned char *data = NULL;
-    unsigned int data_len = 0x00;
-    unsigned char crc8    = 0xFF;
-    unsigned char result  = 0x00;
-
-#if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTuple( args, "y#|B", &data, &data_len, &crc8 ) )
+    unsigned char result = 0x00;
+    unsigned char init   = 0xFF;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc8_rohc, &result ) ) {
         return NULL;
-#else
-    if ( !PyArg_ParseTuple( args, "s#|B", &data, &data_len, &crc8 ) )
-        return NULL;
-#endif /* PY_MAJOR_VERSION */
-
-    result = hexin_calc_crc8_rohc( data, data_len, crc8 );
+    }
 
     return Py_BuildValue( "B", result );
 }
@@ -131,60 +125,36 @@ static PyObject * _crc8_rohc( PyObject *self, PyObject *args )
 
 static PyObject * _crc8_itu( PyObject *self, PyObject *args )
 {
-    const unsigned char *data = NULL;
-    unsigned int data_len = 0x00;
-    unsigned char crc8    = 0x00;
-    unsigned char result  = 0x00;
-
-#if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTuple( args, "y#|B", &data, &data_len, &crc8 ) )
+    unsigned char result = 0x00;
+    unsigned char init   = 0x00;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc8_07, &result ) ) {
         return NULL;
-#else
-    if ( !PyArg_ParseTuple( args, "s#|B", &data, &data_len, &crc8 ) )
-        return NULL;
-#endif /* PY_MAJOR_VERSION */
+    }
 
-    result = hexin_calc_crc8_07( data, data_len, crc8 );
-    result = result ^ 0x55;
-    return Py_BuildValue( "B", result );
+    return Py_BuildValue( "B", result ^ 0x55 );
 }
 
 static PyObject * _crc8( PyObject *self, PyObject *args )
 {
-    const unsigned char *data = NULL;
-    unsigned int data_len = 0x00;
-    unsigned char crc8    = 0x00;
-    unsigned char result  = 0x00;
-
-#if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTuple( args, "y#|B", &data, &data_len, &crc8 ) )
+    unsigned char result = 0x00;
+    unsigned char init   = 0x00;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc8_07, &result ) ) {
         return NULL;
-#else
-    if ( !PyArg_ParseTuple( args, "s#|B", &data, &data_len, &crc8 ) )
-        return NULL;
-#endif /* PY_MAJOR_VERSION */
-
-    result = hexin_calc_crc8_07( data, data_len, crc8 );
+    }
 
     return Py_BuildValue( "B", result );
 }
 
 static PyObject * _crc8_sum( PyObject *self, PyObject *args )
 {
-    const unsigned char *data = NULL;
-    unsigned int data_len = 0x00;
-    unsigned char crc8    = 0x00;
-    unsigned char result  = 0x00;
-
-#if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTuple( args, "y#|B", &data, &data_len, &crc8 ) )
+    unsigned char result = 0x00;
+    unsigned char init   = 0x00;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc8_sum, &result ) ) {
         return NULL;
-#else
-    if ( !PyArg_ParseTuple( args, "s#|B", &data, &data_len, &crc8 ) )
-        return NULL;
-#endif /* PY_MAJOR_VERSION */
-
-    result = hexin_calc_crc8_sum( data, data_len, crc8 );
+    }
 
     return Py_BuildValue( "B", result );
 }
@@ -229,8 +199,7 @@ static PyObject * _crc8_table( PyObject *self, PyObject *args )
 */
 static PyObject * _crc8_hacker( PyObject *self, PyObject *args, PyObject* kws )
 {
-    const unsigned char *data = NULL;
-    unsigned int data_len = 0x00000000L;
+    Py_buffer data = { NULL, NULL };
     unsigned char init    = 0xFF;
     unsigned char xorout  = 0x00;
     unsigned int  ref     = 0x00000000L;
@@ -239,37 +208,42 @@ static PyObject * _crc8_hacker( PyObject *self, PyObject *args, PyObject* kws )
     static char* kwlist[]={ "data", "poly", "init", "xorout", "ref", NULL };
 
 #if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y#|BBBp", kwlist, &data, &data_len, &polynomial, &init, &xorout, &ref ) )
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y*|BBBp", kwlist, &data, &polynomial, &init, &xorout, &ref ) ) {
+        if ( data.obj ) {
+            PyBuffer_Release( &data );
+        }
         return NULL;
+    }
 #else
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s#|BBBp", kwlist, &data, &data_len, &polynomial, &init, &xorout, &ref ) )
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s*|BBBp", kwlist, &data, &polynomial, &init, &xorout, &ref ) ) {
+        if ( data.obj ) {
+            PyBuffer_Release( &data );
+        }
         return NULL;
+    }
 #endif /* PY_MAJOR_VERSION */
 
     if ( HEXIN_REFIN_OR_REFOUT_IS_TRUE( ref ) ) {
         polynomial = hexin_reverse8( polynomial );
     }
 
-    result = hexin_calc_crc8_hacker( data, data_len, init, polynomial );
+    result = hexin_calc_crc8_hacker( (unsigned char *)data.buf, (unsigned int)data.len, init, polynomial );
     result = result ^ xorout;
+
+    if ( data.obj )
+       PyBuffer_Release( &data );
+
     return Py_BuildValue( "B", result );
 }
 
 static PyObject * _crc8_fletcher( PyObject *self, PyObject *args )
 {
-    const unsigned char *data = NULL;
-    unsigned int data_len = 0x00;
-    unsigned char result  = 0x00;
-
-#if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTuple( args, "y#|B", &data, &data_len) )
+    unsigned char result   = 0x00;
+    unsigned char reserved = 0x00;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, reserved, hexin_calc_crc8_fletcher, &result ) ) {
         return NULL;
-#else
-    if ( !PyArg_ParseTuple( args, "s#|B", &data, &data_len ) )
-        return NULL;
-#endif /* PY_MAJOR_VERSION */
-
-    result = hexin_calc_crc8_fletcher( data, data_len );
+    }
 
     return Py_BuildValue( "B", result );
 }
@@ -334,7 +308,7 @@ PyInit__crc8( void )
         return NULL;
     }
 
-    PyModule_AddStringConstant( m, "__version__", "0.1.6" );
+    PyModule_AddStringConstant( m, "__version__", "1.1"   );
     PyModule_AddStringConstant( m, "__author__",  "Heyn"  );
 
     return m;

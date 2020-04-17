@@ -4,7 +4,7 @@
 *                                           All Rights Reserved
 * File    : _crc64module.c
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V0.1.6
+* Version : V1.1
 *
 * LICENSING TERMS:
 * ---------------
@@ -12,6 +12,7 @@
 *                       2017-08-21 [Heyn] Optimization code for the C99 standard.
 *                                         for ( unsigned int i=0; i<256; i++ ) -> for ( i=0; i<256; i++ )
 *                       2020-03-16 [Heyn] New add hacker64 code.
+*                       2020-04-17 [Heyn] Issues #1
 *
 *********************************************************************************************************
 */
@@ -19,42 +20,59 @@
 #include <Python.h>
 #include "_crc64tables.h"
 
-static PyObject * _crc64_iso( PyObject *self, PyObject *args )
+static unsigned char hexin_PyArg_ParseTuple( PyObject *self, PyObject *args,
+                                             unsigned long long init,
+                                             unsigned long long (*function)( unsigned char *,
+                                                                             unsigned int,
+                                                                             unsigned long long ),
+                                             unsigned long long *result )
 {
-    const unsigned char *data = NULL;
-    unsigned int data_len = 0x00000000L;
-    unsigned long long crc64    = 0x0000000000000000L;
-    unsigned long long result   = 0x00000000L;
+    Py_buffer data = { NULL, NULL };
 
 #if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTuple( args, "y#|K", &data, &data_len, &crc64 ) )
-        return NULL;
+    if ( !PyArg_ParseTuple( args, "y*|K", &data, &init ) ) {
+        if ( data.obj ) {
+            PyBuffer_Release( &data );
+        }
+        return FALSE;
+    }
 #else
-    if ( !PyArg_ParseTuple( args, "s#|K", &data, &data_len, &crc64 ) )
-        return NULL;
+    if ( !PyArg_ParseTuple( args, "s*|K", &data, &init ) ) {
+        if ( data.obj ) {
+            PyBuffer_Release( &data );
+        }
+        return FALSE;
+    }
 #endif /* PY_MAJOR_VERSION */
 
-    result = hexin_calc_crc64_iso( data, data_len, crc64 );
+    *result = function( (unsigned char *)data.buf, (unsigned int)data.len, init );
+
+    if ( data.obj )
+       PyBuffer_Release( &data );
+
+    return TRUE;
+}
+
+static PyObject * _crc64_iso( PyObject *self, PyObject *args )
+{
+    unsigned long long result = 0x0000000000000000L;
+    unsigned long long init   = 0x0000000000000000L;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc64_iso, &result ) ) {
+        return NULL;
+    }
 
     return Py_BuildValue( "K", result );
 }
 
 static PyObject * _crc64_ecma182( PyObject *self, PyObject *args )
 {
-    const unsigned char *data = NULL;
-    unsigned int data_len = 0x00000000L;
-    unsigned long long crc64    = 0xFFFFFFFFFFFFFFFFL;
-    unsigned long long result   = 0x00000000L;
-
-#if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTuple( args, "y#|K", &data, &data_len, &crc64 ) )
+    unsigned long long result = 0x0000000000000000L;
+    unsigned long long init   = 0xFFFFFFFFFFFFFFFFL;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc64_ecma182, &result ) ) {
         return NULL;
-#else
-    if ( !PyArg_ParseTuple( args, "s#|K", &data, &data_len, &crc64 ) )
-        return NULL;
-#endif /* PY_MAJOR_VERSION */
-
-    result = hexin_calc_crc64_ecma182( data, data_len, crc64 );
+    }
 
     return Py_BuildValue( "K", result );
 }
@@ -94,8 +112,7 @@ static PyObject * _crc64_table( PyObject *self, PyObject *args )
 
 static PyObject * _crc64_hacker( PyObject *self, PyObject *args, PyObject* kws )
 {
-    const unsigned char *data = NULL;
-    unsigned int data_len = 0x00000000L;
+    Py_buffer data = { NULL, NULL };
     unsigned long long init   = 0xFFFFFFFFFFFFFFFFL;
     unsigned long long xorout = 0x0000000000000000L;
     unsigned int   ref        = 0x00000000L;
@@ -105,17 +122,29 @@ static PyObject * _crc64_hacker( PyObject *self, PyObject *args, PyObject* kws )
     static char* kwlist[]={ "data", "poly", "init", "xorout", "ref", NULL };
 
 #if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y#|KKKp", kwlist, &data, &data_len, &polynomial, &init, &xorout, &ref ) )
-        return NULL;
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y*|KKKp", kwlist, &data, &polynomial, &init, &xorout, &ref ) ) {
+        if ( data.obj ) {
+            PyBuffer_Release( &data );
+        }
+        return NULL; 
+    }
 #else
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s#|KKKp", kwlist, &data, &data_len, &polynomial, &init, &xorout, &ref ) )
-        return NULL;
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s*|KKKp", kwlist, &data, &polynomial, &init, &xorout, &ref ) ) {
+        if ( data.obj ) {
+            PyBuffer_Release( &data );
+        }
+        return NULL; 
+    }
 #endif /* PY_MAJOR_VERSION */
     if ( ref == 0x00000001L ) {
         polynomial = hexin_reverse64( polynomial );
     }
-    result = hexin_calc_crc64_hacker( data, data_len, init, polynomial );
+    result = hexin_calc_crc64_hacker( (unsigned char *)data.buf, (unsigned int)data.len, init, polynomial );
     result = result ^ xorout;
+
+    if ( data.obj )
+       PyBuffer_Release( &data );
+
     return Py_BuildValue( "K", result );
 }
 
@@ -160,13 +189,13 @@ PyInit__crc64(void)
 {
     PyObject *m;
 
-    m = PyModule_Create(&_crc64module);
-    if (m == NULL) {
+    m = PyModule_Create( &_crc64module );
+    if ( m == NULL ) {
         return NULL;
     }
 
-    PyModule_AddStringConstant(m, "__version__", "0.1.6");
-    PyModule_AddStringConstant(m, "__author__", "Heyn");
+    PyModule_AddStringConstant( m, "__version__", "1.1" );
+    PyModule_AddStringConstant( m, "__author__",  "Heyn");
 
     return m;
 }
@@ -177,7 +206,7 @@ PyInit__crc64(void)
 PyMODINIT_FUNC
 init_crc64(void)
 {
-    (void) Py_InitModule3("_crc64", _crc64Methods, _crc64_doc);
+    (void) Py_InitModule3( "_crc64", _crc64Methods, _crc64_doc );
 }
 
 #endif /* PY_MAJOR_VERSION */

@@ -4,7 +4,7 @@
 *                                           All Rights Reserved
 * File    : _crc16tables.h
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V0.1.6
+* Version : V1.1
 *
 * LICENSING TERMS:
 * ---------------
@@ -54,7 +54,7 @@ unsigned short hexin_calc_crc16_a6bc( const unsigned char *pSrc, unsigned int le
 unsigned short hexin_calc_crc16_sick( const unsigned char *pSrc, unsigned int len, unsigned short crc16 );
 
 unsigned short hexin_calc_crc16_hacker(   const unsigned char *pSrc, unsigned int len, unsigned short crc16, unsigned short polynomial );
-unsigned short hexin_calc_crc16_network(  const unsigned char *pSrc, unsigned int len );
-unsigned short hexin_calc_crc16_fletcher( const unsigned char *pSrc, unsigned int len );
+unsigned short hexin_calc_crc16_network(  const unsigned char *pSrc, unsigned int len, unsigned short crc16 /*reserved*/ );
+unsigned short hexin_calc_crc16_fletcher( const unsigned char *pSrc, unsigned int len, unsigned short crc16 /*reserved*/ );
 
 #endif //__CRC16_TABLES_H__

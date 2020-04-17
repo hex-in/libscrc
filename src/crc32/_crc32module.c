@@ -4,7 +4,7 @@
  *                                           All Rights Reserved
  * File    : _crc32module.c
  * Author  : Heyn (heyunhuan@gmail.com)
- * Version : V0.1.6
+ * Version : V1.1
  *
  * LICENSING TERMS:
  * ---------------
@@ -12,13 +12,9 @@
  *                      2017-08-17 [Heyn] Optimized Code.
  *                      2017-08-21 [Heyn] Optimization code for the C99 standard.
  *                                        for ( unsigned int i=0; i<256; i++ ) -> for ( i=0; i<256; i++ )
- *                      2017-09-22 [Heyn] Optimized Code.
- *                                        New get crc32 table.
- *                      2019-04-18 [Heyn] New creaker.
- *                      2019-04-28 [Heyn] New add lclear32 \ rclear32 \ pltable32 \ prtable32 functions.
- *                      2020-03-16 [Heyn] New add hacker32 code.
- *                                        Removed lclear32 \ rclear32 \ pltable32 \ prtable32 functions.
- *                      2020-03-20 [Heyn] New add adler32
+ *                      2017-09-22 [Heyn] Optimized Code. New add table32() function.
+ *                      2020-03-20 [Heyn] New add adler32 and fletcher32 functions.
+ *                      2020-04-17 [Heyn] Issues #1
  * 
  * Web : https://en.wikipedia.org/wiki/Polynomial_representations_of_cyclic_redundancy_checks
  *
@@ -26,8 +22,40 @@
  */
 
 #include <Python.h>
-
 #include "_crc32tables.h"
+
+static unsigned char hexin_PyArg_ParseTuple( PyObject *self, PyObject *args,
+                                             unsigned int init,
+                                             unsigned int (*function)( unsigned char *,
+                                                                       unsigned int,
+                                                                       unsigned int ),
+                                             unsigned int *result )
+{
+    Py_buffer data = { NULL, NULL };
+
+#if PY_MAJOR_VERSION >= 3
+    if ( !PyArg_ParseTuple( args, "y*|I", &data, &init ) ) {
+        if ( data.obj ) {
+            PyBuffer_Release( &data );
+        }
+        return FALSE;
+    }
+#else
+    if ( !PyArg_ParseTuple( args, "s*|I", &data, &init ) ) {
+        if ( data.obj ) {
+            PyBuffer_Release( &data );
+        }
+        return FALSE;
+    }
+#endif /* PY_MAJOR_VERSION */
+
+    *result = function( (unsigned char *)data.buf, (unsigned int)data.len, init );
+
+    if ( data.obj )
+       PyBuffer_Release( &data );
+
+    return TRUE;
+}
 
 /*
  ********************************************************************************************************
@@ -43,20 +71,13 @@
 
 static PyObject * _crc32_mpeg_2( PyObject *self, PyObject *args )
 {
-    const unsigned char *data = NULL;
-    unsigned int data_len = 0x00000000L;
-    unsigned int crc32    = 0xFFFFFFFFL;
-    unsigned int result   = 0x00000000L;
-
-#if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTuple( args, "y#|I", &data, &data_len, &crc32 ) )
+    unsigned int result = 0x00000000L;
+    unsigned int init   = 0xFFFFFFFFL;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc32_04c11db7, &result ) ) {
         return NULL;
-#else
-    if ( !PyArg_ParseTuple( args, "s#|I", &data, &data_len, &crc32 ) )
-        return NULL;
-#endif /* PY_MAJOR_VERSION */
+    }
 
-    result = hexin_calc_crc32_04c11db7( data, data_len, crc32 );
     return Py_BuildValue( "I", result );
 }
 
@@ -75,23 +96,14 @@ static PyObject * _crc32_mpeg_2( PyObject *self, PyObject *args )
 
 static PyObject * _crc32_crc32( PyObject *self, PyObject *args )
 {
-    const unsigned char *data = NULL;
-    unsigned int data_len = 0x00000000L;
-    unsigned int crc32    = 0xFFFFFFFFL;
-    unsigned int result   = 0x00000000L;
-
-#if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTuple( args, "y#|I", &data, &data_len, &crc32 ) )
+    unsigned int result = 0x00000000L;
+    unsigned int init   = 0xFFFFFFFFL;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc32_edb88320, &result ) ) {
         return NULL;
-#else
-    if ( !PyArg_ParseTuple( args, "s#|I", &data, &data_len, &crc32 ) )
-        return NULL;
-#endif /* PY_MAJOR_VERSION */
+    }
 
-    result = hexin_calc_crc32_edb88320( data, data_len, crc32 );
-    result = result ^ 0xFFFFFFFFL;
-
-    return Py_BuildValue( "I", result );
+    return Py_BuildValue( "I", result ^ 0xFFFFFFFFL );
 }
 
 /*
@@ -135,8 +147,7 @@ static PyObject * _crc32_table( PyObject *self, PyObject *args )
 
 static PyObject * _crc32_hacker( PyObject *self, PyObject *args, PyObject* kws )
 {
-    const unsigned char *data = NULL;
-    unsigned int data_len = 0x00000000L;
+    Py_buffer data = { NULL, NULL };
     unsigned int init     = 0xFFFFFFFFL;
     unsigned int xorout   = 0x00000000L;
     unsigned int ref      = 0x00000000L;
@@ -145,38 +156,43 @@ static PyObject * _crc32_hacker( PyObject *self, PyObject *args, PyObject* kws )
     static char* kwlist[]={ "data", "poly", "init", "xorout", "ref", NULL };
 
 #if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y#|IIIp", kwlist, &data, &data_len, &polynomial, &init, &xorout, &ref ) )
-        return NULL;
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y*|IIIp", kwlist, &data, &polynomial, &init, &xorout, &ref ) ) {
+        if ( data.obj ) {
+            PyBuffer_Release( &data );
+        }
+        return NULL;        
+    }
 #else
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s#|IIIp", kwlist, &data, &data_len, &polynomial, &init, &xorout, &ref ) )
-        return NULL;
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s*|IIIp", kwlist, &data, &polynomial, &init, &xorout, &ref ) ) {
+        if ( data.obj ) {
+            PyBuffer_Release( &data );
+        }
+        return NULL;  
+    }
 #endif /* PY_MAJOR_VERSION */
 
     if ( HEXIN_REFIN_OR_REFOUT_IS_TRUE( ref ) ) {
         polynomial = hexin_reverse32( polynomial );
     }
 
-    result = hexin_calc_crc32_hacker( data, data_len, init, polynomial );
+    result = hexin_calc_crc32_hacker( (unsigned char *)data.buf, (unsigned int)data.len, init, polynomial );
     result = result ^ xorout;
+
+    if ( data.obj )
+       PyBuffer_Release( &data );
+
     return Py_BuildValue( "I", result );
 }
 
 
 static PyObject * _crc32_adler32( PyObject *self, PyObject *args )
 {
-    const unsigned char *data = NULL;
-    unsigned int data_len = 0x00000000L;
     unsigned int result   = 0x00000000L;
-
-#if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTuple( args, "y#", &data, &data_len ) )
+    unsigned int reserved = 0x00000000L;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, reserved, hexin_calc_crc32_adler, &result ) ) {
         return NULL;
-#else
-    if ( !PyArg_ParseTuple( args, "s#", &data, &data_len ) )
-        return NULL;
-#endif /* PY_MAJOR_VERSION */
-
-    result = hexin_calc_crc32_adler( data, data_len );
+    }
 
     return Py_BuildValue( "I", result );
 }
@@ -189,19 +205,12 @@ static PyObject * _crc32_adler32( PyObject *self, PyObject *args )
 
 static PyObject * _crc32_fletcher32( PyObject *self, PyObject *args )
 {
-    const unsigned char *data = NULL;
-    unsigned int data_len = 0x00000000L;
     unsigned int result   = 0x00000000L;
-
-#if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTuple( args, "y#", &data, &data_len ) )
+    unsigned int reserved = 0x00000000L;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, reserved, hexin_calc_crc32_fletcher, &result ) ) {
         return NULL;
-#else
-    if ( !PyArg_ParseTuple( args, "s#", &data, &data_len ) )
-        return NULL;
-#endif /* PY_MAJOR_VERSION */
-
-    result = hexin_calc_crc32_fletcher( data, data_len );
+    }
 
     return Py_BuildValue( "I", result );
 }
@@ -258,8 +267,8 @@ PyInit__crc32( void )
         return NULL;
     }
 
-    PyModule_AddStringConstant( m, "__version__", "0.1.6" );
-    PyModule_AddStringConstant( m, "__author__",  "Heyn"  );
+    PyModule_AddStringConstant( m, "__version__", "1.1"  );
+    PyModule_AddStringConstant( m, "__author__",  "Heyn" );
 
     return m;
 }

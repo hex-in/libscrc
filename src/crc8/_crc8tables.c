@@ -231,7 +231,7 @@ unsigned char hexin_calc_crc8_hacker( const unsigned char *pSrc, unsigned int le
 	return crc;
 }
 
-unsigned char hexin_calc_crc8_fletcher( const unsigned char *pSrc, unsigned int len )
+unsigned char hexin_calc_crc8_fletcher( const unsigned char *pSrc, unsigned int len, unsigned char crc8 /*reserved*/ )
 {
     unsigned int i = 0;
     unsigned char sum1 = 0, sum2 = 0;

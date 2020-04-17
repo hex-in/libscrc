@@ -4,7 +4,7 @@
 *                                           All Rights Reserved
 * File    : _crc16module.c
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V1.0
+* Version : V1.1
 *
 * LICENSING TERMS:
 * ---------------
@@ -24,12 +24,46 @@
 *                       2020-03-20 [Heyn] New add UDP and TCP checksum.
 *                       2020-03-23 [Blazin64] Adds support for the CRC method used by MCRF4XX RFID hardware.
 *                       2020-04-08 [Heyn] New add libscrc.epc16() for RFID tag EPC
+*                       2020-04-17 [Heyn] Issues #1
 *
 *********************************************************************************************************
 */
 
 #include <Python.h>
 #include "_crc16tables.h"
+
+static unsigned char hexin_PyArg_ParseTuple( PyObject *self, PyObject *args,
+                                             unsigned short init,
+                                             unsigned short (*function)( unsigned char *,
+                                                                         unsigned int,
+                                                                         unsigned short ),
+                                             unsigned short *result )
+{
+    Py_buffer data = { NULL, NULL };
+
+#if PY_MAJOR_VERSION >= 3
+    if ( !PyArg_ParseTuple( args, "y*|H", &data, &init ) ) {
+        if ( data.obj ) {
+            PyBuffer_Release( &data );
+        }
+        return FALSE;
+    }
+#else
+    if ( !PyArg_ParseTuple( args, "s*|H", &data, &init ) ) {
+        if ( data.obj ) {
+            PyBuffer_Release( &data );
+        }
+        return FALSE;
+    }
+#endif /* PY_MAJOR_VERSION */
+
+    *result = function( (unsigned char *)data.buf, (unsigned int)data.len, init );
+
+    if ( data.obj )
+       PyBuffer_Release( &data );
+
+    return TRUE;
+}
 
 /*
 *********************************************************************************************************
@@ -39,20 +73,12 @@
 
 static PyObject * _crc16_modbus( PyObject *self, PyObject *args )
 {
-    const unsigned char *data = NULL;
-    unsigned int data_len = 0x00000000L;
-    unsigned short crc16  = 0xFFFF;
     unsigned short result = 0x0000;
-
-#if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTuple( args, "y#|H", &data, &data_len, &crc16 ) )
+    unsigned short init   = 0xFFFF;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_a001, &result ) ) {
         return NULL;
-#else
-    if ( !PyArg_ParseTuple(args, "s#|H", &data, &data_len, &crc16 ) )
-        return NULL;
-#endif /* PY_MAJOR_VERSION */
-
-    result = hexin_calc_crc16_a001( data, data_len, crc16 );
+    }
 
     return Py_BuildValue( "H", result );
 }
@@ -72,22 +98,14 @@ static PyObject * _crc16_modbus( PyObject *self, PyObject *args )
 */
 static PyObject * _crc16_usb( PyObject *self, PyObject *args )
 {
-    const unsigned char *data = NULL;
-    unsigned int data_len = 0x00000000L;
-    unsigned short crc16  = 0xFFFF;
     unsigned short result = 0x0000;
-
-#if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTuple( args, "y#|H", &data, &data_len, &crc16 ) )
+    unsigned short init   = 0xFFFF;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_a001, &result ) ) {
         return NULL;
-#else
-    if ( !PyArg_ParseTuple( args, "s#|H", &data, &data_len, &crc16 ) )
-        return NULL;
-#endif /* PY_MAJOR_VERSION */
+    }
 
-    result = hexin_calc_crc16_a001( data, data_len, crc16 );
-    result = result ^ 0xFFFF;
-    return Py_BuildValue( "H", result );
+    return Py_BuildValue( "H", result ^ 0xFFFF );
 }
 
 /*
@@ -105,24 +123,11 @@ static PyObject * _crc16_usb( PyObject *self, PyObject *args )
 
 static PyObject * _crc16_ibm( PyObject *self, PyObject *args )
 {
-    const unsigned char *data = NULL;
-    unsigned int data_len = 0x00000000L;
-    unsigned short poly   = CRC16_POLYNOMIAL_A001;
-    unsigned short crc16  = 0x0000;
     unsigned short result = 0x0000;
-
-#if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTuple( args, "y#|HH", &data, &data_len, &poly, &crc16 ) )
+    unsigned short init   = 0x0000;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_a001, &result ) ) {
         return NULL;
-#else
-    if ( !PyArg_ParseTuple( args, "s#|HH", &data, &data_len, &poly, &crc16 ) )
-        return NULL;
-#endif /* PY_MAJOR_VERSION */
-
-    if ( poly == CRC16_POLYNOMIAL_8005 ) {
-        result = hexin_calc_crc16_8005( data, data_len, crc16 );
-    } else {
-        result = hexin_calc_crc16_a001( data, data_len, crc16 );
     }
 
     return Py_BuildValue( "H", result );
@@ -141,20 +146,12 @@ static PyObject * _crc16_ibm( PyObject *self, PyObject *args )
 
 static PyObject * _crc16_xmodem( PyObject *self, PyObject *args )
 {
-    const unsigned char *data = NULL;
-    unsigned int data_len = 0x00000000L;
-    unsigned short crc16  = 0x0000;
     unsigned short result = 0x0000;
-
-#if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTuple( args, "y#|H", &data, &data_len, &crc16 ) )
+    unsigned short init   = 0x0000;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_1021, &result ) ) {
         return NULL;
-#else
-    if ( !PyArg_ParseTuple( args, "s#|H", &data, &data_len, &crc16 ) )
-        return NULL;
-#endif /* PY_MAJOR_VERSION */
-
-    result = hexin_calc_crc16_1021( data, data_len, crc16 );
+    }
 
     return Py_BuildValue( "H", result );
 }
@@ -171,20 +168,12 @@ static PyObject * _crc16_xmodem( PyObject *self, PyObject *args )
 */
 static PyObject * _crc16_ccitt( PyObject *self, PyObject *args )
 {
-    const unsigned char *data = NULL;
-    unsigned int data_len = 0x00000000L;
-    unsigned short crc16  = 0xFFFF;
     unsigned short result = 0x0000;
-
-#if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTuple( args, "y#|H", &data, &data_len, &crc16 ) )
+    unsigned short init   = 0xFFFF;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_1021, &result ) ) {
         return NULL;
-#else
-    if ( !PyArg_ParseTuple( args, "s#|H", &data, &data_len, &crc16 ) )
-        return NULL;
-#endif /* PY_MAJOR_VERSION */
-
-    result = hexin_calc_crc16_1021( data, data_len, crc16 );
+    }
 
     return Py_BuildValue( "H", result );
 }
@@ -205,20 +194,12 @@ static PyObject * _crc16_ccitt( PyObject *self, PyObject *args )
 
 static PyObject * _crc16_kermit( PyObject *self, PyObject *args )
 {
-    const unsigned char *data = NULL;
-    unsigned int data_len = 0x00000000L;
-    unsigned short crc16  = 0x0000;
     unsigned short result = 0x0000;
-
-#if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTuple(args, "y#|H", &data, &data_len, &crc16 ) )
+    unsigned short init   = 0x0000;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_8408, &result ) ) {
         return NULL;
-#else
-    if ( !PyArg_ParseTuple(args, "s#|H", &data, &data_len, &crc16 ) )
-        return NULL;
-#endif /* PY_MAJOR_VERSION */
-
-    result = hexin_calc_crc16_8408( data, data_len, crc16 );
+    }
 
     return Py_BuildValue( "H", result );
 }
@@ -238,20 +219,12 @@ static PyObject * _crc16_kermit( PyObject *self, PyObject *args )
 
 static PyObject * _crc16_mcrf4xx( PyObject *self, PyObject *args )
 {
-    const unsigned char *data = NULL;
-    unsigned int data_len = 0x00000000L;
-    unsigned short crc16  = 0xFFFF;
     unsigned short result = 0x0000;
-
-#if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTuple( args, "y#|H", &data, &data_len, &crc16 ) )
+    unsigned short init   = 0xFFFF;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_8408, &result ) ) {
         return NULL;
-#else
-    if ( !PyArg_ParseTuple( args, "s#|H", &data, &data_len, &crc16 ) )
-        return NULL;
-#endif /* PY_MAJOR_VERSION */
-
-    result = hexin_calc_crc16_8408( data, data_len, crc16 );
+    }
 
     return Py_BuildValue( "H", result );
 }
@@ -270,22 +243,14 @@ static PyObject * _crc16_mcrf4xx( PyObject *self, PyObject *args )
 */
 static PyObject * _crc16_x25( PyObject *self, PyObject *args )
 {
-    const unsigned char *data = NULL;
-    unsigned int data_len = 0x00000000L;
-    unsigned short crc16  = 0xFFFF;
     unsigned short result = 0x0000;
-
-#if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTuple( args, "y#|H", &data, &data_len, &crc16 ) )
+    unsigned short init   = 0xFFFF;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_8408, &result ) ) {
         return NULL;
-#else
-    if ( !PyArg_ParseTuple( args, "s#|H", &data, &data_len, &crc16 ) )
-        return NULL;
-#endif /* PY_MAJOR_VERSION */
+    }
 
-    result = hexin_calc_crc16_8408( data, data_len, crc16 );
-    result = result ^ 0xFFFF;
-    return Py_BuildValue( "H", result );
+    return Py_BuildValue( "H", result ^ 0xFFFF );
 }
 
 /*
@@ -296,20 +261,12 @@ static PyObject * _crc16_x25( PyObject *self, PyObject *args )
 
 static PyObject * _crc16_sick( PyObject *self, PyObject *args )
 {
-    const unsigned char *data = NULL;
-    unsigned int data_len = 0x00000000L;
-    unsigned short crc16  = 0x0000;
     unsigned short result = 0x0000;
-
-#if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTuple( args, "y#|H", &data, &data_len, &crc16 ) )
+    unsigned short init   = 0x0000;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_sick, &result ) ) {
         return NULL;
-#else
-    if ( !PyArg_ParseTuple( args, "s#|H", &data, &data_len, &crc16 ) )
-        return NULL;
-#endif /* PY_MAJOR_VERSION */
-
-    result = hexin_calc_crc16_sick( data, data_len, crc16 );
+    }
 
     return Py_BuildValue( "H", result );
 }
@@ -329,20 +286,12 @@ static PyObject * _crc16_sick( PyObject *self, PyObject *args )
 
 static PyObject * _crc16_dnp( PyObject *self, PyObject *args )
 {
-    const unsigned char *data = NULL;
-    unsigned int data_len = 0x00000000L;
-    unsigned short crc16  = 0x0000;
     unsigned short result = 0x0000;
-
-#if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTuple( args, "y#|H", &data, &data_len, &crc16 ) )
+    unsigned short init   = 0x0000;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_a6bc, &result ) ) {
         return NULL;
-#else
-    if ( !PyArg_ParseTuple( args, "s#|H", &data, &data_len, &crc16 ) )
-        return NULL;
-#endif /* PY_MAJOR_VERSION */
-
-    result = hexin_calc_crc16_a6bc( data, data_len, crc16 );
+    }
 
     return Py_BuildValue( "H", result );
 }
@@ -362,23 +311,14 @@ static PyObject * _crc16_dnp( PyObject *self, PyObject *args )
 */
 static PyObject * _crc16_maxim( PyObject *self, PyObject *args )
 {
-    const unsigned char *data = NULL;
-    unsigned int data_len = 0x00000000L;
-    unsigned short crc16  = 0x0000;
     unsigned short result = 0x0000;
-
-#if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTuple( args, "y#|H", &data, &data_len, &crc16 ) )
+    unsigned short init   = 0x0000;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_a001, &result ) ) {
         return NULL;
-#else
-    if ( !PyArg_ParseTuple( args, "s#|H", &data, &data_len, &crc16 ) )
-        return NULL;
-#endif /* PY_MAJOR_VERSION */
+    }
 
-    result = hexin_calc_crc16_a001( data, data_len, crc16 );
-    result = result ^ 0xFFFF;
-
-    return Py_BuildValue( "H", result );
+    return Py_BuildValue( "H", result ^ 0xFFFF );
 }
 
 /*
@@ -396,20 +336,12 @@ static PyObject * _crc16_maxim( PyObject *self, PyObject *args )
 
 static PyObject * _crc16_dect( PyObject *self, PyObject *args )
 {
-    const unsigned char *data = NULL;
-    unsigned int data_len = 0x00000000L;
-    unsigned short crc16  = 0x0000;
     unsigned short result = 0x0000;
-
-#if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTuple( args, "y#|H", &data, &data_len, &crc16 ) )
+    unsigned short init   = 0x0000;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_91a0, &result ) ) {
         return NULL;
-#else
-    if ( !PyArg_ParseTuple( args, "s#|H", &data, &data_len, &crc16 ) )
-        return NULL;
-#endif /* PY_MAJOR_VERSION */
-
-    result = hexin_calc_crc16_91a0( data, data_len, crc16 );
+    }
 
     return Py_BuildValue( "H", result );
 }
@@ -454,8 +386,7 @@ static PyObject * _crc16_table( PyObject *self, PyObject *args )
 */
 static PyObject * _crc16_hacker( PyObject *self, PyObject *args, PyObject* kws )
 {
-    const unsigned char *data = NULL;
-    unsigned int data_len = 0x00000000L;
+    Py_buffer data = { NULL, NULL };
     unsigned short init   = 0xFFFF;
     unsigned short xorout = 0x0000;
     unsigned int   ref    = 0x00000000L;
@@ -464,19 +395,31 @@ static PyObject * _crc16_hacker( PyObject *self, PyObject *args, PyObject* kws )
     static char* kwlist[]={ "data", "poly", "init", "xorout", "ref", NULL };
 
 #if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y#|HHHp", kwlist, &data, &data_len, &polynomial, &init, &xorout, &ref ) )
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y*|HHHp", kwlist, &data, &polynomial, &init, &xorout, &ref ) ) {
+        if ( data.obj ) {
+            PyBuffer_Release( &data );
+        }
         return NULL;
+    }
 #else
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s#|HHHp", kwlist, &data, &data_len, &polynomial, &init, &xorout, &ref ) )
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s*|HHHp", kwlist, &data, &polynomial, &init, &xorout, &ref ) ) {
+        if ( data.obj ) {
+            PyBuffer_Release( &data );
+        }
         return NULL;
+    }
 #endif /* PY_MAJOR_VERSION */
 
     if ( HEXIN_REFIN_OR_REFOUT_IS_TRUE( ref ) ) {
         polynomial = hexin_reverse16( polynomial );
     }
 
-    result = hexin_calc_crc16_hacker( data, data_len, init, polynomial );
+    result = hexin_calc_crc16_hacker( (unsigned char *)data.buf, (unsigned int)data.len, init, polynomial );
     result = result ^ xorout;
+
+    if ( data.obj )
+       PyBuffer_Release( &data );
+
     return Py_BuildValue( "H", result );
 }
 
@@ -487,19 +430,12 @@ static PyObject * _crc16_hacker( PyObject *self, PyObject *args, PyObject* kws )
 */
 static PyObject * _crc16_network( PyObject *self, PyObject *args )
 {
-    const unsigned char *data = NULL;
-    unsigned int data_len = 0x00000000L;
-    unsigned short result = 0x0000;
-
-#if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTuple( args, "y#|H", &data, &data_len ) )
+    unsigned short result   = 0x0000;
+    unsigned short reserved = 0x0000;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, reserved, hexin_calc_crc16_network, &result ) ) {
         return NULL;
-#else
-    if ( !PyArg_ParseTuple(args, "s#", &data, &data_len ) )
-        return NULL;
-#endif /* PY_MAJOR_VERSION */
-
-    result = hexin_calc_crc16_network( data, data_len );
+    }
 
     return Py_BuildValue( "H", result );
 }
@@ -512,41 +448,26 @@ static PyObject * _crc16_network( PyObject *self, PyObject *args )
 
 static PyObject * _crc16_fletcher( PyObject *self, PyObject *args )
 {
-    const unsigned char *data = NULL;
-    unsigned int data_len = 0x00000000L;
-    unsigned short result = 0x0000;
-
-#if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTuple( args, "y#|H", &data, &data_len ) )
+    unsigned short result   = 0x0000;
+    unsigned short reserved = 0x0000;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, reserved, hexin_calc_crc16_fletcher, &result ) ) {
         return NULL;
-#else
-    if ( !PyArg_ParseTuple(args, "s#", &data, &data_len ) )
-        return NULL;
-#endif /* PY_MAJOR_VERSION */
-
-    result = hexin_calc_crc16_fletcher( data, data_len );
+    }
 
     return Py_BuildValue( "H", result );
 }
 
 static PyObject * _crc16_rfid_epc( PyObject *self, PyObject *args )
 {
-    const unsigned char *data = NULL;
-    unsigned int data_len = 0x00000000L;
-    unsigned short crc16  = 0xFFFF;
     unsigned short result = 0x0000;
-
-#if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTuple( args, "y#|H", &data, &data_len, &crc16 ) )
+    unsigned short init   = 0xFFFF;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_1021, &result ) ) {
         return NULL;
-#else
-    if ( !PyArg_ParseTuple( args, "s#|H", &data, &data_len, &crc16 ) )
-        return NULL;
-#endif /* PY_MAJOR_VERSION */
+    }
 
-    result = hexin_calc_crc16_1021( data, data_len, crc16 );
-    result = result ^ 0xFFFF;
-    return Py_BuildValue( "H", result );
+    return Py_BuildValue( "H", result ^ 0xFFFF );
 }
 
 /* method table */
@@ -623,7 +544,7 @@ PyInit__crc16( void )
         return NULL;
     }
 
-    PyModule_AddStringConstant( m, "__version__", "1.0"   );
+    PyModule_AddStringConstant( m, "__version__", "1.1"   );
     PyModule_AddStringConstant( m, "__author__",  "Heyn"  );
 
     return m;
