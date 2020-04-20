@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-""" Setup script for CRC8/CRC16/CRC32/CRC64 library. """
+""" Setup script for CRC8/CRC16/CRC24/CRC32/CRC64 library. """
 from os import path
 from setuptools import setup, find_packages, Extension
 from codecs import open
@@ -8,7 +8,7 @@ from codecs import open
 # Python:   3.5.2+
 # Platform: Windows/Linux/MacOS/ARMv7
 # Author:   Heyn (heyunhuan@gmail.com)
-# Program:  Library CRC8/CRC16/CRC32/CRC64 Modules.
+# Program:  Library CRC8/CRC16/CRC24/CRC32/CRC64 Modules.
 # History:  2017-08-09 Wheel Ver:0.0.1 [Heyn] Initialize
 #           2017-08-10 Wheel Ver:0.0.2 [Heyn] New add CRC8 (IntelHex/BCC/LRC/CRC8(VERB))
 #           2017-08-17 Wheel Ver:0.0.3 [Heyn] Optimized Code.
@@ -29,7 +29,7 @@ setup(
     name='libscrc',
     version='1.1',
 
-    description='Library for calculating CRC4/CRC8/CRC16/CRC32/CRC64',
+    description='Library for calculating CRC4/CRC8/CRC16/CRC24/CRC32/CRC64',
     long_description=long_description,
 
     url='https://github.com/hex-in/libscrc',
@@ -70,7 +70,7 @@ setup(
         'Programming Language :: Python :: Implementation :: PyPy',
     ],
 
-    keywords=['CRC4', 'CRC5', 'CRC6', 'CRC7', 'CRC8', 'CRC16', 'CRC32', 'CRC64'],
+    keywords=['CRC4', 'CRC5', 'CRC6', 'CRC7', 'CRC8', 'CRC16', 'CRC24', 'CRC32', 'CRC64'],
 
     packages=['libscrc'],
 
@@ -79,6 +79,7 @@ setup(
     ext_modules=[Extension('libscrc._crcx',  sources=['src/crcx/_crcxmodule.c',   'src/crcx/_crcxtables.c'  ]),
                  Extension('libscrc._crc8',  sources=['src/crc8/_crc8module.c',   'src/crc8/_crc8tables.c'  ]),
                  Extension('libscrc._crc16', sources=['src/crc16/_crc16module.c', 'src/crc16/_crc16tables.c']),
+                 Extension('libscrc._crc24', sources=['src/crc24/_crc24module.c', 'src/crc24/_crc24tables.c']),
                  Extension('libscrc._crc32', sources=['src/crc32/_crc32module.c', 'src/crc32/_crc32tables.c']),
                  Extension('libscrc._crc64', sources=['src/crc64/_crc64module.c', 'src/crc64/_crc64tables.c']),
                 ],

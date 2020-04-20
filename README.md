@@ -2,18 +2,18 @@
 
 libscrc
 =======
-libscrc is a library for calculating CRC4 CRC5 CRC6 CRC7 CRC8 CRC16 CRC32 CRC64.
+libscrc is a library for calculating CRC4 CRC5 CRC6 CRC7 CRC8 CRC16 CRC24 CRC32 CRC64.
 
 |  CRCx |  CRC8 | CRC16  | CRC24 |   CRC32| CRC64  |
 | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: |
-| CRC4-ITU | INTEL   | MODBUS   | BLE* | FSC      | ISO    |
-| CRC5-ITU | BCC     | IBM      | OPENPGP* | CRC32    | ECMA182|
-| CRC5-EPC | LRC     | XMODEM | LTEA* | MPEG2    |        |
-| CRC5-USB | MAXIM8  | CCITT    | LTEB* |ADLER32   |        |
-| CRC6-ITU | ROHC    | KERMIT   | OS9* |FLETCHER32|        |
-| CRC7-MMC | ITU8    |MCRF4XX   |   |          |        |
-|          | CRC8    | SICK     |      |          |        |
-|          | SUM8    | DNP      |       |          |        |
+| CRC4-ITU | INTEL   | MODBUS   | BLE | FSC      | ISO    |
+| CRC5-ITU | BCC     | IBM      | OPENPGP | CRC32    | ECMA182|
+| CRC5-EPC | LRC     | XMODEM | LTE-A | MPEG2    |        |
+| CRC5-USB | MAXIM8  | CCITT    | LTE-B |ADLER32   |        |
+| CRC6-ITU | ROHC    | KERMIT   | OS9 |FLETCHER32|        |
+| CRC7-MMC | ITU8    |MCRF4XX   | FLEXRAY-A |          |        |
+|          | CRC8    | SICK     | FLEXRAY-B |          |        |
+|          | SUM8    | DNP      | INTERLAKEN |          |        |
 |          |FLETCHER8| X25      |       |          |        |
 |          |         | USB      |       |          |        |
 |          |         | MAXIM16  |   |          |        |
@@ -56,7 +56,7 @@ Installation
 #python3 setup.py bdist_wheel
 ```
 
-4. After installation you can run unit tests to make sure that the library works fine.  Execute
+3. After installation you can run unit tests to make sure that the library works fine.  Execute
 
 ```
 #python3 -m libscrc.test.modbus
@@ -143,7 +143,20 @@ crc16 = libscrc.epc16(b'123456789')		# RFID EPC(CRC16-PC-EPC)
 crc16 = libscrc.profibus(b'123456789')
 ```
 
-4. CRC32
+4. CRC24
+
+```python
+crc24 = libscrc.ble(b'123456789')
+crc24 = libscrc.flexraya(b'123456789')
+crc24 = libscrc.flexrayb(b'123456789')
+crc24 = libscrc.openpgp(b'123456789')
+crc24 = libscrc.lte_a(b'123456789')
+crc24 = libscrc.lte_b(b'123456789')
+crc24 = libscrc.os9(b'123456789')
+crc24 = libscrc.interlaken(b'123456789')
+```
+
+5. CRC32
 
 ```python
 crc32 = libscrc.fsc(b'1234')            # Ethernet frame sequence (FSC)
@@ -156,7 +169,7 @@ crc32 = libscrc.hacker32( b'123456789', poly=0x04C11DB7 )
 crc32 = libscrc.hacker32( b'123456789', poly=0x04C11DB7, init=0, xorout=0xFFFFFFFF )
 ```
 
-5. CRC64
+6. CRC64
 
 ```python
 crc64 = libscrc.iso(b'1234')
@@ -172,6 +185,12 @@ crc64 = libscrc.hacker64( b'123456789', poly=0xD800000000000000, init=0 )
 NOTICE
 ------
 * v0.1.6+ version will not support python2 series (2020-01-20)
+
+### V1.1(2020-04-20)
+
+------
+
+- New crc24 ( ble \ flexraya \ flexrayb \ openpgp \ lte_a \ lte_b \ os9 \ interlaken )
 
 ### **V1.0 (2020-03-23)**
 
