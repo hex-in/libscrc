@@ -4,7 +4,7 @@
 *                                           All Rights Reserved
 * File    : _crc32tables.c
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V0.1.6
+* Version : V1.1
 *
 * LICENSING TERMS:
 * ---------------
@@ -20,10 +20,12 @@
 static unsigned int     crc32_table_04c11db7[MAX_TABLE_ARRAY] = { 0x00000000L };
 static unsigned int     crc32_table_edb88320[MAX_TABLE_ARRAY] = { 0x00000000L };
 static unsigned int     crc32_table_hacker[  MAX_TABLE_ARRAY] = { 0x00000000L };
+static unsigned int     crc32_table_shared[  MAX_TABLE_ARRAY] = { 0x00000000L };
 
 static unsigned int  	crc32_table_04c11db7_init		      = FALSE;
 static unsigned int		crc32_table_edb88320_init	          = FALSE;
 static unsigned int     crc32_table_hacker_init               = FALSE;
+static unsigned int     crc32_table_shared_init               = FALSE;
 
 unsigned int hexin_reverse32( unsigned int data )
 {
@@ -101,7 +103,6 @@ unsigned int hexin_crc32_poly_is_low_calc( unsigned int crc32, unsigned char c, 
                                     POLY=0x04C11DB7L [FSC]
 *********************************************************************************************************
 */
-
 unsigned int hexin_calc_crc32_04c11db7( const unsigned char *pSrc, unsigned int len, unsigned int crc32 )
 {
     unsigned int i = 0;
@@ -122,7 +123,6 @@ unsigned int hexin_calc_crc32_04c11db7( const unsigned char *pSrc, unsigned int 
                                     POLY=0xEDB88320L [CRC32 for file]
 *********************************************************************************************************
 */
-
 unsigned int hexin_calc_crc32_edb88320( const unsigned char *pSrc, unsigned int len, unsigned int crc32 )
 {
     unsigned int i = 0;
@@ -143,7 +143,6 @@ unsigned int hexin_calc_crc32_edb88320( const unsigned char *pSrc, unsigned int 
 *                                   For hacker
 *********************************************************************************************************
 */
-
 static unsigned char hexin_init_crc32_table_hacker( unsigned int polynomial ) 
 {
     if ( crc32_table_hacker_init == polynomial ) {
@@ -184,7 +183,6 @@ unsigned int hexin_calc_crc32_hacker( const unsigned char *pSrc, unsigned int le
 	return crc;
 }
 
-
 unsigned int hexin_calc_crc32_adler( const unsigned char *pSrc, unsigned int len, unsigned int crc32 /*reserved*/ )
 {
     unsigned int sum1 = 1, sum2 = 0;
@@ -202,7 +200,6 @@ unsigned int hexin_calc_crc32_adler( const unsigned char *pSrc, unsigned int len
                                     For fletcher32 checksum
 *********************************************************************************************************
 */
-
 unsigned int hexin_calc_crc32_fletcher( const unsigned char *pSrc, unsigned int len, unsigned int crc32 /*reserved*/ )
 {
     unsigned long sum1 = 0xFFFF, sum2 = 0xFFFF;
@@ -224,4 +221,45 @@ unsigned int hexin_calc_crc32_fletcher( const unsigned char *pSrc, unsigned int 
     }
 
     return ( sum1 & 0xFFFF ) | ( sum2 << 16 );
+}
+
+
+/*
+*********************************************************************************************************
+                                    For User
+*********************************************************************************************************
+*/
+unsigned int hexin_calc_crc32_shared( const unsigned char *pSrc,
+                                      unsigned int len,
+                                      unsigned int crc32,
+                                      unsigned int polynomial,
+                                      unsigned char mask /* TRUE -> high, FALSE -> low */ )
+{
+    unsigned int i = 0;
+    unsigned int crc = crc32;
+
+    if ( crc32_table_shared_init != polynomial ) {
+        if ( TRUE == mask ) {
+            hexin_crc32_init_table_poly_is_high( polynomial, crc32_table_shared );
+        } else {
+            hexin_crc32_init_table_poly_is_low(  polynomial, crc32_table_shared );
+        }
+        crc32_table_shared_init = polynomial;
+    }
+
+    switch ( mask ) {
+        case TRUE:
+            for ( i=0; i<len; i++ ) {
+                crc = hexin_crc32_poly_is_high_calc( crc, pSrc[i], crc32_table_shared );
+            }
+            break;
+        
+        default:
+            for ( i=0; i<len; i++ ) {
+                crc = hexin_crc32_poly_is_low_calc(  crc, pSrc[i], crc32_table_shared );
+            }
+            break;
+    }
+
+	return crc;
 }

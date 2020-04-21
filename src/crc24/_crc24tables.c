@@ -12,7 +12,7 @@
 *
 *********************************************************************************************************
 */
-#include "stdio.h"
+
 #include "_crc24tables.h"
 
 static unsigned int     crc24_table_00065b[MAX_TABLE_ARRAY] = { 0x00000000L };

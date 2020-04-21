@@ -11,14 +11,14 @@ libscrc is a library for calculating CRC4 CRC5 CRC6 CRC7 CRC8 CRC16 CRC24 CRC32 
 | CRC5-EPC | LRC     | XMODEM | LTE-A | MPEG2    |        |
 | CRC5-USB | MAXIM8  | CCITT    | LTE-B |ADLER32   |        |
 | CRC6-ITU | ROHC    | KERMIT   | OS9 |FLETCHER32|        |
-| CRC7-MMC | ITU8    |MCRF4XX   | FLEXRAY-A |          |        |
-|          | CRC8    | SICK     | FLEXRAY-B |          |        |
-|          | SUM8    | DNP      | INTERLAKEN |          |        |
-|          |FLETCHER8| X25      |       |          |        |
-|          |         | USB      |       |          |        |
-|          |         | MAXIM16  |   |          |        |
-|          |         | DECT     |      |          |        |
-|          |         | TCP      |       |          |        |
+| CRC7-MMC | ITU8    |MCRF4XX   | FLEXRAY-A | POSIX |        |
+|          | CRC8    | SICK     | FLEXRAY-B | BZIP2 |        |
+|          | SUM8    | DNP      | INTERLAKEN | JAMCRC |        |
+|          |FLETCHER8| X25      |       | AUTOSAR |        |
+|          |         | USB      |       | C |        |
+|          |         | MAXIM16  |   | D |        |
+|          |         | DECT     |      | Q |        |
+|          |         | TCP      |       | XFER |        |
 |          |         | UDP      |       |          |        |
 |          |         |FLETCHER16||          |        |
 |          |         |EPC16     |     |          |        |
@@ -75,6 +75,7 @@ Usage
 import libscrc
 crc16 = libscrc.modbus(b'1234')      # Calculate ASCII of modbus
 crc16 = libscrc.modbus(b'\x01\x02')  # Calculate HEX of modbus
+crc16 = libscrc.modbus(bytearray( [ 0x01, 0x02 ] ))
 ```
 
   You can also calculate CRC gradually
@@ -167,6 +168,15 @@ crc32 = libscrc.crc32(b'1234')          # WinRAR, File
 # xorout=0x00000000(default)
 crc32 = libscrc.hacker32( b'123456789', poly=0x04C11DB7 )
 crc32 = libscrc.hacker32( b'123456789', poly=0x04C11DB7, init=0, xorout=0xFFFFFFFF )
+
+crc32 = libscrc.posix(b'1234')
+crc32 = libscrc.bzip2(b'1234')
+crc32 = libscrc.jamcrc(b'1234')
+crc32 = libscrc.autosar(b'1234')
+crc32 = libscrc.crc32_c(b'1234')
+crc32 = libscrc.crc32_d(b'1234')
+crc32 = libscrc.crc32_q(b'1234')
+crc32 = libscrc.xfer(b'1234')
 ```
 
 6. CRC64

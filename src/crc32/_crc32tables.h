@@ -49,4 +49,10 @@ unsigned int hexin_calc_crc32_hacker(   const unsigned char *pSrc, unsigned int 
 unsigned int hexin_calc_crc32_adler(    const unsigned char *pSrc, unsigned int len, unsigned int crc32 /*reserved*/ );
 unsigned int hexin_calc_crc32_fletcher( const unsigned char *pSrc, unsigned int len, unsigned int crc32 /*reserved*/ );
 
+
+unsigned int hexin_calc_crc32_shared( const unsigned char *pSrc,
+                                      unsigned int len,         /* pSrc length. */
+                                      unsigned int crc32,
+                                      unsigned int polynomial,
+                                      unsigned char mask        /* TRUE -> high, FALSE -> low */ );
 #endif //__CRC32_TABLES_H__

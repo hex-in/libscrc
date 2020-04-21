@@ -57,6 +57,44 @@ static unsigned char hexin_PyArg_ParseTuple( PyObject *self, PyObject *args,
     return TRUE;
 }
 
+
+static unsigned char hexin_PyArg_ParseTuple_Parametes( PyObject *self, PyObject *args,
+                                                       unsigned int  init,
+                                                       unsigned int  polynomial,
+                                                       unsigned char mask,
+                                                       unsigned int (*function)( unsigned char *,
+                                                                                 unsigned int,
+                                                                                 unsigned int,
+                                                                                 unsigned int,
+                                                                                 unsigned char ),
+                                                       unsigned int *result )
+{
+    Py_buffer data = { NULL, NULL };
+
+#if PY_MAJOR_VERSION >= 3
+    if ( !PyArg_ParseTuple( args, "y*|I", &data, &init ) ) {
+        if ( data.obj ) {
+            PyBuffer_Release( &data );
+        }
+        return FALSE;
+    }
+#else
+    if ( !PyArg_ParseTuple( args, "s*|I", &data, &init ) ) {
+        if ( data.obj ) {
+            PyBuffer_Release( &data );
+        }
+        return FALSE;
+    }
+#endif /* PY_MAJOR_VERSION */
+
+    *result = function( (unsigned char *)data.buf, (unsigned int)data.len, init, polynomial, mask  );
+
+    if ( data.obj )
+       PyBuffer_Release( &data );
+
+    return TRUE;
+}
+
 /*
  ********************************************************************************************************
  *                                   POLY=0x4C11DB7 [MPEG2 ]
@@ -215,6 +253,114 @@ static PyObject * _crc32_fletcher32( PyObject *self, PyObject *args )
     return Py_BuildValue( "I", result );
 }
 
+static PyObject * _crc32_posix( PyObject *self, PyObject *args )
+{
+    unsigned int result = 0x00000000L;
+    unsigned int init   = 0x00000000L;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc32_04c11db7, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "I", result ^ 0xFFFFFFFFL );
+}
+
+static PyObject * _crc32_bzip2( PyObject *self, PyObject *args )
+{
+    unsigned int result = 0x00000000L;
+    unsigned int init   = 0xFFFFFFFFL;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc32_04c11db7, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "I", result ^ 0xFFFFFFFFL );
+}
+
+static PyObject * _crc32_jamcrc( PyObject *self, PyObject *args )
+{
+    unsigned int result = 0x00000000L;
+    unsigned int init   = 0xFFFFFFFFL;
+    unsigned int poly   = hexin_reverse32( 0x04C11DB7L );
+    unsigned char mask  = TRUE;
+ 
+    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc32_shared, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "I", result );
+}
+
+static PyObject * _crc32_autosar( PyObject *self, PyObject *args )
+{
+    unsigned int result = 0x00000000L;
+    unsigned int init   = 0xFFFFFFFFL;
+    unsigned int poly   = hexin_reverse32( 0xF4ACFB13L );
+    unsigned char mask  = TRUE;
+ 
+    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc32_shared, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "I", result ^ 0xFFFFFFFFL );
+}
+
+static PyObject * _crc32_crc32_c( PyObject *self, PyObject *args )
+{
+    unsigned int result = 0x00000000L;
+    unsigned int init   = 0xFFFFFFFFL;
+    unsigned int poly   = hexin_reverse32( 0x1EDC6F41L );
+    unsigned char mask  = TRUE;
+ 
+    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc32_shared, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "I", result ^ 0xFFFFFFFFL );
+}
+
+static PyObject * _crc32_crc32_d( PyObject *self, PyObject *args )   // TODO
+{
+    unsigned int result = 0x00000000L;
+    unsigned int init   = 0xFFFFFFFFL;
+    unsigned int poly   = hexin_reverse32( 0xA833982BL );
+    unsigned char mask  = TRUE;
+ 
+    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc32_shared, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "I", result ^ 0xFFFFFFFFL );
+}
+
+static PyObject * _crc32_crc32_q( PyObject *self, PyObject *args )
+{
+    unsigned int result = 0x00000000L;
+    unsigned int init   = 0x00000000L;
+    unsigned int poly   = 0x814141ABL;
+    unsigned char mask  = FALSE;
+ 
+    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc32_shared, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "I", result );
+}
+
+static PyObject * _crc32_xfer( PyObject *self, PyObject *args )
+{
+    unsigned int result = 0x00000000L;
+    unsigned int init   = 0x00000000L;
+    unsigned int poly   = 0x000000AFL;
+    unsigned char mask  = FALSE;
+ 
+    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc32_shared, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "I", result );
+}
+
 /* method table */
 static PyMethodDef _crc32Methods[] = {
     { "mpeg2",       (PyCFunction)_crc32_mpeg_2,     METH_VARARGS,   "Calculate CRC (MPEG2) of CRC32 [Poly=0x04C11DB7, Init=0xFFFFFFFF, Xorout=0x00000000 Refin=False Refout=False]"},
@@ -229,6 +375,14 @@ static PyMethodDef _crc32Methods[] = {
                                                                                  "@ref    : default=False" },
     { "adler32",    (PyCFunction)_crc32_adler32,     METH_VARARGS,   "Calculate adler32 (MOD=65521)" },
     { "fletcher32", (PyCFunction)_crc32_fletcher32,  METH_VARARGS,   "Calculate fletcher32" },
+    { "posix",      (PyCFunction)_crc32_posix,       METH_VARARGS,   "Calculate CRC (POSIX) of CRC32 [Poly=0x04C11DB7, Init=0x00000000, Xorout=0xFFFFFFFF Refin=True Refout=True]"},
+    { "bzip2",      (PyCFunction)_crc32_bzip2,       METH_VARARGS,   "Calculate CRC (BZIP2) of CRC32 [Poly=0x04C11DB7, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]"},
+    { "jamcrc",     (PyCFunction)_crc32_jamcrc,      METH_VARARGS,   "Calculate CRC (JAMCRC) of CRC32 [Poly=0x04C11DB7, Init=0xFFFFFFFF, Xorout=0x00000000 Refin=True Refout=True]"},
+    { "autosar",    (PyCFunction)_crc32_autosar,     METH_VARARGS,   "Calculate CRC (AUTOSAR) of CRC32 [Poly=0xF4ACFB13, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]"},
+    { "crc32_c",    (PyCFunction)_crc32_crc32_c,     METH_VARARGS,   "Calculate CRC (CRC32_C) of CRC32 [Poly=0x1EDC6F41, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]"},
+    { "crc32_d",    (PyCFunction)_crc32_crc32_d,     METH_VARARGS,   "Calculate CRC (CRC32_D) of CRC32 [Poly=0xA833982B, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]"},
+    { "crc32_q",    (PyCFunction)_crc32_crc32_q,     METH_VARARGS,   "Calculate CRC (CRC32_Q) of CRC32 [Poly=0x814141AB, Init=0x00000000, Xorout=0x00000000 Refin=True Refout=True]"},
+    { "xfer",       (PyCFunction)_crc32_xfer,        METH_VARARGS,   "Calculate CRC (XFER) of CRC32 [Poly=0x000000AF, Init=0x00000000, Xorout=0x00000000 Refin=True Refout=True]"},
     { NULL, NULL, 0, NULL }        /* Sentinel */
 };
 
@@ -242,6 +396,14 @@ PyDoc_STRVAR( _crc32_doc,
 "libscrc.hacker32   -> Free calculation CRC32 (not support python2 series) Xorout=0x00000000 Refin=False Refout=False\n"
 "libscrc.adler32    -> Calculate adler32 (MOD=65521)\n"
 "libscrc.fletcher32 -> Calculate fletcher32\n"
+"libscrc.posix      -> Calculate CRC (POSIX) [Poly=0x04C11DB7, Init=0x00000000, Xorout=0xFFFFFFFF Refin=False Refout=False]\n"
+"libscrc.bzip2      -> Calculate CRC (BZIP2) [Poly=0x04C11DB7, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True  Refout=True]\n"
+"libscrc.jamcrc     -> Calculate CRC (JAMCRC) [Poly=0x04C11DB7, Init=0xFFFFFFFF, Xorout=0x00000000 Refin=True  Refout=True]\n"
+"libscrc.autosar    -> Calculate CRC (AUTOSAR) [Poly=0xF4ACFB13, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True  Refout=True]\n"
+"libscrc.crc32_c    -> Calculate CRC (CRC32_C) [Poly=0x1EDC6F41, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True  Refout=True]\n"
+"libscrc.crc32_d    -> Calculate CRC (CRC32_D) [Poly=0xA833982B, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True  Refout=True]\n"
+"libscrc.crc32_q    -> Calculate CRC (CRC32_Q) [Poly=0x814141AB, Init=0x00000000, Xorout=0x00000000 Refin=True  Refout=True]\n"
+"libscrc.xfer       -> Calculate CRC (XFER) [Poly=0x000000AF, Init=0x00000000, Xorout=0x00000000 Refin=True  Refout=True]\n"
 "\n" );
 
 
