@@ -16,12 +16,12 @@
 
 #include "_crcxtables.h"
 
-static unsigned char    crc4_table_0c[MAX_TABLE_ARRAY]   = { 0x0000 };     // Used for ITU
-static unsigned char    crc5_table_15[MAX_TABLE_ARRAY]   = { 0x0000 };     // Used for ITU
-static unsigned char    crc5_table_48[MAX_TABLE_ARRAY]   = { 0x0000 };     // Used for EPC
-static unsigned char    crc5_table_14[MAX_TABLE_ARRAY]   = { 0x0000 };     // Used for USB
-static unsigned char    crc6_table_30[MAX_TABLE_ARRAY]   = { 0x0000 };     // Used for ITU
-static unsigned char    crc7_table_12[MAX_TABLE_ARRAY]   = { 0x0000 };     // Used for MMC, SD
+static unsigned char    crc4_table_0c[MAX_TABLE_ARRAY]   = { 0x00 };     // Used for ITU
+static unsigned char    crc5_table_15[MAX_TABLE_ARRAY]   = { 0x00 };     // Used for ITU
+static unsigned char    crc5_table_48[MAX_TABLE_ARRAY]   = { 0x00 };     // Used for EPC
+static unsigned char    crc5_table_14[MAX_TABLE_ARRAY]   = { 0x00 };     // Used for USB
+static unsigned char    crc6_table_30[MAX_TABLE_ARRAY]   = { 0x00 };     // Used for ITU
+static unsigned char    crc7_table_12[MAX_TABLE_ARRAY]   = { 0x00 };     // Used for MMC, SD
 
 static int              crc4_table_0c_init               = FALSE;
 static int              crc5_table_15_init               = FALSE;

@@ -14,6 +14,7 @@
 #           2020-04-17 Wheel Ver:1.1   [Heyn] New add CRC24
 
 from ._crcx  import *
+from ._canx  import *
 from ._crc8  import *
 from ._crc16 import *
 from ._crc24 import *

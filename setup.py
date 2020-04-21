@@ -77,6 +77,7 @@ setup(
     include_package_data=True,
 
     ext_modules=[Extension('libscrc._crcx',  sources=['src/crcx/_crcxmodule.c',   'src/crcx/_crcxtables.c'  ]),
+                 Extension('libscrc._canx',  sources=['src/canx/_canxmodule.c',   'src/canx/_canxtables.c'  ]),
                  Extension('libscrc._crc8',  sources=['src/crc8/_crc8module.c',   'src/crc8/_crc8tables.c'  ]),
                  Extension('libscrc._crc16', sources=['src/crc16/_crc16module.c', 'src/crc16/_crc16tables.c']),
                  Extension('libscrc._crc24', sources=['src/crc24/_crc24module.c', 'src/crc24/_crc24tables.c']),

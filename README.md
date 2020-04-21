@@ -12,10 +12,10 @@ libscrc is a library for calculating CRC4 CRC5 CRC6 CRC7 CRC8 CRC16 CRC24 CRC32 
 | CRC5-USB | MAXIM8  | CCITT    | LTE-B |ADLER32   |        |
 | CRC6-ITU | ROHC    | KERMIT   | OS9 |FLETCHER32|        |
 | CRC7-MMC | ITU8    |MCRF4XX   | FLEXRAY-A | POSIX |        |
-|          | CRC8    | SICK     | FLEXRAY-B | BZIP2 |        |
-|          | SUM8    | DNP      | INTERLAKEN | JAMCRC |        |
-|          |FLETCHER8| X25      |       | AUTOSAR |        |
-|          |         | USB      |       | C |        |
+| CAN15 | CRC8    | SICK     | FLEXRAY-B | BZIP2 |        |
+| CAN17 | SUM8    | DNP      | INTERLAKEN | JAMCRC |        |
+| CAN21 |FLETCHER8| X25      |       | AUTOSAR |        |
+|  |         | USB      |       | C |        |
 |          |         | MAXIM16  |   | D |        |
 |          |         | DECT     |      | Q |        |
 |          |         | TCP      |       | XFER |        |
@@ -97,6 +97,10 @@ crc5 = libscrc.epc(b'1234')
 crc5 = libscrc.usb5(b'1234')
 crc6 = libscrc.itu6(b'1234')
 crc7 = libscrc.mmc(b'1234')
+
+crc15 = libscrc.can15(b'1234')
+crc17 = libscrc.can17(b'1234')
+crc21 = libscrc.can21(b'1234')
 ```
 
 2. CRC8
