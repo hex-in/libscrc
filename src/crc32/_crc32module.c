@@ -319,7 +319,7 @@ static PyObject * _crc32_crc32_c( PyObject *self, PyObject *args )
     return Py_BuildValue( "I", result ^ 0xFFFFFFFFL );
 }
 
-static PyObject * _crc32_crc32_d( PyObject *self, PyObject *args )   // TODO
+static PyObject * _crc32_crc32_d( PyObject *self, PyObject *args )
 {
     unsigned int result = 0x00000000L;
     unsigned int init   = 0xFFFFFFFFL;

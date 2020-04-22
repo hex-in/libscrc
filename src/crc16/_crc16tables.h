@@ -60,4 +60,10 @@ unsigned short hexin_calc_crc16_fletcher( const unsigned char *pSrc, unsigned in
 
 unsigned short hexin_calc_crc16_1dcf( const unsigned char *pSrc, unsigned int len, unsigned short crc16 );
 
+unsigned short hexin_calc_crc16_shared( const unsigned char *pSrc,
+                                        unsigned int len,
+                                        unsigned short crc16,
+                                        unsigned short polynomial,
+                                        unsigned char mask /* TRUE -> high, FALSE -> low */ );
+
 #endif //__CRC16_TABLES_H__

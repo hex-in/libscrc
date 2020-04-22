@@ -18,11 +18,17 @@ libscrc is a library for calculating CRC4 CRC5 CRC6 CRC7 CRC8 CRC16 CRC24 CRC32 
 |  |         | USB      |       | C |        |
 |          |         | MAXIM16  |   | D |        |
 |          |         | DECT     |      | Q |        |
-|          |         | TCP      |       | XFER |        |
-|          |         | UDP      |       |          |        |
+|          |         | TCP/UDP  |       | XFER |        |
+|          |         | CDMA2000 |       |          |        |
 |          |         |FLETCHER16||          |        |
 |          |         |EPC16     |     |          |        |
 | | |PROFIBUS | | | |
+| | |BUYPASS | | | |
+| | |GENIBUS | | | |
+| | |GSM16 | | | |
+| | |RIELLO | | | |
+| | |OPENSAFETY | | | |
+| | |EN13757 | | | |
 
 
 
@@ -122,7 +128,7 @@ crc16 = libscrc.ibm(b'1234')            # poly=0xA001 (default Reversed)
 crc16 = libscrc.ibm(b'1234', 0x8005)    # poly=0x8005 (Normal)
 crc16 = libscrc.modbus(b'1234')
 crc16 = libscrc.xmodem(b'1234')
-crc16 = libscrc.ccitt(b'1234')
+crc16 = libscrc.ccitt_aug(b'1234')
 crc16 = libscrc.ccitt_false(b'1234')
 crc16 = libscrc.kermit(b'1234')
 crc16 = libscrc.mcrf4xx(b'1234')
@@ -144,21 +150,36 @@ crc16 = libscrc.udp( data )             # 13933
 crc16 = libscrc.hacker16( b'123456789', poly=0xA001 )
 crc16 = libscrc.hacker16( b'123456789', poly=0xA001, init=0, xorout=0xFFFF )
 
-crc16 = libscrc.epc16(b'123456789')		# RFID EPC(CRC16-PC-EPC)
-crc16 = libscrc.profibus(b'123456789')
+crc16 = libscrc.epc16(b'1234')		# RFID EPC(CRC16-PC-EPC)
+crc16 = libscrc.profibus(b'1234')
+crc16 = libscrc.buypass(b'1234')
+crc16 = libscrc.genibus(b'1234')
+crc16 = libscrc.gsm16(b'1234')
+crc16 = libscrc.riello(b'1234')
+
+crc16 = libscrc.crc16_a(b'1234')
+crc16 = libscrc.cdma2000(b'1234')
+crc16 = libscrc.teledisk(b'1234')
+crc16 = libscrc.tms37157(b'1234')
+crc16 = libscrc.en13757(b'1234')
+crc16 = libscrc.t10_dif(b'1234')
+crc16 = libscrc.dds_110(b'1234')
+crc16 = libscrc.lj1200(b'1234')
+crc16 = libscrc.opensafety_a(b'1234')
+crc16 = libscrc.opensafety_b(b'1234')
 ```
 
 4. CRC24
 
 ```python
-crc24 = libscrc.ble(b'123456789')
-crc24 = libscrc.flexraya(b'123456789')
-crc24 = libscrc.flexrayb(b'123456789')
-crc24 = libscrc.openpgp(b'123456789')
-crc24 = libscrc.lte_a(b'123456789')
-crc24 = libscrc.lte_b(b'123456789')
-crc24 = libscrc.os9(b'123456789')
-crc24 = libscrc.interlaken(b'123456789')
+crc24 = libscrc.ble(b'1234')
+crc24 = libscrc.flexraya(b'1234')
+crc24 = libscrc.flexrayb(b'1234')
+crc24 = libscrc.openpgp(b'1234')
+crc24 = libscrc.lte_a(b'1234')
+crc24 = libscrc.lte_b(b'1234')
+crc24 = libscrc.os9(b'1234')
+crc24 = libscrc.interlaken(b'1234')
 ```
 
 5. CRC32

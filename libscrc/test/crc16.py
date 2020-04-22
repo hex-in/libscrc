@@ -7,6 +7,7 @@
 # Program:  Test library CRC16 Module.
 # Package:  pip install libscrc.
 # History:  2017-08-17 Wheel Ver:0.0.3 [Heyn] Initialize
+#           2019-04-22 Wheel Ver:1.1   [Heyn] New add some functions.
 
 import unittest
 
@@ -21,8 +22,8 @@ class TestCRC16( unittest.TestCase ):
         """ Test basic functionality.
         """
         self.assertEqual( module.x25(b'123456789'),         0x906E )
-        self.assertEqual(module.xmodem(b'123456789'),       0x31C3 )
-        self.assertEqual( module.ccitt(b'123456789'),       0x2189 )
+        self.assertEqual( module.xmodem(b'123456789'),      0x31C3 )
+        self.assertEqual( module.ccitt_aug(b'123456789'),   0xE5CC )
         self.assertEqual( module.kermit(b'123456789'),      0x2189 )
         self.assertEqual( module.mcrf4xx(b'123456789'),     0x6F91 )
         self.assertEqual( module.ccitt_false(b'123456789'), 0x29B1 )
@@ -36,6 +37,21 @@ class TestCRC16( unittest.TestCase ):
         self.assertEqual( module.udp(b'\x45\x00\x00\x3c\x00\x00\x00\x00\x40\x11\x00\x00\xc0\xa8\x2b\xc3\x08\x08\x08\x08\x11'), 0x366D )
         self.assertEqual( module.fletcher16(b'123456789'),  0x1EDE )
         self.assertEqual( module.profibus(b'123456789'),    0xA819 )
+        self.assertEqual( module.buypass(b'123456789'),     0xFEE8 )
+        self.assertEqual( module.genibus(b'123456789'),     0xD64E )
+        self.assertEqual( module.gsm16(b'123456789'),       0xCE3C )
+        self.assertEqual( module.riello(b'123456789'),      0x63D0 )
+        self.assertEqual( module.crc16_a(b'123456789'),     0xBF05 )
+        self.assertEqual( module.cdma2000(b'123456789'),    0x4C06 )
+        self.assertEqual( module.teledisk(b'123456789'),    0x0FB3 )
+        self.assertEqual( module.tms37157(b'123456789'),    0x26B1 )
+        self.assertEqual( module.en13757(b'123456789'),     0xC2B7 )
+        self.assertEqual( module.t10_dif(b'123456789'),     0xD0DB )
+        self.assertEqual( module.dds_110(b'123456789'),     0x9ECF )
+        self.assertEqual( module.lj1200(b'123456789'),      0xBDF4 )
+
+        self.assertEqual( module.opensafety_a(b'123456789'),0x5D38 )
+        self.assertEqual( module.opensafety_b(b'123456789'),0x20FE )
 
         # the same in two steps
         crc = module.x25( b'12345' )

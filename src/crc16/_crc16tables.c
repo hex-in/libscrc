@@ -42,6 +42,9 @@ static unsigned short   crc16_table_hacker[MAX_TABLE_ARRAY] = { 0x0000 };     //
 static unsigned short   crc16_table_hacker_init             = FALSE;          // Default value.
 
 
+static unsigned short   crc16_table_shared[MAX_TABLE_ARRAY] = { 0x0000 };     // Used for share memory.
+static unsigned short   crc16_table_shared_init             = FALSE;
+
 unsigned short hexin_reverse16( unsigned short data )
 {
     unsigned int   i = 0;
@@ -208,11 +211,11 @@ unsigned short hexin_calc_crc16_8005( const unsigned char *pSrc, unsigned int le
     unsigned short crc = crc16;
 
     if ( crc16_table_8005_init == FALSE ) {
-        crc16_table_8005_init = hexin_crc16_init_table_poly_is_high( CRC16_POLYNOMIAL_8005, crc16_table_8005 );
+        crc16_table_8005_init = hexin_crc16_init_table_poly_is_low( CRC16_POLYNOMIAL_8005, crc16_table_8005 );
     }
 
 	for ( i=0; i<len; i++ ) {
-		crc = hexin_crc16_poly_is_high_calc( crc, pSrc[i], crc16_table_8005 );
+		crc = hexin_crc16_poly_is_low_calc( crc, pSrc[i], crc16_table_8005 );
 	}
 	return crc;
 }
@@ -383,5 +386,41 @@ unsigned short hexin_calc_crc16_1dcf( const unsigned char *pSrc, unsigned int le
 	for ( i=0; i<len; i++ ) {
 		crc = hexin_crc16_poly_is_low_calc( crc, pSrc[i], crc16_table_1dcf );
 	}
+	return crc;
+}
+
+
+unsigned short hexin_calc_crc16_shared( const unsigned char *pSrc,
+                                        unsigned int len,
+                                        unsigned short crc16,
+                                        unsigned short polynomial,
+                                        unsigned char mask /* TRUE -> high, FALSE -> low */ )
+{
+    unsigned int i = 0;
+    unsigned short crc = crc16;
+
+    if ( crc16_table_shared_init != polynomial ) {
+        if ( TRUE == mask ) {
+            hexin_crc16_init_table_poly_is_high( polynomial, crc16_table_shared );
+        } else {
+            hexin_crc16_init_table_poly_is_low(  polynomial, crc16_table_shared );
+        }
+        crc16_table_shared_init = polynomial;
+    }
+
+    switch ( mask ) {
+        case TRUE:
+            for ( i=0; i<len; i++ ) {
+                crc = hexin_crc16_poly_is_high_calc( crc, pSrc[i], crc16_table_shared );
+            }
+            break;
+        
+        default:
+            for ( i=0; i<len; i++ ) {
+                crc = hexin_crc16_poly_is_low_calc(  crc, pSrc[i], crc16_table_shared );
+            }
+            break;
+    }
+
 	return crc;
 }

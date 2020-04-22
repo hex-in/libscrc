@@ -30,9 +30,9 @@ libscrc is a library for calculating CRC4 CRC5 CRC6 CRC7 CRC8 CRC16 CRC24 CRC32 
 +------------+------------+------------+-----------+-----------+-----------+
 |            |            | DECT       |           |    Q      |           |
 +------------+------------+------------+-----------+-----------+-----------+
-|            |            | TCP        |           |   XFER    |           |
+|            |            | TCP/UDP    |           |   XFER    |           |
 +------------+------------+------------+-----------+-----------+-----------+
-|            |            | UDP        |           |           |           |
+|            |            | CDMA2000   |           |           |           |
 +------------+------------+------------+-----------+-----------+-----------+
 |            |            | FLETCHER16 |           |           |           |
 +------------+------------+------------+-----------+-----------+-----------+
@@ -40,7 +40,18 @@ libscrc is a library for calculating CRC4 CRC5 CRC6 CRC7 CRC8 CRC16 CRC24 CRC32 
 +------------+------------+------------+-----------+-----------+-----------+
 |            |            | PROFIBUS   |           |           |           |
 +------------+------------+------------+-----------+-----------+-----------+
-
+|            |            | BUYPASS    |           |           |           |
++------------+------------+------------+-----------+-----------+-----------+
+|            |            | GENIBUS    |           |           |           |
++------------+------------+------------+-----------+-----------+-----------+
+|            |            | GSM16      |           |           |           |
++------------+------------+------------+-----------+-----------+-----------+
+|            |            | RIELLO     |           |           |           |
++------------+------------+------------+-----------+-----------+-----------+
+|            |            | OPENSAFETY |           |           |           |
++------------+------------+------------+-----------+-----------+-----------+
+|            |            | EN13757    |           |           |           |
++------------+------------+------------+-----------+-----------+-----------+
 
 Installation
 ------------
@@ -105,7 +116,7 @@ Example
     crc15 = libscrc.can15(b'1234')
     crc17 = libscrc.can17(b'1234')
     crc21 = libscrc.can21(b'1234')
-    
+
 * CRC8::
 
     crc8 = libscrc.intel(b'1234')
@@ -122,7 +133,7 @@ Example
     crc16 = libscrc.ibm(b'1234', 0x8005)    # poly=0x8005 (Normal)
     crc16 = libscrc.modbus(b'1234')  
     crc16 = libscrc.xmodem(b'1234')  
-    crc16 = libscrc.ccitt(b'1234')  
+    crc16 = libscrc.ccitt_aug(b'1234')  
     crc16 = libscrc.ccitt_false(b'1234')  
     crc16 = libscrc.kermit(b'1234')  
     crc16 = libscrc.mcrf4xx(b'1234')  
@@ -138,7 +149,22 @@ Example
 
     crc16 = libscrc.epc16(b'1234')          # RFID EPC(CRC16-PC-EPC)
     crc16 = libscrc.profibus(b'1234')
-    
+    crc16 = libscrc.buypass(b'1234')
+    crc16 = libscrc.genibus(b'1234')
+    crc16 = libscrc.gsm16(b'1234')
+    crc16 = libscrc.riello(b'1234')
+
+    crc16 = libscrc.crc16_a(b'1234')
+    crc16 = libscrc.cdma2000(b'1234')
+    crc16 = libscrc.teledisk(b'1234')
+    crc16 = libscrc.tms37157(b'1234')
+    crc16 = libscrc.en13757(b'1234')
+    crc16 = libscrc.t10_dif(b'1234')
+    crc16 = libscrc.dds_110(b'1234')
+    crc16 = libscrc.lj1200(b'1234')
+    crc16 = libscrc.opensafety_a(b'1234')
+    crc16 = libscrc.opensafety_b(b'1234')
+
 * CRC24::
     crc24 = libscrc.ble(b'1234')
     crc24 = libscrc.flexraya(b'1234')

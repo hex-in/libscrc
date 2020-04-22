@@ -65,6 +65,44 @@ static unsigned char hexin_PyArg_ParseTuple( PyObject *self, PyObject *args,
     return TRUE;
 }
 
+
+static unsigned char hexin_PyArg_ParseTuple_Parametes( PyObject *self, PyObject *args,
+                                                       unsigned short init,
+                                                       unsigned short polynomial,
+                                                       unsigned char  mask,
+                                                       unsigned short (*function)( unsigned char *,
+                                                                                   unsigned int,
+                                                                                   unsigned short,
+                                                                                   unsigned short,
+                                                                                   unsigned char ),
+                                                       unsigned short *result )
+{
+    Py_buffer data = { NULL, NULL };
+
+#if PY_MAJOR_VERSION >= 3
+    if ( !PyArg_ParseTuple( args, "y*|H", &data, &init ) ) {
+        if ( data.obj ) {
+            PyBuffer_Release( &data );
+        }
+        return FALSE;
+    }
+#else
+    if ( !PyArg_ParseTuple( args, "s*|H", &data, &init ) ) {
+        if ( data.obj ) {
+            PyBuffer_Release( &data );
+        }
+        return FALSE;
+    }
+#endif /* PY_MAJOR_VERSION */
+
+    *result = function( (unsigned char *)data.buf, (unsigned int)data.len, init, polynomial, mask  );
+
+    if ( data.obj )
+       PyBuffer_Release( &data );
+
+    return TRUE;
+}
+
 /*
 *********************************************************************************************************
                                     POLY=0xA001 [Modbus USB]
@@ -170,6 +208,18 @@ static PyObject * _crc16_ccitt( PyObject *self, PyObject *args )
 {
     unsigned short result = 0x0000;
     unsigned short init   = 0xFFFF;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_1021, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "H", result );
+}
+
+static PyObject * _crc16_ccitt_aug( PyObject *self, PyObject *args )
+{
+    unsigned short result = 0x0000;
+    unsigned short init   = 0x1D0F;
  
     if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_1021, &result ) ) {
         return NULL;
@@ -487,24 +537,201 @@ static PyObject * _crc16_profibus( PyObject *self, PyObject *args )
     return Py_BuildValue( "H", result ^ 0xFFFF );
 }
 
+static PyObject * _crc16_buypass( PyObject *self, PyObject *args )
+{
+    unsigned short result = 0x0000;
+    unsigned short init   = 0x0000;
+    unsigned short poly   = 0x8005;
+    unsigned char  mask   = FALSE;
+ 
+    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "H", result );
+}
+
+static PyObject * _crc16_gsm16( PyObject *self, PyObject *args )
+{
+    unsigned short result = 0x0000;
+    unsigned short init   = 0x0000;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_1021, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "H", (result ^ 0xFFFF) );
+}
+
+static PyObject * _crc16_riello( PyObject *self, PyObject *args )
+{
+    unsigned short result = 0x0000;
+    unsigned short init   = hexin_reverse16( 0xB2AA );
+    unsigned short poly   = hexin_reverse16( 0x1021 );
+    unsigned char  mask   = TRUE;
+ 
+    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "H", result );
+}
+
+static PyObject * _crc16_crc16_a( PyObject *self, PyObject *args )
+{
+    unsigned short result = 0x0000;
+    unsigned short init   = hexin_reverse16( 0xC6C6 );
+    unsigned short poly   = hexin_reverse16( 0x1021 );
+    unsigned char  mask   = TRUE;
+ 
+    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "H", result );
+}
+
+static PyObject * _crc16_cdma2000( PyObject *self, PyObject *args )
+{
+    unsigned short result = 0x0000;
+    unsigned short init   = 0xFFFF;
+    unsigned short poly   = 0xC867;
+    unsigned char  mask   = FALSE;
+ 
+    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "H", result );
+}
+
+static PyObject * _crc16_teledisk( PyObject *self, PyObject *args )
+{
+    unsigned short result = 0x0000;
+    unsigned short init   = 0x0000;
+    unsigned short poly   = 0xA097;
+    unsigned char  mask   = FALSE;
+ 
+    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "H", result );
+}
+
+static PyObject * _crc16_tms37157( PyObject *self, PyObject *args )
+{
+    unsigned short result = 0x0000;
+    unsigned short init   = hexin_reverse16( 0x89EC );
+    unsigned short poly   = hexin_reverse16( 0x1021 );
+    unsigned char  mask   = TRUE; 
+ 
+    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "H", result );
+}
+
+static PyObject * _crc16_en13757( PyObject *self, PyObject *args )
+{
+    unsigned short result = 0x0000;
+    unsigned short init   = 0x0000;
+    unsigned short poly   = 0x3D65;
+    unsigned char  mask   = FALSE; 
+ 
+    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "H", result ^ 0xFFFF );
+}
+
+static PyObject * _crc16_t10_dif( PyObject *self, PyObject *args )
+{
+    unsigned short result = 0x0000;
+    unsigned short init   = 0x0000;
+    unsigned short poly   = 0x8BB7;
+    unsigned char  mask   = FALSE; 
+ 
+    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "H", result );
+}
+
+static PyObject * _crc16_dds_110( PyObject *self, PyObject *args )
+{
+    unsigned short result = 0x0000;
+    unsigned short init   = 0x800D;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_8005, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "H", result );
+}
+
+static PyObject * _crc16_lj1200( PyObject *self, PyObject *args )
+{
+    unsigned short result = 0x0000;
+    unsigned short init   = 0x0000;
+    unsigned short poly   = 0x6F63;
+    unsigned char  mask   = FALSE; 
+ 
+    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "H", result );
+}
+
+static PyObject * _crc16_opensafety_a( PyObject *self, PyObject *args )
+{
+    unsigned short result = 0x0000;
+    unsigned short init   = 0x0000;
+    unsigned short poly   = 0x5935;
+    unsigned char  mask   = FALSE;
+ 
+    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "H", result );
+}
+
+static PyObject * _crc16_opensafety_b( PyObject *self, PyObject *args )
+{
+    unsigned short result = 0x0000;
+    unsigned short init   = 0x0000;
+    unsigned short poly   = 0x755B;
+    unsigned char  mask   = FALSE;
+ 
+    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "H", result );
+}
 
 /* method table */
 static PyMethodDef _crc16Methods[] = {
-    { "modbus",      (PyCFunction)_crc16_modbus, METH_VARARGS, "Calculate Modbus of CRC16              [Poly=0xA001, Init=0xFFFF Xorout=0x0000 Refin=False Refout=False]" },
-    { "usb16",       (PyCFunction)_crc16_usb,    METH_VARARGS, "Calculate USB    of CRC16              [Poly=0xA001, Init=0xFFFF Xorout=0xFFFF Refin=False Refout=False]" },
-    { "ibm",         (PyCFunction)_crc16_ibm,    METH_VARARGS, "Calculate IBM (Alias:ARC/LHA) of CRC16 [Poly=0x8005, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]" },
-    { "xmodem",      (PyCFunction)_crc16_xmodem, METH_VARARGS, "Calculate XMODEM of CRC16              [Poly=0x1021, Init=0x0000 Xorout=0x0000 Refin=False Refout=False]" },
-    { "ccitt",       (PyCFunction)_crc16_kermit, METH_VARARGS, "Calculate CCITT-TRUE of CRC16          [Poly=0x1021, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]" },
-    { "ccitt_false", (PyCFunction)_crc16_ccitt,  METH_VARARGS, "Calculate CCITT-FALSE of CRC16         [Poly=0x1021, Init=0xFFFF or 0x1D0F]" },
-    { "kermit",      (PyCFunction)_crc16_kermit, METH_VARARGS, "Calculate Kermit (CCITT-TRUE) of CRC16 [Poly=0x8408, Init=0x0000]" },
-    { "mcrf4xx",     (PyCFunction)_crc16_mcrf4xx,METH_VARARGS, "Calculate MCRF4XX of CRC16             [Poly=0x8408, Init=0xFFFF]" },
-    { "sick",        (PyCFunction)_crc16_sick,   METH_VARARGS, "Calculate Sick of CRC16                [Poly=0x8005, Init=0x0000]" },
-    { "dnp",         (PyCFunction)_crc16_dnp,    METH_VARARGS, "Calculate DNP (Ues:M-Bus, ICE870)  of CRC16    [Poly=0x3D65, Init=0x0000 Xorout=0xFFFF Refin=True Refout=True]" },
-    { "x25",         (PyCFunction)_crc16_x25,    METH_VARARGS, "Calculate X25  of CRC16                [Poly=0x1021, Init=0xFFFF Xorout=0xFFFF Refin=True Refout=True]" },
-    { "maxim16",     (PyCFunction)_crc16_maxim,  METH_VARARGS, "Calculate MAXIM of CRC16               [Poly=0x8005, Init=0x0000 Xorout=0xFFFF Refin=True Refout=True]" },
-    { "dect",        (PyCFunction)_crc16_dect,   METH_VARARGS, "Calculate DECT of CRC16                [Poly=0x0589, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]" },
-    { "table16",     (PyCFunction)_crc16_table,  METH_VARARGS, "Print CRC16 table to list. libscrc.table16( polynomial )" },
-    { "hacker16",    (PyCFunction)_crc16_hacker, METH_KEYWORDS|METH_VARARGS, "User calculation CRC16\n"
+    { "modbus",      (PyCFunction)_crc16_modbus,    METH_VARARGS, "Calculate Modbus of CRC16              [Poly=0xA001, Init=0xFFFF Xorout=0x0000 Refin=False Refout=False]" },
+    { "usb16",       (PyCFunction)_crc16_usb,       METH_VARARGS, "Calculate USB    of CRC16              [Poly=0xA001, Init=0xFFFF Xorout=0xFFFF Refin=False Refout=False]" },
+    { "ibm",         (PyCFunction)_crc16_ibm,       METH_VARARGS, "Calculate IBM (Alias:ARC/LHA) of CRC16 [Poly=0x8005, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]" },
+    { "xmodem",      (PyCFunction)_crc16_xmodem,    METH_VARARGS, "Calculate XMODEM of CRC16              [Poly=0x1021, Init=0x0000 Xorout=0x0000 Refin=False Refout=False]" },
+    { "ccitt_aug",   (PyCFunction)_crc16_ccitt_aug, METH_VARARGS, "Calculate CCITT-AUG of CRC16           [Poly=0x1021, Init=0x1D0F Xorout=0x0000 Refin=True Refout=True]" },
+    { "ccitt_false", (PyCFunction)_crc16_ccitt,     METH_VARARGS, "Calculate CCITT-FALSE of CRC16         [Poly=0x1021, Init=0xFFFF or 0x1D0F]" },
+    { "kermit",      (PyCFunction)_crc16_kermit,    METH_VARARGS, "Calculate Kermit (CCITT-TRUE) of CRC16 [Poly=0x8408, Init=0x0000]" },
+    { "mcrf4xx",     (PyCFunction)_crc16_mcrf4xx,   METH_VARARGS, "Calculate MCRF4XX of CRC16             [Poly=0x8408, Init=0xFFFF]" },
+    { "sick",        (PyCFunction)_crc16_sick,      METH_VARARGS, "Calculate Sick of CRC16                [Poly=0x8005, Init=0x0000]" },
+    { "dnp",         (PyCFunction)_crc16_dnp,       METH_VARARGS, "Calculate DNP (Ues:M-Bus, ICE870)  of CRC16    [Poly=0x3D65, Init=0x0000 Xorout=0xFFFF Refin=True Refout=True]" },
+    { "x25",         (PyCFunction)_crc16_x25,       METH_VARARGS, "Calculate X25  of CRC16                [Poly=0x1021, Init=0xFFFF Xorout=0xFFFF Refin=True Refout=True]" },
+    { "maxim16",     (PyCFunction)_crc16_maxim,     METH_VARARGS, "Calculate MAXIM of CRC16               [Poly=0x8005, Init=0x0000 Xorout=0xFFFF Refin=True Refout=True]" },
+    { "dect",        (PyCFunction)_crc16_dect,      METH_VARARGS, "Calculate DECT of CRC16                [Poly=0x0589, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]" },
+    { "table16",     (PyCFunction)_crc16_table,     METH_VARARGS, "Print CRC16 table to list. libscrc.table16( polynomial )" },
+    { "hacker16",    (PyCFunction)_crc16_hacker,    METH_KEYWORDS|METH_VARARGS, "User calculation CRC16\n"
                                                                              "@data   : bytes\n"
                                                                              "@poly   : default=0x1021\n"
                                                                              "@init   : default=0xFFFF\n"
@@ -515,6 +742,21 @@ static PyMethodDef _crc16Methods[] = {
     { "fletcher16",  (PyCFunction)_crc16_fletcher,   METH_VARARGS, "Calculate fletcher16" },
     { "epc16",       (PyCFunction)_crc16_rfid_epc,   METH_VARARGS, "Calculate RFID EPC CRC16" },
     { "profibus",    (PyCFunction)_crc16_profibus,   METH_VARARGS, "Calculate PROFIBUS checksum" },
+    { "buypass",     (PyCFunction)_crc16_buypass,    METH_VARARGS, "Calculate BUYPASS [Poly=0x8005, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]" },
+    { "genibus",     (PyCFunction)_crc16_rfid_epc,   METH_VARARGS, "Calculate GENIBUS [Poly=0x1021, Init=0xFFFF Xorout=0xFFFF Refin=True Refout=True]" },
+    { "gsm16",       (PyCFunction)_crc16_gsm16,      METH_VARARGS, "Calculate GSM16 [Poly=0x1021, Init=0x0000 Xorout=0xFFFF Refin=True Refout=True]" },
+    { "riello",      (PyCFunction)_crc16_riello,     METH_VARARGS, "Calculate RIELLO [Poly=0x1021, Init=0xB2AA Xorout=0x0000 Refin=True Refout=True]" },
+    { "crc16_a",     (PyCFunction)_crc16_crc16_a,    METH_VARARGS, "Calculate CRC16-A [Poly=0x1021, Init=0xC6C6 Xorout=0x0000 Refin=True Refout=True]" },
+    { "cdma2000",    (PyCFunction)_crc16_cdma2000,   METH_VARARGS, "Calculate CDMA2000 [Poly=0xC867, Init=0xFFFF Xorout=0x0000 Refin=True Refout=True]" },
+    { "teledisk",    (PyCFunction)_crc16_teledisk,   METH_VARARGS, "Calculate TELEDISK [Poly=0xA097, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]" },
+    { "tms37157",    (PyCFunction)_crc16_tms37157,   METH_VARARGS, "Calculate TMS37157 [Poly=0x1021, Init=0x89EC Xorout=0x0000 Refin=True Refout=True]" },
+    { "en13757",     (PyCFunction)_crc16_en13757,    METH_VARARGS, "Calculate EN13757 [Poly=0x3D65, Init=0x0000 Xorout=0xFFFF Refin=True Refout=True]" },
+    { "t10_dif",     (PyCFunction)_crc16_t10_dif,    METH_VARARGS, "Calculate T10-DIF [Poly=0x8BB7, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]" },
+    { "dds_110",     (PyCFunction)_crc16_dds_110,    METH_VARARGS, "Calculate DDS-110 [Poly=0x8005, Init=0x800D Xorout=0x0000 Refin=True Refout=True]" },
+    { "lj1200",      (PyCFunction)_crc16_lj1200,     METH_VARARGS, "Calculate LJ1200 [Poly=0x6F63, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]" },
+    
+    { "opensafety_a",   (PyCFunction)_crc16_opensafety_a,   METH_VARARGS, "Calculate OPENSAFETY-A [Poly=0x5935, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]" },
+    { "opensafety_b",   (PyCFunction)_crc16_opensafety_b,   METH_VARARGS, "Calculate OPENSAFETY-B [Poly=0x755B, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]" },
     { NULL, NULL, 0, NULL }        /* Sentinel */
 };
 
@@ -526,7 +768,7 @@ PyDoc_STRVAR( _crc16_doc,
 "libscrc.usb16      -> Calculate USB    of CRC16              [Poly=0xA001, Init=0xFFFF Xorout=0xFFFF Refin=True Refout=True]\n"
 "libscrc.ibm        -> Calculate IBM (Alias:ARC/LHA) of CRC16 [Poly=0x8005, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]\n"
 "libscrc.xmodem     -> Calculate XMODEM of CRC16              [Poly=0x1021, Init=0x0000 Xorout=0x0000 Refin=False Refout=False]\n"
-"libscrc.ccitt      -> Calculate CCITT-TRUE of CRC16          [Poly=0x1021, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]\n"
+"libscrc.ccitt_aug  -> Calculate CCITT-AUG of CRC16           [Poly=0x1021, Init=0x1D0F Xorout=0x0000 Refin=True Refout=True]\n"
 "libscrc.ccitt_false-> Calculate CCITT-FALSE of CRC16         [Poly=0x1021, Init=0xFFFF or 0x1D0F]\n"
 "libscrc.kermit     -> Calculate Kermit (CCITT-TRUE) of CRC16 [Poly=0x8408, Init=0x0000]\n"
 "libscrc.mcrf4xx    -> Calculate MCRF4XX of CRC16             [Poly=0x8408, Init=0xFFFF]\n"
@@ -539,6 +781,18 @@ PyDoc_STRVAR( _crc16_doc,
 "libscrc.fletcher16 -> Calculate fletcher16\n"
 "libscrc.epc16      -> Calculate rfid epc crc16\n"
 "libscrc.profibus   -> Calculate PROFIBUS checksum\n"
+"libscrc.buypass    -> Calculate BUYPASS [Poly=0x8005, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]\n"
+"libscrc.genibus    -> Calculate GENIBUS [Poly=0x1021, Init=0xFFFF Xorout=0xFFFF Refin=True Refout=True]\n"
+"libscrc.gsm16      -> Calculate GSM-16 [Poly=0x1021, Init=0x0000 Xorout=0xFFFF Refin=True Refout=True]\n"
+"libscrc.riello     -> Calculate RIELLO [Poly=0x1021, Init=0xB2AA Xorout=0x0000 Refin=True Refout=True]\n"
+"libscrc.crc16_a    -> Calculate CRC16-A [Poly=0x1021, Init=0xC6C6 Xorout=0x0000 Refin=True Refout=True]\n"
+"libscrc.cdma2000   -> Calculate CDMA2000 [Poly=0xC867, Init=0xFFFF Xorout=0x0000 Refin=True Refout=True]\n"
+"libscrc.teledisk   -> Calculate TELEDISK [Poly=0xA097, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]\n"
+"libscrc.tms37157   -> Calculate TMS37157 [Poly=0x1021, Init=0x89EC Xorout=0x0000 Refin=True Refout=True]\n"
+"libscrc.en13757    -> Calculate EN13757 [Poly=0x3D65, Init=0x0000 Xorout=0xFFFF Refin=True Refout=True]\n"
+"libscrc.t10_dif    -> Calculate T10-DIF [Poly=0x8BB7, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]\n"
+"libscrc.dds_110    -> Calculate DDS-110 [Poly=0x8005, Init=0x800D Xorout=0x0000 Refin=True Refout=True]\n"
+"libscrc.lj1200     -> Calculate LJ1200 [Poly=0x6F63, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]\n"
 "\n" );
 
 
