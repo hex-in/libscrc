@@ -265,6 +265,9 @@ static PyObject * _crc32_posix( PyObject *self, PyObject *args )
     return Py_BuildValue( "I", result ^ 0xFFFFFFFFL );
 }
 
+/*
+* Alias: CRC-32/AAL5, CRC-32/DECT-B, B-CRC-32
+*/
 static PyObject * _crc32_bzip2( PyObject *self, PyObject *args )
 {
     unsigned int result = 0x00000000L;
@@ -366,6 +369,11 @@ static PyMethodDef _crc32Methods[] = {
     { "mpeg2",       (PyCFunction)_crc32_mpeg_2,     METH_VARARGS,   "Calculate CRC (MPEG2) of CRC32 [Poly=0x04C11DB7, Init=0xFFFFFFFF, Xorout=0x00000000 Refin=False Refout=False]"},
     { "fsc",         (PyCFunction)_crc32_mpeg_2,     METH_VARARGS,   "Calculate CRC (Ethernt's FSC) of CRC32 [Poly=0x04C11DB7, Init=0xFFFFFFFF, Xorout=0x00000000 Refin=False Refout=False]"},
     { "crc32",       (PyCFunction)_crc32_crc32,      METH_VARARGS,   "Calculate CRC (WinRAR, File) of CRC32  [Poly=0xEDB88320, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]"},
+    { "iso_hdlc",    (PyCFunction)_crc32_crc32,      METH_VARARGS,   "Calculate ISO-HDLC of CRC32  [Poly=0xEDB88320, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]"},
+    { "xz32",        (PyCFunction)_crc32_crc32,      METH_VARARGS,   "Calculate XZ of CRC32  [Poly=0xEDB88320, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]"},
+    { "pkzip",       (PyCFunction)_crc32_crc32,      METH_VARARGS,   "Calculate PKZIP of CRC32  [Poly=0xEDB88320, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]"},
+    { "adccp",       (PyCFunction)_crc32_crc32,      METH_VARARGS,   "Calculate ADCCP of CRC32  [Poly=0xEDB88320, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]"},
+    { "v_42",        (PyCFunction)_crc32_crc32,      METH_VARARGS,   "Calculate V-42 of CRC32  [Poly=0xEDB88320, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]"},
     { "table32",     (PyCFunction)_crc32_table,      METH_VARARGS,   "Print CRC32 table to list. libscrc.table32( polynomial )" },
     { "hacker32",    (PyCFunction)_crc32_hacker,     METH_KEYWORDS|METH_VARARGS, "User calculation CRC32\n"
                                                                                  "@data   : bytes\n"
@@ -376,12 +384,18 @@ static PyMethodDef _crc32Methods[] = {
     { "adler32",    (PyCFunction)_crc32_adler32,     METH_VARARGS,   "Calculate adler32 (MOD=65521)" },
     { "fletcher32", (PyCFunction)_crc32_fletcher32,  METH_VARARGS,   "Calculate fletcher32" },
     { "posix",      (PyCFunction)_crc32_posix,       METH_VARARGS,   "Calculate CRC (POSIX) of CRC32 [Poly=0x04C11DB7, Init=0x00000000, Xorout=0xFFFFFFFF Refin=True Refout=True]"},
+    { "cksum",      (PyCFunction)_crc32_posix,       METH_VARARGS,   "Calculate CRC (CKSUM) of CRC32 [Poly=0x04C11DB7, Init=0x00000000, Xorout=0xFFFFFFFF Refin=True Refout=True]"},
     { "bzip2",      (PyCFunction)_crc32_bzip2,       METH_VARARGS,   "Calculate CRC (BZIP2) of CRC32 [Poly=0x04C11DB7, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]"},
+    { "aal5",       (PyCFunction)_crc32_bzip2,       METH_VARARGS,   "Calculate CRC (AAL5) of CRC32 [Poly=0x04C11DB7, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]"},
     { "jamcrc",     (PyCFunction)_crc32_jamcrc,      METH_VARARGS,   "Calculate CRC (JAMCRC) of CRC32 [Poly=0x04C11DB7, Init=0xFFFFFFFF, Xorout=0x00000000 Refin=True Refout=True]"},
     { "autosar",    (PyCFunction)_crc32_autosar,     METH_VARARGS,   "Calculate CRC (AUTOSAR) of CRC32 [Poly=0xF4ACFB13, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]"},
-    { "crc32_c",    (PyCFunction)_crc32_crc32_c,     METH_VARARGS,   "Calculate CRC (CRC32_C) of CRC32 [Poly=0x1EDC6F41, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]"},
-    { "crc32_d",    (PyCFunction)_crc32_crc32_d,     METH_VARARGS,   "Calculate CRC (CRC32_D) of CRC32 [Poly=0xA833982B, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]"},
-    { "crc32_q",    (PyCFunction)_crc32_crc32_q,     METH_VARARGS,   "Calculate CRC (CRC32_Q) of CRC32 [Poly=0x814141AB, Init=0x00000000, Xorout=0x00000000 Refin=True Refout=True]"},
+    { "crc32_c",    (PyCFunction)_crc32_crc32_c,     METH_VARARGS,   "Calculate CRC (CRC32-C) of CRC32 [Poly=0x1EDC6F41, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]"},
+    { "iscsi",      (PyCFunction)_crc32_crc32_c,     METH_VARARGS,   "Calculate CRC (ISCSI) of CRC32 [Poly=0x1EDC6F41, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]"},
+    { "base91_c",   (PyCFunction)_crc32_crc32_c,     METH_VARARGS,   "Calculate CRC (BASE91-C) of CRC32 [Poly=0x1EDC6F41, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]"},
+    { "crc32_d",    (PyCFunction)_crc32_crc32_d,     METH_VARARGS,   "Calculate CRC (CRC32-D) of CRC32 [Poly=0xA833982B, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]"},
+    { "base91_d",   (PyCFunction)_crc32_crc32_d,     METH_VARARGS,   "Calculate CRC (BASE91-D) of CRC32 [Poly=0xA833982B, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]"},
+    { "crc32_q",    (PyCFunction)_crc32_crc32_q,     METH_VARARGS,   "Calculate CRC (CRC32-Q) of CRC32 [Poly=0x814141AB, Init=0x00000000, Xorout=0x00000000 Refin=True Refout=True]"},
+    { "aixm",       (PyCFunction)_crc32_crc32_q,     METH_VARARGS,   "Calculate CRC (AIXM) of CRC32 [Poly=0x814141AB, Init=0x00000000, Xorout=0x00000000 Refin=True Refout=True]"},
     { "xfer",       (PyCFunction)_crc32_xfer,        METH_VARARGS,   "Calculate CRC (XFER) of CRC32 [Poly=0x000000AF, Init=0x00000000, Xorout=0x00000000 Refin=True Refout=True]"},
     { NULL, NULL, 0, NULL }        /* Sentinel */
 };
@@ -392,17 +406,25 @@ PyDoc_STRVAR( _crc32_doc,
 "libscrc.fsc        -> Calculate CRC for Ethernet frame sequence (FSC) [Poly=0x04C11DB7, Init=0xFFFFFFFF, Xorout=0x00000000 Refin=False Refout=False]\n"
 "libscrc.mpeg2      -> Calculate CRC for Media file (MPEG2) [Poly=0x04C11DB7, Init=0xFFFFFFFF, Xorout=0x00000000 Refin=False Refout=False]\n"
 "libscrc.crc32      -> Calculate CRC for file [Poly=0xEDB88320L, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]\n"
+"libscrc.iso_hdlc   -> Calculate ISO-HDLC [Poly=0xEDB88320L, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]\n"
+"libscrc.xz32       -> Calculate XZ [Poly=0xEDB88320L, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]\n"
+"libscrc.pkzip      -> Calculate PKZIP [Poly=0xEDB88320L, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]\n"
+"libscrc.adccp      -> Calculate ADCCP [Poly=0xEDB88320L, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]\n"
+"libscrc.v_42       -> Calculate V-42 [Poly=0xEDB88320L, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]\n"
 "libscrc.table32    -> Print CRC32 table to list\n"
 "libscrc.hacker32   -> Free calculation CRC32 (not support python2 series) Xorout=0x00000000 Refin=False Refout=False\n"
 "libscrc.adler32    -> Calculate adler32 (MOD=65521)\n"
 "libscrc.fletcher32 -> Calculate fletcher32\n"
 "libscrc.posix      -> Calculate CRC (POSIX) [Poly=0x04C11DB7, Init=0x00000000, Xorout=0xFFFFFFFF Refin=False Refout=False]\n"
+"libscrc.cksum      -> Calculate CRC (CKSUM) [Poly=0x04C11DB7, Init=0x00000000, Xorout=0xFFFFFFFF Refin=False Refout=False]\n"
 "libscrc.bzip2      -> Calculate CRC (BZIP2) [Poly=0x04C11DB7, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True  Refout=True]\n"
 "libscrc.jamcrc     -> Calculate CRC (JAMCRC) [Poly=0x04C11DB7, Init=0xFFFFFFFF, Xorout=0x00000000 Refin=True  Refout=True]\n"
 "libscrc.autosar    -> Calculate CRC (AUTOSAR) [Poly=0xF4ACFB13, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True  Refout=True]\n"
-"libscrc.crc32_c    -> Calculate CRC (CRC32_C) [Poly=0x1EDC6F41, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True  Refout=True]\n"
-"libscrc.crc32_d    -> Calculate CRC (CRC32_D) [Poly=0xA833982B, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True  Refout=True]\n"
-"libscrc.crc32_q    -> Calculate CRC (CRC32_Q) [Poly=0x814141AB, Init=0x00000000, Xorout=0x00000000 Refin=True  Refout=True]\n"
+"libscrc.crc32_c    -> Calculate CRC (CRC32-C) [Poly=0x1EDC6F41, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True  Refout=True]\n"
+"libscrc.crc32_d    -> Calculate CRC (CRC32-D) [Poly=0xA833982B, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True  Refout=True]\n"
+"libscrc.base91_d   -> Calculate CRC (BASE91-D) [Poly=0xA833982B, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True  Refout=True]\n"
+"libscrc.crc32_q    -> Calculate CRC (CRC32-Q) [Poly=0x814141AB, Init=0x00000000, Xorout=0x00000000 Refin=True  Refout=True]\n"
+"libscrc.aixm       -> Calculate CRC (AIXM) [Poly=0x814141AB, Init=0x00000000, Xorout=0x00000000 Refin=True  Refout=True]\n"
 "libscrc.xfer       -> Calculate CRC (XFER) [Poly=0x000000AF, Init=0x00000000, Xorout=0x00000000 Refin=True  Refout=True]\n"
 "\n" );
 
