@@ -30,10 +30,13 @@ class TestCRC16( unittest.TestCase ):
         self.assertEqual( module.sick(b'123456789'),        0xA656 )
         self.assertEqual( module.dnp(b'123456789'),         0xEA82 )
         self.assertEqual( module.ibm(b'123456789'),         0xBB3D )
+        self.assertEqual( module.arc(b'123456789'),         0xBB3D )
+        self.assertEqual( module.lha(b'123456789'),         0xBB3D )
         self.assertEqual( module.modbus(b'123456789'),      0x4B37 )
         self.assertEqual( module.usb16(b'123456789'),       0xB4C8 )
         self.assertEqual( module.maxim16(b'123456789'),     0x44C2 )
-        self.assertEqual( module.dect(b'123456789'),        0xCAB0 )
+        self.assertEqual( module.dect_r(b'123456789'),      0x007E )
+        self.assertEqual( module.dect_x(b'123456789'),      0x007F )
         self.assertEqual( module.udp(b'\x45\x00\x00\x3c\x00\x00\x00\x00\x40\x11\x00\x00\xc0\xa8\x2b\xc3\x08\x08\x08\x08\x11'), 0x366D )
         self.assertEqual( module.fletcher16(b'123456789'),  0x1EDE )
         self.assertEqual( module.profibus(b'123456789'),    0xA819 )
@@ -52,6 +55,33 @@ class TestCRC16( unittest.TestCase ):
 
         self.assertEqual( module.opensafety_a(b'123456789'),0x5D38 )
         self.assertEqual( module.opensafety_b(b'123456789'),0x20FE )
+
+        self.assertEqual( module.cms(b'123456789'),         0xAEE7 )
+        self.assertEqual( module.darc(b'123456789'),        0xD64E )
+        self.assertEqual( module.epc_c1g2(b'123456789'),    0xD64E )
+        self.assertEqual( module.icode16(b'123456789'),     0xD64E )
+
+        self.assertEqual( module.ibm_3740(b'123456789'),    0x29B1 )
+        self.assertEqual( module.autosar16(b'123456789'),   0x29B1 )
+
+        self.assertEqual( module.ibm_sdlc(b'123456789'),    0x906E )
+        self.assertEqual( module.iso_hdlc16(b'123456789'),  0x906E )
+        self.assertEqual( module.iec14443_3_b(b'123456789'),0x906E )
+        self.assertEqual( module.iec14443_3_a(b'123456789'),0xBF05 )
+
+        self.assertEqual( module.ccitt_true(b'123456789'),  0x2189 )
+        self.assertEqual( module.ccitt(b'123456789'),       0x2189 )
+        self.assertEqual( module.v41_lsb(b'123456789'),     0x2189 )
+        self.assertEqual( module.spi_fujitsu(b'123456789'), 0xE5CC )
+
+        self.assertEqual( module.umts(b'123456789'),        0xFEE8 )
+        self.assertEqual( module.verifone(b'123456789'),    0xFEE8 )
+
+        self.assertEqual( module.zmodem(b'123456789'),      0x31C3 )
+        self.assertEqual( module.acorn(b'123456789'),       0x31C3 )
+        self.assertEqual( module.v41_msb(b'123456789'),     0x31C3 )
+        self.assertEqual( module.lte16(b'123456789'),       0x31C3 )
+        self.assertEqual( module.nrsc5(b'123456789'),       0xA066 )
 
         # the same in two steps
         crc = module.x25( b'12345' )

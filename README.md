@@ -17,7 +17,7 @@ libscrc is a library for calculating CRC4 CRC5 CRC6 CRC7 CRC8 CRC16 CRC24 CRC32 
 | CAN21 |FLETCHER8| X25      | CRC24 | AUTOSAR |        |
 |  | SMBUS | USB      |       | C / ISCSI |        |
 |          | AUTOSAR | MAXIM16  |   | D / BASE91-D |        |
-|          | LTE | DECT     |      | Q / AIXM |        |
+|          | LTE | DECT(R/X) |      | Q / AIXM |        |
 |          | SAE-J1855 | TCP/UDP  |       | XFER |        |
 |          | I-CODE | CDMA2000 |       | CKSUM |        |
 |          | GSM-A |FLETCHER16|| XZ32 |        |
@@ -29,6 +29,7 @@ libscrc is a library for calculating CRC4 CRC5 CRC6 CRC7 CRC8 CRC16 CRC24 CRC32 
 | | DARC |RIELLO | | | |
 | | |OPENSAFETY | | | |
 | | |EN13757 | | | |
+| | |CMS | | | |
 
 
 
@@ -145,7 +146,10 @@ crc16 = libscrc.ibm(b'1234')            # poly=0xA001 (default Reversed)
 crc16 = libscrc.ibm(b'1234', 0x8005)    # poly=0x8005 (Normal)
 crc16 = libscrc.modbus(b'1234')
 crc16 = libscrc.xmodem(b'1234')
+crc16 = libscrc.zmodem(b'1234')
+crc16 = libscrc.ccitt(b'1234')
 crc16 = libscrc.ccitt_aug(b'1234')
+crc16 = libscrc.ccitt_true(b'1234')
 crc16 = libscrc.ccitt_false(b'1234')
 crc16 = libscrc.kermit(b'1234')
 crc16 = libscrc.mcrf4xx(b'1234')
@@ -155,7 +159,8 @@ crc16 = libscrc.dnp(b'1234')
 crc16 = libscrc.x25(b'1234')
 crc16 = libscrc.usb16(b'1234')
 crc16 = libscrc.maxim16(b'1234')
-crc16 = libscrc.dect(b'1234')           # poly=0x0589 (Cordless Telephones)
+crc16 = libscrc.dect_r(b'1234')
+crc16 = libscrc.dect_x(b'1234')
 
 data  = b'\x45\x00\x00\x3c\x00\x00\x00\x00\x40\x11\x00\x00\xc0\xa8\x2b\xc3\x08\x08\x08\x08\x11'
 crc16 = libscrc.tcp( data )             # 13933
@@ -184,6 +189,27 @@ crc16 = libscrc.dds_110(b'1234')
 crc16 = libscrc.lj1200(b'1234')
 crc16 = libscrc.opensafety_a(b'1234')
 crc16 = libscrc.opensafety_b(b'1234')
+
+crc16 = libscrc.arc(b'1234')
+crc16 = libscrc.lha(b'1234')
+crc16 = libscrc.cms(b'1234')
+crc16 = libscrc.darc(b'1234')
+crc16 = libscrc.epc_c1g2(b'1234')
+crc16 = libscrc.icode16(b'1234')
+crc16 = libscrc.ibm_3740(b'1234')
+crc16 = libscrc.autosar16(b'1234')
+crc16 = libscrc.ibm_sdlc(b'1234')
+crc16 = libscrc.iso_hdlc16(b'1234')
+crc16 = libscrc.iec14443_3_b(b'1234')
+crc16 = libscrc.iec14443_3_a(b'1234')
+crc16 = libscrc.v41_lsb(b'1234')
+crc16 = libscrc.v41_msb(b'1234')
+crc16 = libscrc.spi_fujitsu(b'1234')
+crc16 = libscrc.umts(b'1234')
+crc16 = libscrc.verifone(b'1234')
+crc16 = libscrc.acorn(b'1234')
+crc16 = libscrc.lte16(b'1234')
+crc16 = libscrc.nrsc5(b'1234')
 ```
 
 4. CRC24
@@ -225,7 +251,7 @@ crc32 = libscrc.base91_d(b'1234')
 crc32 = libscrc.cksum(b'1234')
 crc32 = libscrc.base91_c(b'1234')
 crc32 = libscrc.iscsi(b'1234')
-crc32 = libscrc.iso_hdlc(b'1234')
+crc32 = libscrc.iso_hdlc32(b'1234')
 crc32 = libscrc.xz32(b'1234')
 crc32 = libscrc.pkzip(b'1234')
 crc32 = libscrc.adccp(b'1234')

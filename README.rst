@@ -28,7 +28,7 @@ libscrc is a library for calculating CRC4 CRC5 CRC6 CRC7 CRC8 CRC16 CRC24 CRC32 
 +------------+------------+------------+-----------+-----------+-----------+
 |            | AUTOSAR    | MAXIM16    |           | D/BASE91-D|           |
 +------------+------------+------------+-----------+-----------+-----------+
-|            | LTE        | DECT       |           | Q / AIXM  |           |
+|            | LTE        | DECT(R/X)  |           | Q / AIXM  |           |
 +------------+------------+------------+-----------+-----------+-----------+
 |            | SAE-J1855  | TCP/UDP    |           |   XFER    |           |
 +------------+------------+------------+-----------+-----------+-----------+
@@ -51,6 +51,8 @@ libscrc is a library for calculating CRC4 CRC5 CRC6 CRC7 CRC8 CRC16 CRC24 CRC32 
 |            |            | OPENSAFETY |           |           |           |
 +------------+------------+------------+-----------+-----------+-----------+
 |            |            | EN13757    |           |           |           |
++------------+------------+------------+-----------+-----------+-----------+
+|            |            |   CMS      |           |           |           |
 +------------+------------+------------+-----------+-----------+-----------+
 
 Installation
@@ -83,12 +85,12 @@ Installation
     
 * After installation you can run unit tests to make sure that the library works fine.  Execute::
 
-    # python3 -m libscrc.test.modbus
-    # python3 -m libscrc.test.crc8
-    # python3 -m libscrc.test.crc16
-    # python3 -m libscrc.test.crc24
-    # python3 -m libscrc.test.crc32
-    # python3 -m libscrc.test.crc64
+    # python3 -m libscrc.test.modbus  
+    # python3 -m libscrc.test.crc8  
+    # python3 -m libscrc.test.crc16  
+    # python3 -m libscrc.test.crc24  
+    # python3 -m libscrc.test.crc32  
+    # python3 -m libscrc.test.crc64  
 
 Usage
 -----
@@ -150,7 +152,10 @@ Example
     crc16 = libscrc.ibm(b'1234', 0x8005)    # poly=0x8005 (Normal)
     crc16 = libscrc.modbus(b'1234')  
     crc16 = libscrc.xmodem(b'1234')  
+    crc16 = libscrc.zmodem(b'1234')  
+    crc16 = libscrc.ccitt(b'1234')  
     crc16 = libscrc.ccitt_aug(b'1234')  
+    crc16 = libscrc.ccitt_true(b'1234')  
     crc16 = libscrc.ccitt_false(b'1234')  
     crc16 = libscrc.kermit(b'1234')  
     crc16 = libscrc.mcrf4xx(b'1234')  
@@ -159,80 +164,103 @@ Example
     crc16 = libscrc.x25(b'1234')  
     crc16 = libscrc.usb16(b'1234')  
     crc16 = libscrc.maxim16(b'1234')  
-    crc16 = libscrc.dect(b'1234')           # poly=0x0589 (Cordless Telephones)
+    crc16 = libscrc.dect_r(b'1234')  
+    crc16 = libscrc.dect_x(b'1234')  
+
     data  = b'\x45\x00\x00\x3c\x00\x00\x00\x00\x40\x11\x00\x00\xc0\xa8\x2b\xc3\x08\x08\x08\x08\x11'
-    crc16 = libscrc.tcp( data )             # 13933
-    crc16 = libscrc.udp( data )             # 13933
+    crc16 = libscrc.tcp( data )             # 13933  
+    crc16 = libscrc.udp( data )             # 13933  
 
-    crc16 = libscrc.epc16(b'1234')          # RFID EPC(CRC16-PC-EPC)
-    crc16 = libscrc.profibus(b'1234')
-    crc16 = libscrc.buypass(b'1234')
-    crc16 = libscrc.genibus(b'1234')
-    crc16 = libscrc.gsm16(b'1234')
-    crc16 = libscrc.riello(b'1234')
+    crc16 = libscrc.epc16(b'1234')          # RFID EPC(CRC16-PC-EPC)  
+    crc16 = libscrc.profibus(b'1234')  
+    crc16 = libscrc.buypass(b'1234')  
+    crc16 = libscrc.genibus(b'1234')  
+    crc16 = libscrc.gsm16(b'1234')  
+    crc16 = libscrc.riello(b'1234')  
 
-    crc16 = libscrc.crc16_a(b'1234')
-    crc16 = libscrc.cdma2000(b'1234')
-    crc16 = libscrc.teledisk(b'1234')
-    crc16 = libscrc.tms37157(b'1234')
-    crc16 = libscrc.en13757(b'1234')
-    crc16 = libscrc.t10_dif(b'1234')
-    crc16 = libscrc.dds_110(b'1234')
-    crc16 = libscrc.lj1200(b'1234')
-    crc16 = libscrc.opensafety_a(b'1234')
-    crc16 = libscrc.opensafety_b(b'1234')
+    crc16 = libscrc.crc16_a(b'1234')  
+    crc16 = libscrc.cdma2000(b'1234')  
+    crc16 = libscrc.teledisk(b'1234')  
+    crc16 = libscrc.tms37157(b'1234')  
+    crc16 = libscrc.en13757(b'1234')  
+    crc16 = libscrc.t10_dif(b'1234')  
+    crc16 = libscrc.dds_110(b'1234')  
+    crc16 = libscrc.lj1200(b'1234')  
+    crc16 = libscrc.opensafety_a(b'1234')  
+    crc16 = libscrc.opensafety_b(b'1234')  
+
+    crc16 = libscrc.arc(b'1234')  
+    crc16 = libscrc.lha(b'1234')  
+    crc16 = libscrc.cms(b'1234')  
+    crc16 = libscrc.darc(b'1234')  
+    crc16 = libscrc.epc_c1g2(b'1234')  
+    crc16 = libscrc.icode16(b'1234')  
+    crc16 = libscrc.ibm_3740(b'1234')  
+    crc16 = libscrc.autosar16(b'1234')  
+    crc16 = libscrc.ibm_sdlc(b'1234')  
+    crc16 = libscrc.iso_hdlc16(b'1234')  
+    crc16 = libscrc.iec14443_3_b(b'1234')  
+    crc16 = libscrc.iec14443_3_a(b'1234')  
+    crc16 = libscrc.v41_lsb(b'1234')  
+    crc16 = libscrc.v41_msb(b'1234')  
+    crc16 = libscrc.spi_fujitsu(b'1234')  
+    crc16 = libscrc.umts(b'1234')  
+    crc16 = libscrc.verifone(b'1234')  
+    crc16 = libscrc.acorn(b'1234')  
+    crc16 = libscrc.lte16(b'1234')  
+    crc16 = libscrc.nrsc5(b'1234')  
 
 * CRC24::
-    crc24 = libscrc.ble(b'1234')
-    crc24 = libscrc.flexraya(b'1234')
-    crc24 = libscrc.flexrayb(b'1234')
-    crc24 = libscrc.openpgp(b'1234')
-    crc24 = libscrc.lte_a(b'1234')
-    crc24 = libscrc.lte_b(b'1234')
-    crc24 = libscrc.os9(b'1234')
-    crc24 = libscrc.interlaken(b'1234')
-    crc24 = libscrc.crc24(b'1234')
+    crc24 = libscrc.ble(b'1234')  
+    crc24 = libscrc.flexraya(b'1234')  
+    crc24 = libscrc.flexrayb(b'1234')  
+    crc24 = libscrc.openpgp(b'1234')  
+    crc24 = libscrc.lte_a(b'1234')  
+    crc24 = libscrc.lte_b(b'1234')  
+    crc24 = libscrc.os9(b'1234')  
+    crc24 = libscrc.interlaken(b'1234')  
+    crc24 = libscrc.crc24(b'1234')  
     
 * CRC32::
     
-    crc32 = libscrc.fsc(b'1234')            # Ethernet frame sequence (FSC)
-    crc32 = libscrc.mpeg2(b'1234')          # MPEG2
-    crc32 = libscrc.crc32(b'1234')          # WinRAR, File
-    crc32 = libscrc.posix(b'1234')
-    crc32 = libscrc.bzip2(b'1234')
-    crc32 = libscrc.jamcrc(b'1234')
-    crc32 = libscrc.autosar(b'1234')
-    crc32 = libscrc.crc32_c(b'1234')
-    crc32 = libscrc.crc32_d(b'1234')
-    crc32 = libscrc.crc32_q(b'1234')
-    crc32 = libscrc.xfer(b'1234')
-    crc32 = libscrc.aixm(b'1234')
-    crc32 = libscrc.base91_d(b'1234')
-    crc32 = libscrc.cksum(b'1234')
-    crc32 = libscrc.base91_c(b'1234')
-    crc32 = libscrc.iscsi(b'1234')
-    crc32 = libscrc.iso_hdlc(b'1234')
-    crc32 = libscrc.xz32(b'1234')
-    crc32 = libscrc.pkzip(b'1234')
-    crc32 = libscrc.adccp(b'1234')
-    crc32 = libscrc.v_42(b'1234')
-    crc32 = libscrc.aal5(b'1234')
+    crc32 = libscrc.fsc(b'1234')            # Ethernet frame sequence (FSC)  
+    crc32 = libscrc.mpeg2(b'1234')          # MPEG2  
+    crc32 = libscrc.crc32(b'1234')          # WinRAR, File  
+    crc32 = libscrc.posix(b'1234')  
+    crc32 = libscrc.bzip2(b'1234')  
+    crc32 = libscrc.jamcrc(b'1234')  
+    crc32 = libscrc.autosar(b'1234')  
+    crc32 = libscrc.crc32_c(b'1234')  
+    crc32 = libscrc.crc32_d(b'1234')  
+    crc32 = libscrc.crc32_q(b'1234')  
+    crc32 = libscrc.xfer(b'1234')  
+    crc32 = libscrc.aixm(b'1234')  
+    crc32 = libscrc.base91_d(b'1234')  
+    crc32 = libscrc.cksum(b'1234')  
+    crc32 = libscrc.base91_c(b'1234')  
+    crc32 = libscrc.iscsi(b'1234')  
+    crc32 = libscrc.iso_hdlc(b'1234')  
+    crc32 = libscrc.xz32(b'1234')  
+    crc32 = libscrc.pkzip(b'1234')  
+    crc32 = libscrc.adccp(b'1234')  
+    crc32 = libscrc.v_42(b'1234')  
+    crc32 = libscrc.aal5(b'1234')  
 
 * CRC64::
-
-    crc64 = libscrc.iso(b'1234')
-    crc64 = libscrc.ecma182(b'1234')
-    crc64 = libscrc.we(b'1234')
-    crc64 = libscrc.xz64(b'1234')
+    
+    crc64 = libscrc.iso(b'1234')  
+    crc64 = libscrc.ecma182(b'1234')  
+    crc64 = libscrc.we(b'1234')  
+    crc64 = libscrc.xz64(b'1234')  
 
 NOTICE
 ------
-* v0.1.6+ version will not support python2 series (2020-01-20)
+* v0.1.6+ version will not support python2 series (2020-01-20)  
 
 V1.0 (2020-03-23)
 ++++++++++++++++++
-* New hacker8 \ hacker16 \ hacker32 \ hacker64
-* New FLETCHER8 \ FLETCHER16 \ FLETCHER32
+* New hacker8 \ hacker16 \ hacker32 \ hacker64  
+* New FLETCHER8 \ FLETCHER16 \ FLETCHER32  
 
 V0.1.5 (2017-09-22)
 +++++++++++++++++++

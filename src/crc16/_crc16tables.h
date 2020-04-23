@@ -34,7 +34,7 @@
 #define                 CRC16_POLYNOMIAL_A001                   0xA001
 #define                 CRC16_POLYNOMIAL_8005                   0x8005
 #define                 CRC16_POLYNOMIAL_A6BC                   0xA6BC
-#define                 CRC16_POLYNOMIAL_91A0                   0x91A0
+#define                 CRC16_POLYNOMIAL_0589                   0x0589
 #define                 CRC16_POLYNOMIAL_1DCF                   0x1DCF
 
 #define                 HEXIN_POLYNOMIAL_IS_HIGH(x)             ( x & 0x8000 )
@@ -46,7 +46,7 @@ unsigned short hexin_reverse16( unsigned short data );
 unsigned int hexin_crc16_init_table_poly_is_high( unsigned short polynomial, unsigned short *table );
 unsigned int hexin_crc16_init_table_poly_is_low(  unsigned short polynomial, unsigned short *table );
 
-unsigned short hexin_calc_crc16_91a0( const unsigned char *pSrc, unsigned int len, unsigned short crc16 );
+unsigned short hexin_calc_crc16_0589( const unsigned char *pSrc, unsigned int len, unsigned short crc16 );
 unsigned short hexin_calc_crc16_8408( const unsigned char *pSrc, unsigned int len, unsigned short crc16 );
 unsigned short hexin_calc_crc16_1021( const unsigned char *pSrc, unsigned int len, unsigned short crc16 );
 unsigned short hexin_calc_crc16_a001( const unsigned char *pSrc, unsigned int len, unsigned short crc16 );

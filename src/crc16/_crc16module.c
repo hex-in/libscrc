@@ -376,20 +376,30 @@ static PyObject * _crc16_maxim( PyObject *self, PyObject *args )
 *                                   POLY=0x0589 [DECT]
 * Poly:    0x0589
 * Init:    0x0000
-* Refin:   True
-* Refout:  True
+* Refin:   FALSE
+* Refout:  FALSE
 * Xorout:  0x0000
-*
-* 0x91A0 = reverse 0x0589
 *********************************************************************************************************
 */
 
-static PyObject * _crc16_dect( PyObject *self, PyObject *args )
+static PyObject * _crc16_dect_r( PyObject *self, PyObject *args )
 {
     unsigned short result = 0x0000;
     unsigned short init   = 0x0000;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_91a0, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_0589, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "H", ( result ^ 0x0001 ) );
+}
+
+static PyObject * _crc16_dect_x( PyObject *self, PyObject *args )
+{
+    unsigned short result = 0x0000;
+    unsigned short init   = 0x0000;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_0589, &result ) ) {
         return NULL;
     }
 
@@ -673,12 +683,38 @@ static PyObject * _crc16_dds_110( PyObject *self, PyObject *args )
     return Py_BuildValue( "H", result );
 }
 
+static PyObject * _crc16_cms( PyObject *self, PyObject *args )
+{
+    unsigned short result = 0x0000;
+    unsigned short init   = 0xFFFF;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_8005, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "H", result );
+}
+
 static PyObject * _crc16_lj1200( PyObject *self, PyObject *args )
 {
     unsigned short result = 0x0000;
     unsigned short init   = 0x0000;
     unsigned short poly   = 0x6F63;
     unsigned char  mask   = FALSE; 
+ 
+    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "H", result );
+}
+
+static PyObject * _crc16_nrsc5( PyObject *self, PyObject *args )
+{
+    unsigned short result = 0x0000;
+    unsigned short init   = 0xFFFF;
+    unsigned short poly   = hexin_reverse16( 0x080B );
+    unsigned char  mask   = TRUE; 
  
     if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, &result ) ) {
         return NULL;
@@ -717,19 +753,35 @@ static PyObject * _crc16_opensafety_b( PyObject *self, PyObject *args )
 
 /* method table */
 static PyMethodDef _crc16Methods[] = {
-    { "modbus",      (PyCFunction)_crc16_modbus,    METH_VARARGS, "Calculate Modbus of CRC16              [Poly=0xA001, Init=0xFFFF Xorout=0x0000 Refin=False Refout=False]" },
-    { "usb16",       (PyCFunction)_crc16_usb,       METH_VARARGS, "Calculate USB    of CRC16              [Poly=0xA001, Init=0xFFFF Xorout=0xFFFF Refin=False Refout=False]" },
+    { "modbus",      (PyCFunction)_crc16_modbus,    METH_VARARGS, "Calculate MODBUS of CRC16 [Poly=0x8005, Init=0xFFFF Xorout=0x0000 Refin=True Refout=True]" },
+    { "usb16",       (PyCFunction)_crc16_usb,       METH_VARARGS, "Calculate USB of CRC16 [Poly=0x8005, Init=0xFFFF Xorout=0xFFFF Refin=True Refout=True]" },
     { "ibm",         (PyCFunction)_crc16_ibm,       METH_VARARGS, "Calculate IBM (Alias:ARC/LHA) of CRC16 [Poly=0x8005, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]" },
-    { "xmodem",      (PyCFunction)_crc16_xmodem,    METH_VARARGS, "Calculate XMODEM of CRC16              [Poly=0x1021, Init=0x0000 Xorout=0x0000 Refin=False Refout=False]" },
-    { "ccitt_aug",   (PyCFunction)_crc16_ccitt_aug, METH_VARARGS, "Calculate CCITT-AUG of CRC16           [Poly=0x1021, Init=0x1D0F Xorout=0x0000 Refin=True Refout=True]" },
-    { "ccitt_false", (PyCFunction)_crc16_ccitt,     METH_VARARGS, "Calculate CCITT-FALSE of CRC16         [Poly=0x1021, Init=0xFFFF or 0x1D0F]" },
-    { "kermit",      (PyCFunction)_crc16_kermit,    METH_VARARGS, "Calculate Kermit (CCITT-TRUE) of CRC16 [Poly=0x8408, Init=0x0000]" },
-    { "mcrf4xx",     (PyCFunction)_crc16_mcrf4xx,   METH_VARARGS, "Calculate MCRF4XX of CRC16             [Poly=0x8408, Init=0xFFFF]" },
-    { "sick",        (PyCFunction)_crc16_sick,      METH_VARARGS, "Calculate Sick of CRC16                [Poly=0x8005, Init=0x0000]" },
-    { "dnp",         (PyCFunction)_crc16_dnp,       METH_VARARGS, "Calculate DNP (Ues:M-Bus, ICE870)  of CRC16    [Poly=0x3D65, Init=0x0000 Xorout=0xFFFF Refin=True Refout=True]" },
-    { "x25",         (PyCFunction)_crc16_x25,       METH_VARARGS, "Calculate X25  of CRC16                [Poly=0x1021, Init=0xFFFF Xorout=0xFFFF Refin=True Refout=True]" },
-    { "maxim16",     (PyCFunction)_crc16_maxim,     METH_VARARGS, "Calculate MAXIM of CRC16               [Poly=0x8005, Init=0x0000 Xorout=0xFFFF Refin=True Refout=True]" },
-    { "dect",        (PyCFunction)_crc16_dect,      METH_VARARGS, "Calculate DECT of CRC16                [Poly=0x0589, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]" },
+    { "arc",         (PyCFunction)_crc16_ibm,       METH_VARARGS, "Calculate ARC (Alias:IBM/LHA) of CRC16 [Poly=0x8005, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]" },
+    { "lha",         (PyCFunction)_crc16_ibm,       METH_VARARGS, "Calculate LHA (Alias:ARC/IBM) of CRC16 [Poly=0x8005, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]" },
+    { "xmodem",      (PyCFunction)_crc16_xmodem,    METH_VARARGS, "Calculate XMODEM of CRC16 [Poly=0x1021, Init=0x0000 Xorout=0x0000 Refin=False Refout=False]" },
+    { "zmodem",      (PyCFunction)_crc16_xmodem,    METH_VARARGS, "Calculate ZMODEM of CRC16 [Poly=0x1021, Init=0x0000 Xorout=0x0000 Refin=False Refout=False]" },
+    { "acorn",       (PyCFunction)_crc16_xmodem,    METH_VARARGS, "Calculate ACORN of CRC16 [Poly=0x1021, Init=0x0000 Xorout=0x0000 Refin=False Refout=False]" },
+    { "v41_msb",     (PyCFunction)_crc16_xmodem,    METH_VARARGS, "Calculate V-41-MSB of CRC16 [Poly=0x1021, Init=0x0000 Xorout=0x0000 Refin=False Refout=False]" },
+    { "lte16",       (PyCFunction)_crc16_xmodem,    METH_VARARGS, "Calculate LTE of CRC16 [Poly=0x1021, Init=0x0000 Xorout=0x0000 Refin=False Refout=False]" },
+    { "ccitt_aug",   (PyCFunction)_crc16_ccitt_aug, METH_VARARGS, "Calculate CCITT-AUG of CRC16 [Poly=0x1021, Init=0x1D0F Xorout=0x0000 Refin=False Refout=False]" },
+    { "spi_fujitsu", (PyCFunction)_crc16_ccitt_aug, METH_VARARGS, "Calculate SPI-FUJITSU of CRC16 [Poly=0x1021, Init=0x1D0F Xorout=0x0000 Refin=False Refout=False]" },
+    { "ccitt_false", (PyCFunction)_crc16_ccitt,     METH_VARARGS, "Calculate CCITT-FALSE of CRC16 [Poly=0x1021, Init=0xFFFF Xorout=0x0000 Refin=False Refout=False]" },
+    { "ibm_3740",    (PyCFunction)_crc16_ccitt,     METH_VARARGS, "Calculate IBM-3740 of CRC16 [Poly=0x1021, Init=0xFFFF Xorout=0x0000 Refin=False Refout=False]" },
+    { "autosar16",   (PyCFunction)_crc16_ccitt,     METH_VARARGS, "Calculate AUTOSAR of CRC16 [Poly=0x1021, Init=0xFFFF Xorout=0x0000 Refin=False Refout=False]" },
+    { "kermit",      (PyCFunction)_crc16_kermit,    METH_VARARGS, "Calculate KERMIT of CRC16 [Poly=0x1021, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]" },
+    { "ccitt_true",  (PyCFunction)_crc16_kermit,    METH_VARARGS, "Calculate CCITT-TRUE of CRC16 [Poly=0x1021, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]" },
+    { "ccitt",       (PyCFunction)_crc16_kermit,    METH_VARARGS, "Calculate CCITT of CRC16 [Poly=0x1021, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]" },
+    { "v41_lsb",     (PyCFunction)_crc16_kermit,    METH_VARARGS, "Calculate V-41-LSB of CRC16 [Poly=0x1021, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]" },
+    { "mcrf4xx",     (PyCFunction)_crc16_mcrf4xx,   METH_VARARGS, "Calculate MCRF4XX of CRC16 [Poly=0x1021, Init=0xFFFF Xorout=0x0000 Refin=True Refout=True]" },
+    { "sick",        (PyCFunction)_crc16_sick,      METH_VARARGS, "Calculate SICK of CRC16 [Poly=0x8005, Init=0x0000]" },
+    { "dnp",         (PyCFunction)_crc16_dnp,       METH_VARARGS, "Calculate DNP (Ues:M-Bus, ICE870) of CRC16 [Poly=0x3D65, Init=0x0000 Xorout=0xFFFF Refin=False Refout=False]" },
+    { "x25",         (PyCFunction)_crc16_x25,       METH_VARARGS, "Calculate X25 of CRC16 [Poly=0x1021, Init=0xFFFF Xorout=0xFFFF Refin=True Refout=True]" },
+    { "ibm_sdlc",    (PyCFunction)_crc16_x25,       METH_VARARGS, "Calculate IBM-SDLC of CRC16 [Poly=0x1021, Init=0xFFFF Xorout=0xFFFF Refin=True Refout=True]" },
+    { "iso_hdlc16",  (PyCFunction)_crc16_x25,       METH_VARARGS, "Calculate ISO-HDLC of CRC16 [Poly=0x1021, Init=0xFFFF Xorout=0xFFFF Refin=True Refout=True]" },
+    { "iec14443_3_b",(PyCFunction)_crc16_x25,       METH_VARARGS, "Calculate ISO-IEC-14443-3-B of CRC16 [Poly=0x1021, Init=0xFFFF Xorout=0xFFFF Refin=True Refout=True]" },
+    { "maxim16",     (PyCFunction)_crc16_maxim,     METH_VARARGS, "Calculate MAXIM(MAXIM-DOW) of CRC16 [Poly=0x8005, Init=0x0000 Xorout=0xFFFF Refin=True Refout=True]" },
+    { "dect_r",      (PyCFunction)_crc16_dect_r,    METH_VARARGS, "Calculate DECT-R of CRC16 [Poly=0x0589, Init=0x0000 Xorout=0x0001 Refin=False Refout=False]" },
+    { "dect_x",      (PyCFunction)_crc16_dect_x,    METH_VARARGS, "Calculate DECT-X of CRC16 [Poly=0x0589, Init=0x0000 Xorout=0x0000 Refin=False Refout=False]" },
     { "table16",     (PyCFunction)_crc16_table,     METH_VARARGS, "Print CRC16 table to list. libscrc.table16( polynomial )" },
     { "hacker16",    (PyCFunction)_crc16_hacker,    METH_KEYWORDS|METH_VARARGS, "User calculation CRC16\n"
                                                                              "@data   : bytes\n"
@@ -739,24 +791,32 @@ static PyMethodDef _crc16Methods[] = {
                                                                              "@ref    : default=False" },
     { "udp",         (PyCFunction)_crc16_network,    METH_VARARGS, "Calculate UDP checksum." },
     { "tcp",         (PyCFunction)_crc16_network,    METH_VARARGS, "Calculate TCP checksum." },
-    { "fletcher16",  (PyCFunction)_crc16_fletcher,   METH_VARARGS, "Calculate fletcher16" },
-    { "epc16",       (PyCFunction)_crc16_rfid_epc,   METH_VARARGS, "Calculate RFID EPC CRC16" },
-    { "profibus",    (PyCFunction)_crc16_profibus,   METH_VARARGS, "Calculate PROFIBUS checksum" },
-    { "buypass",     (PyCFunction)_crc16_buypass,    METH_VARARGS, "Calculate BUYPASS [Poly=0x8005, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]" },
-    { "genibus",     (PyCFunction)_crc16_rfid_epc,   METH_VARARGS, "Calculate GENIBUS [Poly=0x1021, Init=0xFFFF Xorout=0xFFFF Refin=True Refout=True]" },
-    { "gsm16",       (PyCFunction)_crc16_gsm16,      METH_VARARGS, "Calculate GSM16 [Poly=0x1021, Init=0x0000 Xorout=0xFFFF Refin=True Refout=True]" },
+    { "fletcher16",  (PyCFunction)_crc16_fletcher,   METH_VARARGS, "Calculate FLETCHER16" },
+    { "epc16",       (PyCFunction)_crc16_rfid_epc,   METH_VARARGS, "Calculate RFID EPC CRC16 [Poly=0x1021, Init=0xFFFF Xorout=0xFFFF Refin=False Refout=False]" },
+    { "profibus",    (PyCFunction)_crc16_profibus,   METH_VARARGS, "Calculate PROFIBUS of CRC16 [Poly=0x1DCF, Init=0xFFFF Xorout=0xFFFF Refin=False Refout=False]" },
+    { "buypass",     (PyCFunction)_crc16_buypass,    METH_VARARGS, "Calculate BUYPASS [Poly=0x8005, Init=0x0000 Xorout=0x0000 Refin=False Refout=False]" },
+    { "umts",        (PyCFunction)_crc16_buypass,    METH_VARARGS, "Calculate UMTS [Poly=0x8005, Init=0x0000 Xorout=0x0000 Refin=False Refout=False]" },
+    { "verifone",    (PyCFunction)_crc16_buypass,    METH_VARARGS, "Calculate VERIFONE [Poly=0x8005, Init=0x0000 Xorout=0x0000 Refin=False Refout=False]" },
+    { "genibus",     (PyCFunction)_crc16_rfid_epc,   METH_VARARGS, "Calculate GENIBUS [Poly=0x1021, Init=0xFFFF Xorout=0xFFFF Refin=False Refout=False]" },
+    { "darc",        (PyCFunction)_crc16_rfid_epc,   METH_VARARGS, "Calculate DARC [Poly=0x1021, Init=0xFFFF Xorout=0xFFFF Refin=False Refout=False]" },
+    { "epc_c1g2",    (PyCFunction)_crc16_rfid_epc,   METH_VARARGS, "Calculate EPC-C1G2 [Poly=0x1021, Init=0xFFFF Xorout=0xFFFF Refin=False Refout=False]" },
+    { "icode16",     (PyCFunction)_crc16_rfid_epc,   METH_VARARGS, "Calculate I-CODE16 [Poly=0x1021, Init=0xFFFF Xorout=0xFFFF Refin=False Refout=False]" },
+    { "gsm16",       (PyCFunction)_crc16_gsm16,      METH_VARARGS, "Calculate GSM16 [Poly=0x1021, Init=0x0000 Xorout=0xFFFF Refin=False Refout=False]" },
     { "riello",      (PyCFunction)_crc16_riello,     METH_VARARGS, "Calculate RIELLO [Poly=0x1021, Init=0xB2AA Xorout=0x0000 Refin=True Refout=True]" },
     { "crc16_a",     (PyCFunction)_crc16_crc16_a,    METH_VARARGS, "Calculate CRC16-A [Poly=0x1021, Init=0xC6C6 Xorout=0x0000 Refin=True Refout=True]" },
-    { "cdma2000",    (PyCFunction)_crc16_cdma2000,   METH_VARARGS, "Calculate CDMA2000 [Poly=0xC867, Init=0xFFFF Xorout=0x0000 Refin=True Refout=True]" },
+    { "iec14443_3_a",(PyCFunction)_crc16_crc16_a,    METH_VARARGS, "Calculate ISO-IEC-14443-3-A [Poly=0x1021, Init=0xC6C6 Xorout=0x0000 Refin=True Refout=True]" },
+    { "cdma2000",    (PyCFunction)_crc16_cdma2000,   METH_VARARGS, "Calculate CDMA2000 [Poly=0xC867, Init=0xFFFF Xorout=0x0000 Refin=False Refout=False]" },
     { "teledisk",    (PyCFunction)_crc16_teledisk,   METH_VARARGS, "Calculate TELEDISK [Poly=0xA097, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]" },
     { "tms37157",    (PyCFunction)_crc16_tms37157,   METH_VARARGS, "Calculate TMS37157 [Poly=0x1021, Init=0x89EC Xorout=0x0000 Refin=True Refout=True]" },
-    { "en13757",     (PyCFunction)_crc16_en13757,    METH_VARARGS, "Calculate EN13757 [Poly=0x3D65, Init=0x0000 Xorout=0xFFFF Refin=True Refout=True]" },
-    { "t10_dif",     (PyCFunction)_crc16_t10_dif,    METH_VARARGS, "Calculate T10-DIF [Poly=0x8BB7, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]" },
-    { "dds_110",     (PyCFunction)_crc16_dds_110,    METH_VARARGS, "Calculate DDS-110 [Poly=0x8005, Init=0x800D Xorout=0x0000 Refin=True Refout=True]" },
-    { "lj1200",      (PyCFunction)_crc16_lj1200,     METH_VARARGS, "Calculate LJ1200 [Poly=0x6F63, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]" },
+    { "en13757",     (PyCFunction)_crc16_en13757,    METH_VARARGS, "Calculate EN13757(Used in the Wireless M-Bus protocol for remote meter reading) [Poly=0x3D65, Init=0x0000 Xorout=0xFFFF Refin=False Refout=False]" },
+    { "t10_dif",     (PyCFunction)_crc16_t10_dif,    METH_VARARGS, "Calculate T10-DIF [Poly=0x8BB7, Init=0x0000 Xorout=0x0000 Refin=False Refout=False]" },
+    { "dds_110",     (PyCFunction)_crc16_dds_110,    METH_VARARGS, "Calculate DDS-110 [Poly=0x8005, Init=0x800D Xorout=0x0000 Refin=False Refout=False]" },
+    { "cms",         (PyCFunction)_crc16_cms,        METH_VARARGS, "Calculate CMS [Poly=0x8005, Init=0xFFFF Xorout=0x0000 Refin=False Refout=False]" },
+    { "lj1200",      (PyCFunction)_crc16_lj1200,     METH_VARARGS, "Calculate LJ1200 [Poly=0x6F63, Init=0x0000 Xorout=0x0000 Refin=False Refout=False]" },
+    { "nrsc5",       (PyCFunction)_crc16_nrsc5,      METH_VARARGS, "Calculate NRSC-5 [Poly=0x080B, Init=0xFFFF Xorout=0x0000 Refin=True Refout=True]" },
     
-    { "opensafety_a",   (PyCFunction)_crc16_opensafety_a,   METH_VARARGS, "Calculate OPENSAFETY-A [Poly=0x5935, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]" },
-    { "opensafety_b",   (PyCFunction)_crc16_opensafety_b,   METH_VARARGS, "Calculate OPENSAFETY-B [Poly=0x755B, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]" },
+    { "opensafety_a",   (PyCFunction)_crc16_opensafety_a,   METH_VARARGS, "Calculate OPENSAFETY-A [Poly=0x5935, Init=0x0000 Xorout=0x0000 Refin=False Refout=False]" },
+    { "opensafety_b",   (PyCFunction)_crc16_opensafety_b,   METH_VARARGS, "Calculate OPENSAFETY-B [Poly=0x755B, Init=0x0000 Xorout=0x0000 Refin=False Refout=False]" },
     { NULL, NULL, 0, NULL }        /* Sentinel */
 };
 
@@ -764,35 +824,54 @@ static PyMethodDef _crc16Methods[] = {
 /* module documentation */
 PyDoc_STRVAR( _crc16_doc,
 "Calculation of CRC16 \n"
-"libscrc.modbus     -> Calculate Modbus of CRC16              [Poly=0xA001, Init=0xFFFF Xorout=0x0000 Refin=True Refout=True]\n"
+"libscrc.modbus     -> Calculate Modbus of CRC16              [Poly=0x8005, Init=0xFFFF Xorout=0x0000 Refin=True Refout=True]\n"
 "libscrc.usb16      -> Calculate USB    of CRC16              [Poly=0xA001, Init=0xFFFF Xorout=0xFFFF Refin=True Refout=True]\n"
 "libscrc.ibm        -> Calculate IBM (Alias:ARC/LHA) of CRC16 [Poly=0x8005, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]\n"
 "libscrc.xmodem     -> Calculate XMODEM of CRC16              [Poly=0x1021, Init=0x0000 Xorout=0x0000 Refin=False Refout=False]\n"
+"libscrc.ccitt      -> Calculate CCITT of CRC16               [Poly=0x1021, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]\n"
+"libscrc.ccitt_true -> Calculate CCITT-TRUE of CRC16          [Poly=0x1021, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]\n"
 "libscrc.ccitt_aug  -> Calculate CCITT-AUG of CRC16           [Poly=0x1021, Init=0x1D0F Xorout=0x0000 Refin=True Refout=True]\n"
-"libscrc.ccitt_false-> Calculate CCITT-FALSE of CRC16         [Poly=0x1021, Init=0xFFFF or 0x1D0F]\n"
-"libscrc.kermit     -> Calculate Kermit (CCITT-TRUE) of CRC16 [Poly=0x8408, Init=0x0000]\n"
-"libscrc.mcrf4xx    -> Calculate MCRF4XX of CRC16             [Poly=0x8408, Init=0xFFFF]\n"
-"libscrc.sick       -> Calculate Sick of CRC16                [Poly=0x8005, Init=0x0000]\n"
-"libscrc.dnp        -> Calculate DNP (Ues:M-Bus, ICE870)  of CRC16    [Poly=0x3D65, Init=0x0000 Xorout=0xFFFF Refin=True Refout=True]\n"
-"libscrc.x25        -> Calculate X25  of CRC16                [Poly=0x1021, Init=0xFFFF Xorout=0xFFFF Refin=True Refout=True]\n"
+"libscrc.ccitt_false-> Calculate CCITT-FALSE of CRC16         [Poly=0x1021, Init=0xFFFF Xorout=0x0000 Refin=False Refout=False]\n"
+"libscrc.ibm_3740   -> Calculate IBM-3740 of CRC16            [Poly=0x1021, Init=0xFFFF Xorout=0x0000 Refin=False Refout=False]\n"
+"libscrc.autosar16  -> Calculate AUTOSAR of CRC16             [Poly=0x1021, Init=0xFFFF Xorout=0x0000 Refin=False Refout=False]\n"
+"libscrc.kermit     -> Calculate KERMIT (CCITT-TRUE)          [Poly=0x1021, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]\n"
+"libscrc.mcrf4xx    -> Calculate MCRF4XX of CRC16             [Poly=0x1021, Init=0xFFFF Xorout=0x0000 Refin=True Refout=True]\n"
+"libscrc.sick       -> Calculate SICK of CRC16                [Poly=0x8005, Init=0x0000]\n"
+"libscrc.dnp        -> Calculate DNP (Ues:M-Bus, ICE870)      [Poly=0x3D65, Init=0x0000 Xorout=0xFFFF Refin=True Refout=True]\n"
+"libscrc.x25        -> Calculate X25 of CRC16                 [Poly=0x1021, Init=0xFFFF Xorout=0xFFFF Refin=True Refout=True]\n"
+"libscrc.ibm_sdlc   -> Calculate IBM-SDLC of CRC16            [Poly=0x1021, Init=0xFFFF Xorout=0xFFFF Refin=True Refout=True]\n"
+"libscrc.iso_hdlc16 -> Calculate ISO-HDLC of CRC16            [Poly=0x1021, Init=0xFFFF Xorout=0xFFFF Refin=True Refout=True]\n"
+"libscrc.iec14443_3_a -> Calculate ISO-IEC-14443-3-A          [Poly=0x1021, Init=0xC6C6 Xorout=0x0000 Refin=True Refout=True]\n"
+"libscrc.iec14443_3_b -> Calculate ISO-IEC-14443-3-B          [Poly=0x1021, Init=0xFFFF Xorout=0xFFFF Refin=True Refout=True]\n"
 "libscrc.maxim16    -> Calculate MAXIM of CRC16               [Poly=0x8005, Init=0x0000 Xorout=0xFFFF Refin=True Refout=True]\n"
-"libscrc.dect       -> Calculate DECT of CRC16                [Poly=0x0589, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]\n"
+"libscrc.dect_r     -> Calculate DECT-R of CRC16              [Poly=0x0589, Init=0x0000 Xorout=0x0001 Refin=False Refout=False]\n"
+"libscrc.dect_x     -> Calculate DECT-X of CRC16              [Poly=0x0589, Init=0x0000 Xorout=0x0000 Refin=False Refout=False]\n"
 "libscrc.hacker16   -> Free calculation CRC16 (not support python2 series)\n"
-"libscrc.fletcher16 -> Calculate fletcher16\n"
-"libscrc.epc16      -> Calculate rfid epc crc16\n"
-"libscrc.profibus   -> Calculate PROFIBUS checksum\n"
-"libscrc.buypass    -> Calculate BUYPASS [Poly=0x8005, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]\n"
-"libscrc.genibus    -> Calculate GENIBUS [Poly=0x1021, Init=0xFFFF Xorout=0xFFFF Refin=True Refout=True]\n"
-"libscrc.gsm16      -> Calculate GSM-16 [Poly=0x1021, Init=0x0000 Xorout=0xFFFF Refin=True Refout=True]\n"
-"libscrc.riello     -> Calculate RIELLO [Poly=0x1021, Init=0xB2AA Xorout=0x0000 Refin=True Refout=True]\n"
-"libscrc.crc16_a    -> Calculate CRC16-A [Poly=0x1021, Init=0xC6C6 Xorout=0x0000 Refin=True Refout=True]\n"
-"libscrc.cdma2000   -> Calculate CDMA2000 [Poly=0xC867, Init=0xFFFF Xorout=0x0000 Refin=True Refout=True]\n"
-"libscrc.teledisk   -> Calculate TELEDISK [Poly=0xA097, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]\n"
+"libscrc.fletcher16 -> Calculate FLETCHER16\n"
+"libscrc.epc16      -> Calculate RFID EPC of CRC16           [Poly=0x1021, Init=0xFFFF Xorout=0xFFFF Refin=False Refout=False]\n"
+"libscrc.profibus   -> Calculate PROFIBUS [Poly=0x1DCF, Init=0xFFFF Xorout=0xFFFF Refin=False Refout=False]\n"
+"libscrc.buypass    -> Calculate BUYPASS  [Poly=0x8005, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]\n"
+"libscrc.genibus    -> Calculate GENIBUS  [Poly=0x1021, Init=0xFFFF Xorout=0xFFFF Refin=False Refout=False]\n"
+"libscrc.darc       -> Calculate DARC     [Poly=0x1021, Init=0xFFFF Xorout=0xFFFF Refin=False Refout=False]\n"
+"libscrc.epc_c1g2   -> Calculate EPC-C1-G2  [Poly=0x1021, Init=0xFFFF Xorout=0xFFFF Refin=False Refout=False]\n"
+"libscrc.icode16    -> Calculate I-CODE   [Poly=0x1021, Init=0xFFFF Xorout=0xFFFF Refin=False Refout=False]\n"
+"libscrc.gsm16      -> Calculate GSM-16   [Poly=0x1021, Init=0x0000 Xorout=0xFFFF Refin=True Refout=True]\n"
+"libscrc.riello     -> Calculate RIELLO   [Poly=0x1021, Init=0xB2AA Xorout=0x0000 Refin=True Refout=True]\n"
+"libscrc.crc16_a    -> Calculate CRC16-A  [Poly=0x1021, Init=0xC6C6 Xorout=0x0000 Refin=True Refout=True]\n"
+"libscrc.cdma2000   -> Calculate CDMA2000 [Poly=0xC867, Init=0xFFFF Xorout=0x0000 Refin=False Refout=False]\n"
+"libscrc.teledisk   -> Calculate TELEDISK [Poly=0xA097, Init=0x0000 Xorout=0x0000 Refin=False Refout=False]\n"
 "libscrc.tms37157   -> Calculate TMS37157 [Poly=0x1021, Init=0x89EC Xorout=0x0000 Refin=True Refout=True]\n"
-"libscrc.en13757    -> Calculate EN13757 [Poly=0x3D65, Init=0x0000 Xorout=0xFFFF Refin=True Refout=True]\n"
-"libscrc.t10_dif    -> Calculate T10-DIF [Poly=0x8BB7, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]\n"
-"libscrc.dds_110    -> Calculate DDS-110 [Poly=0x8005, Init=0x800D Xorout=0x0000 Refin=True Refout=True]\n"
-"libscrc.lj1200     -> Calculate LJ1200 [Poly=0x6F63, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]\n"
+"libscrc.en13757    -> Calculate EN13757(Used in the Wireless M-Bus protocol for remote meter reading) [Poly=0x3D65, Init=0x0000 Xorout=0xFFFF Refin=False Refout=False]\n"
+"libscrc.t10_dif    -> Calculate T10-DIF [Poly=0x8BB7, Init=0x0000 Xorout=0x0000 Refin=False Refout=False]\n"
+"libscrc.dds_110    -> Calculate DDS-110 [Poly=0x8005, Init=0x800D Xorout=0x0000 Refin=False Refout=False]\n"
+"libscrc.cms        -> Calculate CMS     [Poly=0x8005, Init=0xFFFF Xorout=0x0000 Refin=False Refout=False]\n"
+"libscrc.lj1200     -> Calculate LJ1200  [Poly=0x6F63, Init=0x0000 Xorout=0x0000 Refin=False Refout=False]\n"
+"libscrc.nrsc5      -> Calculate NRSC-5  [Poly=0x080B, Init=0xFFFF Xorout=0x0000 Refin=True Refout=True]\n"
+"libscrc.umts       -> Calculate UMTS    [Poly=0x8005, Init=0x0000 Xorout=0x0000 Refin=False Refout=False]\n"
+"libscrc.v41_lsb    -> Calculate V-41-LSB         [Poly=0x1021, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]\n"
+"libscrc.v41_msb    -> Calculate V-41-MSB         [Poly=0x1021, Init=0x0000 Xorout=0x0000 Refin=False Refout=False]\n"
+"libscrc.opensafety_a   -> Calculate OPENSAFETY-A [Poly=0x5935, Init=0x0000 Xorout=0x0000 Refin=False Refout=False]\n"
+"libscrc.opensafety_b   -> Calculate OPENSAFETY-B [Poly=0x5935, Init=0x0000 Xorout=0x0000 Refin=False Refout=False]\n"
 "\n" );
 
 

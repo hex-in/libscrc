@@ -10,9 +10,7 @@
 * ---------------
 *		New Create at 	2017-09-20 21:57PM [Heyn]
 *                       WebTool :
-*                       http://www.scadacore.com/field-tools/programming-calculators/online-checksum-calculator/
-*                       https://www.lammertbies.nl/comm/info/crc-calculation.html
-*                       http://www.ip33.com/crc.html
+*                       http://reveng.sourceforge.net/crc-catalogue/16.htm#crc.cat-bits.16
 *                       
 *                       2020-03-13 [Heyn] New add hacker code.
 *                       2020-03-20 [Heyn] New add hexin_calc_crc16_network.
@@ -27,7 +25,7 @@ static unsigned short   crc16_table_1021[MAX_TABLE_ARRAY]   = { 0x0000 };     //
 static unsigned short   crc16_table_a001[MAX_TABLE_ARRAY]   = { 0x0000 };     // Used for Modbus USB
 static unsigned short   crc16_table_8005[MAX_TABLE_ARRAY]   = { 0x0000 };     // Used for
 static unsigned short   crc16_table_a6bc[MAX_TABLE_ARRAY]   = { 0x0000 };     // Used for
-static unsigned short   crc16_table_91a0[MAX_TABLE_ARRAY]   = { 0x0000 };     // Used for Cordless Telephones
+static unsigned short   crc16_table_0589[MAX_TABLE_ARRAY]   = { 0x0000 };     // Used for Cordless Telephones
 static unsigned short   crc16_table_1dcf[MAX_TABLE_ARRAY]   = { 0x0000 };     // Used for profibus
 
 static unsigned int     crc16_table_8408_init               = FALSE;
@@ -35,7 +33,7 @@ static unsigned int     crc16_table_1021_init               = FALSE;
 static unsigned int     crc16_table_a001_init               = FALSE;
 static unsigned int     crc16_table_8005_init               = FALSE;
 static unsigned int     crc16_table_a6bc_init               = FALSE;
-static unsigned int     crc16_table_91a0_init               = FALSE;
+static unsigned int     crc16_table_0589_init               = FALSE;
 static unsigned int     crc16_table_1dcf_init               = FALSE;
 
 static unsigned short   crc16_table_hacker[MAX_TABLE_ARRAY] = { 0x0000 };     // Used for hacker.
@@ -117,21 +115,21 @@ unsigned short hexin_crc16_poly_is_low_calc( unsigned short crc16, unsigned char
 
 /*
 *********************************************************************************************************
-                                    POLY=0x91A0 [Cordless Telephones]
+                                    POLY=0x0589 [Cordless Telephones]
 *********************************************************************************************************
 */
 
-unsigned short hexin_calc_crc16_91a0( const unsigned char *pSrc, unsigned int len, unsigned short crc16 )
+unsigned short hexin_calc_crc16_0589( const unsigned char *pSrc, unsigned int len, unsigned short crc16 )
 {
     unsigned int i = 0;
     unsigned short crc = crc16;
 
-    if ( crc16_table_91a0_init == FALSE ) {
-        crc16_table_91a0_init = hexin_crc16_init_table_poly_is_high( CRC16_POLYNOMIAL_91A0, crc16_table_91a0 );
+    if ( crc16_table_0589_init == FALSE ) {
+        crc16_table_0589_init = hexin_crc16_init_table_poly_is_low( CRC16_POLYNOMIAL_0589, crc16_table_0589 );
     }
 
 	for ( i=0; i<len; i++ ) {
-		crc = hexin_crc16_poly_is_high_calc( crc, pSrc[i], crc16_table_91a0 );
+		crc = hexin_crc16_poly_is_low_calc( crc, pSrc[i], crc16_table_0589 );
 	}
 	return crc;
 }
