@@ -29,7 +29,7 @@ class TestCRC64( unittest.TestCase ):
         self.assertNotEqual( module.ecma182(b'123456'), 0x4156683F2F4DCB0E )
 
         self.assertEqual( module.we(b'123456789'),      0x62EC59E3F1A4F00A )
-        self.assertEqual( module.xz(b'123456789'),      0x995DC9BBDF1939FA )
+        self.assertEqual( module.xz64(b'123456789'),    0x995DC9BBDF1939FA )
 
         self.assertEqual( module.hacker64(b'123456789', poly=0xD800000000000000, init=0 ), 0x46A5A9388A5BEFFE )
 

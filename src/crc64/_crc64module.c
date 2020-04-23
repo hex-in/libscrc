@@ -178,7 +178,7 @@ static PyMethodDef _crc64Methods[] = {
     { "iso",         (PyCFunction)_crc64_iso,     METH_VARARGS, "Calculate CRC (GO-IOS) of CRC64 [Poly=0xD800000000000000L, Init=0xFFFFFFFFFFFFFFFFL, refin=True,  refout=True,  xorout=0xFFFFFFFFFFFFFFFFL ]" },
     { "ecma182",     (PyCFunction)_crc64_ecma182, METH_VARARGS, "Calculate CRC (ECMA182) of CRC64 [Poly=0x42F0E1EBA9EA3693L, Init=0x0000000000000000, refin=False, refout=False, xorout=0x0000000000000000 ]" },
     { "we",          (PyCFunction)_crc64_we,      METH_VARARGS, "Calculate CRC (WE) of CRC64 [Poly=0x42F0E1EBA9EA3693L, Init=0xFFFFFFFFFFFFFFFFL, refin=False, refout=False, xorout=0xFFFFFFFFFFFFFFFFL ]" },
-    { "xz",          (PyCFunction)_crc64_xz,      METH_VARARGS, "Calculate CRC (XZ) of CRC64 [Poly=0x42F0E1EBA9EA3693L, Init=0xFFFFFFFFFFFFFFFFL, refin=True, refout=True, xorout=0xFFFFFFFFFFFFFFFFL ]" },
+    { "xz64",        (PyCFunction)_crc64_xz,      METH_VARARGS, "Calculate CRC (XZ) of CRC64 [Poly=0x42F0E1EBA9EA3693L, Init=0xFFFFFFFFFFFFFFFFL, refin=True, refout=True, xorout=0xFFFFFFFFFFFFFFFFL ]" },
     { "table64",     (PyCFunction)_crc64_table,   METH_VARARGS, "Print CRC64 table to list. libscrc.table64( polynomial )" },
     { "hacker64",    (PyCFunction)_crc64_hacker,  METH_KEYWORDS|METH_VARARGS, "User calculation CRC64\n"
                                                                               "@data   : bytes\n"
@@ -196,7 +196,7 @@ PyDoc_STRVAR(_crc64_doc,
 "libscrc.iso      -> Calculate CRC (GO-IOS) of CRC64 [Poly=0xD800000000000000L, Init=0xFFFFFFFFFFFFFFFFL, refin=True,  refout=True,  xorout=0xFFFFFFFFFFFFFFFFL ]\n"
 "libscrc.ecma182  -> Calculate CRC (ECMA182) of CRC64 [Poly=0x42F0E1EBA9EA3693L, Init=0x0000000000000000, refin=False, refout=False, xorout=0x0000000000000000 ]\n"
 "libscrc.we       -> Calculate CRC (WE) of CRC64 [Poly=0x42F0E1EBA9EA3693L, Init=0xFFFFFFFFFFFFFFFFL, refin=False, refout=False, xorout=0xFFFFFFFFFFFFFFFFL ]\n"
-"libscrc.xz       -> Calculate CRC (XZ) of CRC64 [Poly=0x42F0E1EBA9EA3693L, Init=0xFFFFFFFFFFFFFFFFL, refin=True, refout=True, xorout=0xFFFFFFFFFFFFFFFFL ]\n"
+"libscrc.xz64     -> Calculate CRC (XZ) of CRC64 [Poly=0x42F0E1EBA9EA3693L, Init=0xFFFFFFFFFFFFFFFFL, refin=True, refout=True, xorout=0xFFFFFFFFFFFFFFFFL ]\n"
 "libscrc.hacker64 -> Free calculation CRC64 Xorout=0 Refin=False Refout=False\n"
 "\n");
 
