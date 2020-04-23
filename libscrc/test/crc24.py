@@ -25,6 +25,7 @@ class TestCRC24( unittest.TestCase ):
         self.assertEqual( module.flexrayb(b'123456789'),    0x1F23B8 )
 
         self.assertEqual( module.openpgp(b'123456789'),     0x21CF02 )
+        self.assertEqual( module.crc24(b'123456789'),       0x21CF02 )
         self.assertEqual( module.lte_a(b'123456789'),       0xCDE703 )
         self.assertEqual( module.lte_b(b'123456789'),       0x23EF52 )
         self.assertEqual( module.interlaken(b'123456789'),  0xB4F3E6 )

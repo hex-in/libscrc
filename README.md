@@ -9,23 +9,23 @@ libscrc is a library for calculating CRC4 CRC5 CRC6 CRC7 CRC8 CRC16 CRC24 CRC32 
 | CRC4-ITU | INTEL   | MODBUS   | BLE | FSC      | GO-ISO |
 | CRC5-ITU | BCC     | IBM      | OPENPGP | CRC32    | ECMA182|
 | CRC5-EPC | LRC     | XMODEM | LTE-A | MPEG2    | WE |
-| CRC5-USB | MAXIM8  | CCITT    | LTE-B |ADLER32   | XZ |
+| CRC5-USB | MAXIM8  | CCITT    | LTE-B |ADLER32   | XZ64 |
 | CRC6-ITU | ROHC    | KERMIT   | OS9 |FLETCHER32|        |
 | CRC7-MMC | ITU8    |MCRF4XX   | FLEXRAY-A | POSIX |        |
 | CAN15 | CRC8    | SICK     | FLEXRAY-B | BZIP2 |        |
 | CAN17 | SUM8    | DNP      | INTERLAKEN | JAMCRC |        |
-| CAN21 |FLETCHER8| X25      |       | AUTOSAR |        |
+| CAN21 |FLETCHER8| X25      | CRC24 | AUTOSAR |        |
 |  | SMBUS | USB      |       | C / ISCSI |        |
 |          | AUTOSAR | MAXIM16  |   | D / BASE91-D |        |
 |          | LTE | DECT     |      | Q / AIXM |        |
 |          | SAE-J1855 | TCP/UDP  |       | XFER |        |
 |          | I-CODE | CDMA2000 |       | CKSUM |        |
 |          | GSM-A |FLETCHER16|| XZ32 |        |
-|          | NRSC-5 |EPC16     |     |          |        |
-| | WCDMA |PROFIBUS | | | |
-| | BLUETOOTH |BUYPASS | | | |
-| | DVB-S2 |GENIBUS | | | |
-| | EBU |GSM16 | | | |
+|          | NRSC-5 |EPC16     |     | AAL5 |        |
+| | WCDMA |PROFIBUS | | ISO-HDLC | |
+| | BLUETOOTH |BUYPASS | | PKZIP | |
+| | DVB-S2 |GENIBUS | | ADCCP | |
+| | EBU |GSM16 | | V-42 | |
 | | DARC |RIELLO | | | |
 | | |OPENSAFETY | | | |
 | | |EN13757 | | | |
@@ -197,6 +197,7 @@ crc24 = libscrc.lte_a(b'1234')
 crc24 = libscrc.lte_b(b'1234')
 crc24 = libscrc.os9(b'1234')
 crc24 = libscrc.interlaken(b'1234')
+crc24 = libscrc.crc24(b'1234')
 ```
 
 5. CRC32
@@ -238,7 +239,7 @@ crc32 = libscrc.aal5(b'1234')
 crc64 = libscrc.iso(b'1234')
 crc64 = libscrc.ecma182(b'1234')
 crc64 = libscrc.we(b'1234')
-crc64 = libscrc.xz(b'1234')
+crc64 = libscrc.xz64(b'1234')
 
 # init=0xFFFFFFFFFFFFFFFF(default)
 # xorout=0x0000000000000000(default)

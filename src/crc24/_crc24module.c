@@ -188,6 +188,7 @@ static PyMethodDef _crc24Methods[] = {
     { "flexraya",    (PyCFunction)_crc24_flexraya,   METH_VARARGS,   "Calculate FLEXRAY-A of CRC24 [Poly=0x5D6DCB, Init=0xFEDCBA, Xorout=0x00000000 Refin=True Refout=True]"},
     { "flexrayb",    (PyCFunction)_crc24_flexrayb,   METH_VARARGS,   "Calculate FLEXRAY-B of CRC24 [Poly=0x5D6DCB, Init=0xABCDEF, Xorout=0x00000000 Refin=True Refout=True]"},
     { "openpgp",     (PyCFunction)_crc24_openpgp,    METH_VARARGS,   "Calculate OPENPGP of CRC24 [Poly=0x864CFB, Init=0xB704CE, Xorout=0x00000000 Refin=True Refout=True]"},
+    { "crc24",       (PyCFunction)_crc24_openpgp,    METH_VARARGS,   "Calculate CRC of CRC24 [Poly=0x864CFB, Init=0xB704CE, Xorout=0x00000000 Refin=True Refout=True]"},
     { "lte_a",       (PyCFunction)_crc24_lte_a,      METH_VARARGS,   "Calculate LTE-A of CRC24 [Poly=0x864CFB, Init=0x000000, Xorout=0x00000000 Refin=False Refout=False]"},
     { "lte_b",       (PyCFunction)_crc24_lte_b,      METH_VARARGS,   "Calculate LTE-B of CRC24 [Poly=0x800063, Init=0x000000, Xorout=0x00000000 Refin=False Refout=False]"},
     { "os9",         (PyCFunction)_crc24_os9,        METH_VARARGS,   "Calculate OS-9 of CRC24 [Poly=0x800063, Init=0xFFFFFF, Xorout=0xFFFFFF Refin=False Refout=False]"},
@@ -208,6 +209,7 @@ PyDoc_STRVAR( _crc24_doc,
 "libscrc.flexraya   -> Calculate FLEXRAY-A of CRC24 [Poly=0x5D6DCB, Init=0xFEDCBA, Xorout=0x00000000 Refin=True Refout=True]\n"
 "libscrc.flexrayb   -> Calculate FLEXRAY-B of CRC24 [Poly=0x5D6DCB, Init=0xABCDEF, Xorout=0x00000000 Refin=True Refout=True]\n"
 "libscrc.openpgp    -> Calculate OPENPGP of CRC24 [Poly=0x864CFB, Init=0xB704CE, Xorout=0x00000000 Refin=True Refout=True]\n"
+"libscrc.crc24      -> Calculate CRC of CRC24 [Poly=0x864CFB, Init=0xB704CE, Xorout=0x00000000 Refin=True Refout=True]\n"
 "libscrc.lte_a      -> Calculate LTE-A of CRC24 [Poly=0x864CFB, Init=0x000000, Xorout=0x00000000 Refin=False Refout=False]\n"
 "libscrc.lte_b      -> Calculate LTE-B of CRC24 [Poly=0x800063, Init=0x000000, Xorout=0x00000000 Refin=False Refout=False]\n"
 "libscrc.os9        -> Calculate OS-9 of CRC24 [Poly=0x800063, Init=0xFFFFFF, Xorout=0xFFFFFF Refin=False Refout=False]\n"
