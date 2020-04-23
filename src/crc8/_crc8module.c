@@ -165,7 +165,7 @@ static PyObject * _crc8_itu( PyObject *self, PyObject *args )
     return Py_BuildValue( "B", result ^ 0x55 );
 }
 
-static PyObject * _crc8( PyObject *self, PyObject *args )
+static PyObject * _crc8_crc8( PyObject *self, PyObject *args )
 {
     unsigned char result = 0x00;
     unsigned char init   = 0x00;
@@ -272,23 +272,6 @@ static PyObject * _crc8_fletcher( PyObject *self, PyObject *args )
     unsigned char reserved = 0x00;
  
     if ( !hexin_PyArg_ParseTuple( self, args, reserved, hexin_calc_crc8_fletcher, &result ) ) {
-        return NULL;
-    }
-
-    return Py_BuildValue( "B", result );
-}
-
-static PyObject * _crc8_smbus( PyObject *self, PyObject *args )
-{
-    unsigned char result = 0x00;
-    static unsigned char crc8_smbus_table[MAX_TABLE_ARRAY] = { 0x00 };
-    static struct _crc8_parameters param = { .is_initial = FALSE,
-                                             .crc8  = 0x00,
-                                             .poly  = 0x07,
-                                             .table = crc8_smbus_table,
-                                             .initial_table_function = hexin_crc8_init_table_poly_is_low };
-
-    if ( !hexin_PyArg_ParseTuple_Parameters( self, args, &param, &result ) ) {
         return NULL;
     }
 
@@ -497,16 +480,34 @@ static PyObject * _crc8_opensafety8( PyObject *self, PyObject *args )
     return Py_BuildValue( "B", result );
 }
 
+static PyObject * _crc8_mifare_mad( PyObject *self, PyObject *args )
+{
+    unsigned char result = 0x00;
+    static unsigned char crc8_mifare_table[MAX_TABLE_ARRAY] = { 0x00 };
+    static struct _crc8_parameters param = { .is_initial = FALSE,
+                                             .crc8  = 0xC7,
+                                             .poly  = 0x1D,
+                                             .table = crc8_mifare_table,
+                                             .initial_table_function = hexin_crc8_init_table_poly_is_low };
+
+    if ( !hexin_PyArg_ParseTuple_Parameters( self, args, &param, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "B", result );
+}
+
 /* method table */
 static PyMethodDef _crc8Methods[] = {
-    { "intel",      (PyCFunction)_crc8_intel,        METH_VARARGS, "Calculate Intel hexadecimal of CRC8 [Initial = 0x00]" },
-    { "bcc",        (PyCFunction)_crc8_bcc,          METH_VARARGS, "Calculate BCC of CRC8 [Initial = 0x00]" },
-    { "lrc",        (PyCFunction)_crc8_lrc,          METH_VARARGS, "Calculate LRC of CRC8 [Initial = 0x00]" },
-    { "maxim8",     (PyCFunction)_crc8_maxim,        METH_VARARGS, "Calculate MAXIM of CRC8 [Poly = 0x31 Initial = 0x00 Xorout=0x00 Refin=True Refout=True] e.g. DS18B20" },
-    { "rohc",       (PyCFunction)_crc8_rohc,         METH_VARARGS, "Calculate ROHC of CRC8 [Poly = 0x07 Initial = 0xFF Xorout=0x00 Refin=True Refout=True]" },
-    { "itu8",       (PyCFunction)_crc8_itu,          METH_VARARGS, "Calculate ITU  of CRC8 [Poly = 0x07 Initial = 0x00 Xorout=0x55 Refin=False Refout=False]" },
-    { "crc8",       (PyCFunction)_crc8,              METH_VARARGS, "Calculate CRC  of CRC8 [Poly = 0x07 Initial = 0x00 Xorout=0x00 Refin=False Refout=False]" },
-    { "sum8",       (PyCFunction)_crc8_sum,          METH_VARARGS, "Calculate SUM  of CRC8 [Initial = 0x00]" },
+    { "intel",      (PyCFunction)_crc8_intel,        METH_VARARGS, "Calculate Intel hexadecimal of CRC8 [Initial=0x00]" },
+    { "bcc",        (PyCFunction)_crc8_bcc,          METH_VARARGS, "Calculate BCC of CRC8 [Initial=0x00]" },
+    { "lrc",        (PyCFunction)_crc8_lrc,          METH_VARARGS, "Calculate LRC of CRC8 [Initial=0x00]" },
+    { "maxim8",     (PyCFunction)_crc8_maxim,        METH_VARARGS, "Calculate MAXIM(MAXIM-DOM) of CRC8 [Poly=0x31 Initial=0x00 Xorout=0x00 Refin=True Refout=True] e.g. DS18B20" },
+    { "rohc",       (PyCFunction)_crc8_rohc,         METH_VARARGS, "Calculate ROHC of CRC8 [Poly=0x07 Initial=0xFF Xorout=0x00 Refin=True Refout=True]" },
+    { "itu8",       (PyCFunction)_crc8_itu,          METH_VARARGS, "Calculate ITU of CRC8 [Poly=0x07 Initial=0x00 Xorout=0x55 Refin=False Refout=False]" },
+    { "i432_1",     (PyCFunction)_crc8_itu,          METH_VARARGS, "Calculate I-432-1 of CRC8 [Poly=0x07 Initial=0x00 Xorout=0x55 Refin=False Refout=False]" },
+    { "crc8",       (PyCFunction)_crc8_crc8,         METH_VARARGS, "Calculate CRC of CRC8 [Poly=0x07 Initial=0x00 Xorout=0x00 Refin=False Refout=False]" },
+    { "sum8",       (PyCFunction)_crc8_sum,          METH_VARARGS, "Calculate SUM of CRC8 [Initial=0x00]" },
     { "table8",     (PyCFunction)_crc8_table,        METH_VARARGS, "Print CRC8 table to list. libscrc.table8( polynomial )" },
     { "hacker8",    (PyCFunction)_crc8_hacker,       METH_KEYWORDS|METH_VARARGS, "User calculation CRC8\n"
                                                                                  "@data   : bytes\n"
@@ -515,20 +516,23 @@ static PyMethodDef _crc8Methods[] = {
                                                                                  "@xorout : default=0x00\n"
                                                                                  "@ref    : default=False" },
     { "fletcher8",  (PyCFunction)_crc8_fletcher,     METH_VARARGS, "Calculate fletcher8" },
-    { "smbus",      (PyCFunction)_crc8_smbus,        METH_VARARGS, "Calculate SMBUS of CRC8 [Poly = 0x07 Initial = 0x00 Xorout=0x00 Refin=True Refout=True]" },
-    { "autosar8",   (PyCFunction)_crc8_autosar8,     METH_VARARGS, "Calculate AUTOSAR of CRC8 [Poly = 0x2F Initial = 0xFF Xorout=0xFF Refin=True Refout=True]" },
-    { "lte8",       (PyCFunction)_crc8_lte8,         METH_VARARGS, "Calculate LTE of CRC8 [Poly = 0x9B Initial = 0x00 Xorout=0x00 Refin=True Refout=True]" },
-    { "sae_j1855",  (PyCFunction)_crc8_sae_j1855,    METH_VARARGS, "Calculate SAE-J1855 of CRC8 [Poly = 0x1D Initial = 0xFF Xorout=0xFF Refin=True Refout=True]" },
-    { "icode",      (PyCFunction)_crc8_icode,        METH_VARARGS, "Calculate I-CODE of CRC8 [Poly = 0x1D Initial = 0xFD Xorout=0x00 Refin=True Refout=True]" },
-    { "gsm8_a",     (PyCFunction)_crc8_gsm8_a,       METH_VARARGS, "Calculate GSM8-A of CRC8 [Poly = 0x1D Initial = 0x00 Xorout=0x00 Refin=True Refout=True]" },
-    { "gsm8_b",     (PyCFunction)_crc8_gsm8_b,       METH_VARARGS, "Calculate GSM8-B of CRC8 [Poly = 0x49 Initial = 0x00 Xorout=0xFF Refin=True Refout=True]" },
-    { "nrsc_5",     (PyCFunction)_crc8_nrsc_5,       METH_VARARGS, "Calculate NRSC-5 of CRC8 [Poly = 0x31 Initial = 0xFF Xorout=0x00 Refin=True Refout=True]" },
-    { "wcdma",      (PyCFunction)_crc8_wcdma,        METH_VARARGS, "Calculate WCDMA of CRC8 [Poly = 0x9B Initial = 0x00 Xorout=0x00 Refin=True Refout=True]" },
-    { "bluetooth",  (PyCFunction)_crc8_bluetooth,    METH_VARARGS, "Calculate BLUETOOTH of CRC8 [Poly = 0xA7 Initial = 0x00 Xorout=0x00 Refin=True Refout=True]" },
-    { "dvb_s2",     (PyCFunction)_crc8_dvb_s2,       METH_VARARGS, "Calculate DVB-S2 of CRC8 [Poly = 0xD5 Initial = 0x00 Xorout=0x00 Refin=True Refout=True]" },
-    { "ebu8",       (PyCFunction)_crc8_ebu8,         METH_VARARGS, "Calculate EBU of CRC8 [Poly = 0x1D Initial = 0xFF Xorout=0x00 Refin=True Refout=True]" },
-    { "darc",       (PyCFunction)_crc8_darc,         METH_VARARGS, "Calculate DARC of CRC8 [Poly = 0x39 Initial = 0x00 Xorout=0x00 Refin=True Refout=True]" },
-    { "opensafety8",(PyCFunction)_crc8_opensafety8,  METH_VARARGS, "Calculate OPENSAFETY of CRC8 [Poly = 0x2F Initial = 0x00 Xorout=0x00 Refin=True Refout=True]" },
+    { "smbus",      (PyCFunction)_crc8_crc8,         METH_VARARGS, "Calculate SMBUS of CRC8 [Poly=0x07 Initial=0x00 Xorout=0x00 Refin=False Refout=False]" },
+    { "autosar8",   (PyCFunction)_crc8_autosar8,     METH_VARARGS, "Calculate AUTOSAR of CRC8 [Poly=0x2F Initial=0xFF Xorout=0xFF Refin=False Refout=False]" },
+    { "lte8",       (PyCFunction)_crc8_lte8,         METH_VARARGS, "Calculate LTE of CRC8 [Poly=0x9B Initial=0x00 Xorout=0x00 Refin=False Refout=False]" },
+    { "sae_j1855",  (PyCFunction)_crc8_sae_j1855,    METH_VARARGS, "Calculate SAE-J1855 of CRC8 [Poly=0x1D Initial=0xFF Xorout=0xFF Refin=False Refout=False]" },
+    { "icode8",     (PyCFunction)_crc8_icode,        METH_VARARGS, "Calculate I-CODE of CRC8 [Poly=0x1D Initial=0xFD Xorout=0x00 Refin=False Refout=False]" },
+    { "gsm8_a",     (PyCFunction)_crc8_gsm8_a,       METH_VARARGS, "Calculate GSM8-A of CRC8 [Poly=0x1D Initial=0x00 Xorout=0x00 Refin=False Refout=False]" },
+    { "gsm8_b",     (PyCFunction)_crc8_gsm8_b,       METH_VARARGS, "Calculate GSM8-B of CRC8 [Poly=0x49 Initial=0x00 Xorout=0xFF Refin=False Refout=False]" },
+    { "nrsc_5",     (PyCFunction)_crc8_nrsc_5,       METH_VARARGS, "Calculate NRSC-5 of CRC8 [Poly=0x31 Initial=0xFF Xorout=0x00 Refin=False Refout=False]" },
+    { "wcdma8",     (PyCFunction)_crc8_wcdma,        METH_VARARGS, "Calculate WCDMA of CRC8 [Poly=0x9B Initial=0x00 Xorout=0x00 Refin=True Refout=True]" },
+    { "bluetooth",  (PyCFunction)_crc8_bluetooth,    METH_VARARGS, "Calculate BLUETOOTH of CRC8 [Poly=0xA7 Initial=0x00 Xorout=0x00 Refin=True Refout=True]" },
+    { "dvb_s2",     (PyCFunction)_crc8_dvb_s2,       METH_VARARGS, "Calculate DVB-S2 of CRC8 [Poly=0xD5 Initial=0x00 Xorout=0x00 Refin=False Refout=False]" },
+    { "ebu8",       (PyCFunction)_crc8_ebu8,         METH_VARARGS, "Calculate EBU of CRC8 [Poly=0x1D Initial=0xFF Xorout=0x00 Refin=True Refout=True]" },
+    { "tech_3250",  (PyCFunction)_crc8_ebu8,         METH_VARARGS, "Calculate TECH-3250 of CRC8 [Poly=0x1D Initial=0xFF Xorout=0x00 Refin=True Refout=True]" },
+    { "aes8",       (PyCFunction)_crc8_ebu8,         METH_VARARGS, "Calculate AES of CRC8 [Poly=0x1D Initial=0xFF Xorout=0x00 Refin=True Refout=True]" },
+    { "darc8",      (PyCFunction)_crc8_darc,         METH_VARARGS, "Calculate DARC of CRC8 [Poly=0x39 Initial=0x00 Xorout=0x00 Refin=True Refout=True]" },
+    { "opensafety8",(PyCFunction)_crc8_opensafety8,  METH_VARARGS, "Calculate OPENSAFETY of CRC8 [Poly=0x2F Initial=0x00 Xorout=0x00 Refin=False Refout=False]" },
+    { "mifare_mad", (PyCFunction)_crc8_mifare_mad,   METH_VARARGS, "Calculate MIFARE-MAD of CRC8 [Poly=0x1D Initial=0xC7 Xorout=0x00 Refin=False Refout=False]" },
     
     { NULL, NULL, 0, NULL }        /* Sentinel */
 };
@@ -537,30 +541,34 @@ static PyMethodDef _crc8Methods[] = {
 /* module documentation */
 PyDoc_STRVAR( _crc8_doc,
 "Calculation of CRC8 \n"
-"libscrc.intel      -> Calculate Intel hexadecimal of CRC8 [Initial = 0x00]\n"
-"libscrc.bcc        -> Calculate BCC(XOR) of CRC8 [Initial = 0x00]\n"
-"libscrc.lrc        -> Calculate LRC of CRC8 [Initial = 0x00]\n"
-"libscrc.maxim8     -> Calculate MAXIM of CRC8 [Poly = 0x31 Initial = 0x00 Xorout=0x00 Refin=True Refout=True] e.g. DS18B20\n"
-"libscrc.rohc       -> Calculate ROHC of CRC8 [Poly = 0x07 Initial = 0xFF Xorout=0x00 Refin=True Refout=True]\n"
-"libscrc.itu8       -> Calculate ITU  of CRC8 [Poly = 0x07 Initial = 0x00 Xorout=0x55 Refin=False Refout=False]\n"
-"libscrc.crc8       -> Calculate CRC  of CRC8 [Poly = 0x07 Initial = 0x00 Xorout=0x00 Refin=False Refout=False]\n"
-"libscrc.sum8       -> Calculate SUM  of CRC8 [Initial = 0x00]\n"
+"libscrc.intel      -> Calculate Intel hexadecimal of CRC8 [Initial=0x00]\n"
+"libscrc.bcc        -> Calculate BCC(XOR) of CRC8 [Initial=0x00]\n"
+"libscrc.lrc        -> Calculate LRC of CRC8 [Initial=0x00]\n"
+"libscrc.maxim8     -> Calculate MAXIM(MAXIM-DOM) of CRC8 [Poly=0x31 Initial=0x00 Xorout=0x00 Refin=True Refout=True] e.g. DS18B20\n"
+"libscrc.rohc       -> Calculate ROHC of CRC8 [Poly=0x07 Initial=0xFF Xorout=0x00 Refin=True Refout=True]\n"
+"libscrc.itu8       -> Calculate ITU of CRC8 [Poly=0x07 Initial=0x00 Xorout=0x55 Refin=False Refout=False]\n"
+"libscrc.i432_1     -> Calculate I-432-1 of CRC8 [Poly=0x07 Initial=0x00 Xorout=0x55 Refin=False Refout=False]\n"
+"libscrc.crc8       -> Calculate CRC of CRC8 [Poly=0x07 Initial=0x00 Xorout=0x00 Refin=False Refout=False]\n"
+"libscrc.sum8       -> Calculate SUM of CRC8 [Initial=0x00]\n"
 "libscrc.hacker8    -> Free calculation CRC8 [poly=any(default=0x31), init=any(default=0xFF), xorout=0x00 Refin=False Refout=False]\n"
 "libscrc.fletcher8  -> Calculate fletcher8 \n"
-"libscrc.smbus      -> Calculate SMBUS of CRC8 [Poly = 0x07 Initial = 0x00 Xorout=0x00 Refin=True Refout=True]\n"
-"libscrc.autosar8   -> Calculate AUTOSAR of CRC8 [Poly = 0x2F Initial = 0xFF Xorout=0xFF Refin=True Refout=True]\n"
-"libscrc.lte8       -> Calculate LTE of CRC8 [Poly = 0x9B Initial = 0x00 Xorout=0x00 Refin=True Refout=True]\n"
-"libscrc.sae_j1855  -> Calculate SAE-J1855 of CRC8 [Poly = 0x1D Initial = 0xFF Xorout=0xFF Refin=True Refout=True]\n"
-"libscrc.icode      -> Calculate I-CODE of CRC8 [Poly = 0x1D Initial = 0xFD Xorout=0x00 Refin=True Refout=True]\n"
-"libscrc.gsm8_a     -> Calculate GSM8-A of CRC8 [Poly = 0x1D Initial = 0x00 Xorout=0x00 Refin=True Refout=True]\n"
-"libscrc.gsm8_b     -> Calculate GSM8-B of CRC8 [Poly = 0x49 Initial = 0x00 Xorout=0xFF Refin=True Refout=True]\n"
-"libscrc.nrsc_5     -> Calculate NRSC-5 of CRC8 [Poly = 0x31 Initial = 0xFF Xorout=0x00 Refin=True Refout=True]\n"
-"libscrc.wcdma      -> Calculate WCDMA of CRC8 [Poly = 0x9B Initial = 0x00 Xorout=0x00 Refin=True Refout=True]\n"
-"libscrc.bluetooth  -> Calculate BLUETOOTH of CRC8 [Poly = 0xA7 Initial = 0x00 Xorout=0x00 Refin=True Refout=True]\n"
-"libscrc.dvb_s2     -> Calculate DVB-S2 of CRC8 [Poly = 0xD5 Initial = 0x00 Xorout=0x00 Refin=True Refout=True]\n"
-"libscrc.ebu8       -> Calculate EBU of CRC8 [Poly = 0x1D Initial = 0xFF Xorout=0x00 Refin=True Refout=True]\n"
-"libscrc.darc       -> Calculate DARC of CRC8 [Poly = 0x39 Initial = 0x00 Xorout=0x00 Refin=True Refout=True]\n"
-"libscrc.opensafety8-> Calculate OPENSAFETY of CRC8 [Poly = 0x2F Initial = 0x00 Xorout=0x00 Refin=True Refout=True]\n"
+"libscrc.smbus      -> Calculate SMBUS of CRC8 [Poly=0x07 Initial=0x00 Xorout=0x00 Refin=False Refout=False]\n"
+"libscrc.autosar8   -> Calculate AUTOSAR of CRC8 [Poly=0x2F Initial=0xFF Xorout=0xFF Refin=False Refout=False]\n"
+"libscrc.lte8       -> Calculate LTE of CRC8 [Poly=0x9B Initial=0x00 Xorout=0x00 Refin=False Refout=False]\n"
+"libscrc.sae_j1855  -> Calculate SAE-J1855 of CRC8 [Poly=0x1D Initial=0xFF Xorout=0xFF Refin=False Refout=False]\n"
+"libscrc.icode8     -> Calculate I-CODE of CRC8 [Poly=0x1D Initial=0xFD Xorout=0x00 Refin=False Refout=False]\n"
+"libscrc.gsm8_a     -> Calculate GSM8-A of CRC8 [Poly=0x1D Initial=0x00 Xorout=0x00 Refin=False Refout=False]\n"
+"libscrc.gsm8_b     -> Calculate GSM8-B of CRC8 [Poly=0x49 Initial=0x00 Xorout=0xFF Refin=False Refout=False]\n"
+"libscrc.nrsc_5     -> Calculate NRSC-5 of CRC8 [Poly=0x31 Initial=0xFF Xorout=0x00 Refin=False Refout=False]\n"
+"libscrc.wcdma8     -> Calculate WCDMA of CRC8 [Poly=0x9B Initial=0x00 Xorout=0x00 Refin=True Refout=True]\n"
+"libscrc.bluetooth  -> Calculate BLUETOOTH of CRC8 [Poly=0xA7 Initial=0x00 Xorout=0x00 Refin=True Refout=True]\n"
+"libscrc.dvb_s2     -> Calculate DVB-S2 of CRC8 [Poly=0xD5 Initial=0x00 Xorout=0x00 Refin=False Refout=False]]\n"
+"libscrc.ebu8       -> Calculate EBU of CRC8 [Poly=0x1D Initial=0xFF Xorout=0x00 Refin=True Refout=True]\n"
+"libscrc.tech_3250  -> Calculate TECH-3250 of CRC8 [Poly=0x1D Initial=0xFF Xorout=0x00 Refin=True Refout=True]\n"
+"libscrc.aes8       -> Calculate AES of CRC8 [Poly=0x1D Initial=0xFF Xorout=0x00 Refin=True Refout=True]\n"
+"libscrc.darc8      -> Calculate DARC of CRC8 [Poly=0x39 Initial=0x00 Xorout=0x00 Refin=True Refout=True]\n"
+"libscrc.opensafety8-> Calculate OPENSAFETY of CRC8 [Poly=0x2F Initial=0x00 Xorout=0x00 Refin=False Refout=False]\n"
+"libscrc.mifare_mad -> Calculate MIFARE-MAD of CRC8 [Poly=0x1D Initial=0xC7 Xorout=0x00 Refin=False Refout=False]\n"
 "\n" );
 
 

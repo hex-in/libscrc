@@ -27,7 +27,7 @@ libscrc is a library for calculating CRC4 CRC5 CRC6 CRC7 CRC8 CRC16 CRC24 CRC32 
 | | DVB-S2 |GENIBUS | | ADCCP | |
 | | EBU |GSM16 | | V-42 | |
 | | DARC |RIELLO | | | |
-| | |OPENSAFETY | | | |
+| | MIFARE |OPENSAFETY | | | |
 | | |EN13757 | | | |
 | | |CMS | | | |
 
@@ -128,15 +128,19 @@ crc8 = libscrc.smbus(b'1234')
 crc8 = libscrc.autosar8(b'1234')
 crc8 = libscrc.lte8(b'1234')
 crc8 = libscrc.sae_j1855(b'1234')
-crc8 = libscrc.icode(b'1234')
+crc8 = libscrc.icode8(b'1234')
 crc8 = libscrc.gsm8_a(b'1234')
 crc8 = libscrc.nrsc_5(b'1234')
-crc8 = libscrc.wcdma(b'1234')
+crc8 = libscrc.wcdma8(b'1234')
 crc8 = libscrc.bluetooth(b'1234')
 crc8 = libscrc.dvb_s2(b'1234')
 crc8 = libscrc.ebu8(b'1234')
-crc8 = libscrc.darc(b'1234')
+crc8 = libscrc.darc8(b'1234')
 crc8 = libscrc.opensafety8(b'1234')
+crc8 = libscrc.i432_1(b'1234')
+crc8 = libscrc.mifare_mad(b'1234')
+crc8 = libscrc.tech_3250(b'1234')
+crc8 = libscrc.aes8(b'1234')
 ```
 
 3. CRC16

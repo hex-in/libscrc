@@ -11,6 +11,8 @@
 *		New Create at 	2020-03-17 [Heyn] Initialize
 *                       2020-03-20 [Heyn] New add hexin_calc_crc8_fletcher
 *
+*   SEE : http://reveng.sourceforge.net/crc-catalogue/1-15.htm#crc.cat-bits.8
+*
 *********************************************************************************************************
 */
 
