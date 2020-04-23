@@ -22,7 +22,7 @@ class TestCRC32( unittest.TestCase ):
         """
         self.assertEqual( module.fsc(b'123456789'),     0x0376E6E7 )
         self.assertEqual( module.crc32(b'123456789'),   0xCBF43926 )
-        self.assertEqual( module.iso_hdlc(b'123456789'),0xCBF43926 )
+        self.assertEqual( module.iso_hdlc32(b'123456789'),0xCBF43926 )
         self.assertEqual( module.xz32(b'123456789'),    0xCBF43926 )
         self.assertEqual( module.pkzip(b'123456789'),   0xCBF43926 )
         self.assertEqual( module.adccp(b'123456789'),   0xCBF43926 )
