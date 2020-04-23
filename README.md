@@ -6,10 +6,10 @@ libscrc is a library for calculating CRC4 CRC5 CRC6 CRC7 CRC8 CRC16 CRC24 CRC32 
 
 |  CRCx |  CRC8 | CRC16  | CRC24 |   CRC32| CRC64  |
 | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: |
-| CRC4-ITU | INTEL   | MODBUS   | BLE | FSC      | ISO    |
+| CRC4-ITU | INTEL   | MODBUS   | BLE | FSC      | GO-ISO |
 | CRC5-ITU | BCC     | IBM      | OPENPGP | CRC32    | ECMA182|
-| CRC5-EPC | LRC     | XMODEM | LTE-A | MPEG2    |        |
-| CRC5-USB | MAXIM8  | CCITT    | LTE-B |ADLER32   |        |
+| CRC5-EPC | LRC     | XMODEM | LTE-A | MPEG2    | WE |
+| CRC5-USB | MAXIM8  | CCITT    | LTE-B |ADLER32   | XZ |
 | CRC6-ITU | ROHC    | KERMIT   | OS9 |FLETCHER32|        |
 | CRC7-MMC | ITU8    |MCRF4XX   | FLEXRAY-A | POSIX |        |
 | CAN15 | CRC8    | SICK     | FLEXRAY-B | BZIP2 |        |
@@ -226,6 +226,8 @@ crc32 = libscrc.xfer(b'1234')
 ```python
 crc64 = libscrc.iso(b'1234')
 crc64 = libscrc.ecma182(b'1234')
+crc64 = libscrc.we(b'1234')
+crc64 = libscrc.xz(b'1234')
 
 # init=0xFFFFFFFFFFFFFFFF(default)
 # xorout=0x0000000000000000(default)

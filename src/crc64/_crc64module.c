@@ -13,6 +13,7 @@
 *                                         for ( unsigned int i=0; i<256; i++ ) -> for ( i=0; i<256; i++ )
 *                       2020-03-16 [Heyn] New add hacker64 code.
 *                       2020-04-17 [Heyn] Issues #1
+*                       2020-04-23 [Heyn] New add we() and xz() functions.
 *
 *********************************************************************************************************
 */
@@ -56,16 +57,28 @@ static unsigned char hexin_PyArg_ParseTuple( PyObject *self, PyObject *args,
 static PyObject * _crc64_iso( PyObject *self, PyObject *args )
 {
     unsigned long long result = 0x0000000000000000L;
-    unsigned long long init   = 0x0000000000000000L;
+    unsigned long long init   = 0xFFFFFFFFFFFFFFFFL;
  
     if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc64_iso, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "K", ( result ^ 0xFFFFFFFFFFFFFFFFL ) );
+}
+
+static PyObject * _crc64_ecma182( PyObject *self, PyObject *args )
+{
+    unsigned long long result = 0x0000000000000000L;
+    unsigned long long init   = 0x0000000000000000L;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc64_ecma182, &result ) ) {
         return NULL;
     }
 
     return Py_BuildValue( "K", result );
 }
 
-static PyObject * _crc64_ecma182( PyObject *self, PyObject *args )
+static PyObject * _crc64_we( PyObject *self, PyObject *args )
 {
     unsigned long long result = 0x0000000000000000L;
     unsigned long long init   = 0xFFFFFFFFFFFFFFFFL;
@@ -74,7 +87,19 @@ static PyObject * _crc64_ecma182( PyObject *self, PyObject *args )
         return NULL;
     }
 
-    return Py_BuildValue( "K", result );
+    return Py_BuildValue( "K", ( result ^ 0xFFFFFFFFFFFFFFFFL ) );
+}
+
+static PyObject * _crc64_xz( PyObject *self, PyObject *args )
+{
+    unsigned long long result = 0x0000000000000000L;
+    unsigned long long init   = 0xFFFFFFFFFFFFFFFFL;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc64_xz, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "K", ( result ^ 0xFFFFFFFFFFFFFFFFL ) );
 }
 
 /*
@@ -113,7 +138,7 @@ static PyObject * _crc64_table( PyObject *self, PyObject *args )
 static PyObject * _crc64_hacker( PyObject *self, PyObject *args, PyObject* kws )
 {
     Py_buffer data = { NULL, NULL };
-    unsigned long long init   = 0xFFFFFFFFFFFFFFFFL;
+    unsigned long long init   = 0x0000000000000000;
     unsigned long long xorout = 0x0000000000000000L;
     unsigned int   ref        = 0x00000000L;
     unsigned long long result = 0x0000000000000000L;
@@ -150,13 +175,15 @@ static PyObject * _crc64_hacker( PyObject *self, PyObject *args, PyObject* kws )
 
 /* method table */
 static PyMethodDef _crc64Methods[] = {
-    { "iso",         (PyCFunction)_crc64_iso,     METH_VARARGS, "Calculate CRC (IOS) of CRC64 [Poly=0xD800000000000000L, Init=0x0000000000000000L]"},
-    { "ecma182",     (PyCFunction)_crc64_ecma182, METH_VARARGS, "Calculate CRC (ECMA182) of CRC64 [Poly=0x42F0E1EBA9EA3693L, Init=0xFFFFFFFFFFFFFFFFL]"},
+    { "iso",         (PyCFunction)_crc64_iso,     METH_VARARGS, "Calculate CRC (GO-IOS) of CRC64 [Poly=0xD800000000000000L, Init=0xFFFFFFFFFFFFFFFFL, refin=True,  refout=True,  xorout=0xFFFFFFFFFFFFFFFFL ]" },
+    { "ecma182",     (PyCFunction)_crc64_ecma182, METH_VARARGS, "Calculate CRC (ECMA182) of CRC64 [Poly=0x42F0E1EBA9EA3693L, Init=0x0000000000000000, refin=False, refout=False, xorout=0x0000000000000000 ]" },
+    { "we",          (PyCFunction)_crc64_we,      METH_VARARGS, "Calculate CRC (WE) of CRC64 [Poly=0x42F0E1EBA9EA3693L, Init=0xFFFFFFFFFFFFFFFFL, refin=False, refout=False, xorout=0xFFFFFFFFFFFFFFFFL ]" },
+    { "xz",          (PyCFunction)_crc64_xz,      METH_VARARGS, "Calculate CRC (XZ) of CRC64 [Poly=0x42F0E1EBA9EA3693L, Init=0xFFFFFFFFFFFFFFFFL, refin=True, refout=True, xorout=0xFFFFFFFFFFFFFFFFL ]" },
     { "table64",     (PyCFunction)_crc64_table,   METH_VARARGS, "Print CRC64 table to list. libscrc.table64( polynomial )" },
     { "hacker64",    (PyCFunction)_crc64_hacker,  METH_KEYWORDS|METH_VARARGS, "User calculation CRC64\n"
                                                                               "@data   : bytes\n"
                                                                               "@poly   : default=0x42F0E1EBA9EA3693\n"
-                                                                              "@init   : default=0xFFFFFFFFFFFFFFFF\n"
+                                                                              "@init   : default=0x0000000000000000\n"
                                                                               "@xorout : default=0x0000000000000000\n"
                                                                               "@ref    : default=False" },
     {NULL, NULL, 0, NULL}        /* Sentinel */
@@ -166,8 +193,10 @@ static PyMethodDef _crc64Methods[] = {
 /* module documentation */
 PyDoc_STRVAR(_crc64_doc,
 "Calculation of CRC64 \n"
-"libscrc.iso -> Calculate CRC (IOS) of CRC64 [Poly=0xD800000000000000L, Init=0x0000000000000000L]\n"
-"libscrc.ecma182  -> Calculate CRC (ECMA182) of CRC64 [Poly=0x42F0E1EBA9EA3693L, Init=0xFFFFFFFFFFFFFFFFL]\n"
+"libscrc.iso      -> Calculate CRC (GO-IOS) of CRC64 [Poly=0xD800000000000000L, Init=0xFFFFFFFFFFFFFFFFL, refin=True,  refout=True,  xorout=0xFFFFFFFFFFFFFFFFL ]\n"
+"libscrc.ecma182  -> Calculate CRC (ECMA182) of CRC64 [Poly=0x42F0E1EBA9EA3693L, Init=0x0000000000000000, refin=False, refout=False, xorout=0x0000000000000000 ]\n"
+"libscrc.we       -> Calculate CRC (WE) of CRC64 [Poly=0x42F0E1EBA9EA3693L, Init=0xFFFFFFFFFFFFFFFFL, refin=False, refout=False, xorout=0xFFFFFFFFFFFFFFFFL ]\n"
+"libscrc.xz       -> Calculate CRC (XZ) of CRC64 [Poly=0x42F0E1EBA9EA3693L, Init=0xFFFFFFFFFFFFFFFFL, refin=True, refout=True, xorout=0xFFFFFFFFFFFFFFFFL ]\n"
 "libscrc.hacker64 -> Free calculation CRC64 Xorout=0 Refin=False Refout=False\n"
 "\n");
 

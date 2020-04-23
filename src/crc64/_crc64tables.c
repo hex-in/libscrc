@@ -4,11 +4,14 @@
 *                                           All Rights Reserved
 * File    : _crc64tables.c
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V0.1.6
+* Version : V1.1
 *
 * LICENSING TERMS:
 * ---------------
 *		New Create at 	2020-03-13 [Heyn] Initialize
+*                       2020-04-23 [Heyn] New add we() and xz() functions.
+*
+*   SEE : http://reveng.sourceforge.net/crc-catalogue/17plus.htm#crc.cat-bits.64
 *
 *********************************************************************************************************
 */
@@ -17,11 +20,14 @@
 
 unsigned long long	    crc64_table_iso[     MAX_TABLE_ARRAY ]  = { 0x0000000000000000L };
 unsigned long long      crc64_table_ecma182[ MAX_TABLE_ARRAY ]  = { 0x0000000000000000L };
+unsigned long long      crc64_table_xz[      MAX_TABLE_ARRAY ]  = { 0x0000000000000000L };
 unsigned long long      crc64_table_hacker[  MAX_TABLE_ARRAY ]  = { 0x0000000000000000L };
 
 static int				crc64_table_iso_init		            = FALSE;
 static int				crc64_table_ecma182_init	            = FALSE;
+static int				crc64_table_xz_init	                    = FALSE;
 unsigned long long      crc64_table_hacker_init                 = FALSE;
+
 
 unsigned long long hexin_reverse64( unsigned long long data )
 {
@@ -134,8 +140,21 @@ unsigned long long hexin_calc_crc64_ecma182( const unsigned char *pSrc, unsigned
 	for ( i=0; i<len; i++ ) {
         crc = hexin_crc64_poly_is_low_calc( crc, pSrc[i], crc64_table_ecma182 );
     }
+    return crc;
+}
 
-    crc ^= 0xFFFFFFFFFFFFFFFF;
+unsigned long long hexin_calc_crc64_xz( const unsigned char *pSrc, unsigned int len, unsigned long long crc64 )
+{
+    unsigned int i = 0;
+    unsigned long long crc = crc64;
+
+    if ( ! crc64_table_xz_init ) {
+        crc64_table_xz_init = hexin_crc64_init_table_poly_is_high( hexin_reverse64( CRC64_POLYNOMIAL_ECMA182 ), crc64_table_xz );
+    }
+
+	for ( i=0; i<len; i++ ) {
+        crc = hexin_crc64_poly_is_high_calc( crc, pSrc[i], crc64_table_xz );
+    }
     return crc;
 }
 
