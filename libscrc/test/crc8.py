@@ -21,14 +21,28 @@ class TestCRC8( unittest.TestCase ):
     def do_basics( self, module ):
         """ Test basic functionality.
         """
-        self.assertEqual( module.maxim8(b'123456789'), 0xA1 )
-        self.assertEqual( module.rohc(b'123456789'),   0xD0 )
-        self.assertEqual( module.crc8(b'123456789'),   0xF4 )
-        self.assertEqual( module.sum8(b'123456789'),   0xDD )
-        self.assertEqual( module.intel(b'123456789'),  0x23 )
-        self.assertEqual( module.bcc(b'123456789'),    0x31 )
-        self.assertEqual( module.lrc(b'123456789'),    0x23 )
-        self.assertEqual( module.itu8(b'123456789'),   0xA1 )
+        self.assertEqual( module.maxim8(b'123456789'),      0xA1 )
+        self.assertEqual( module.rohc(b'123456789'),        0xD0 )
+        self.assertEqual( module.crc8(b'123456789'),        0xF4 )
+        self.assertEqual( module.sum8(b'123456789'),        0xDD )
+        self.assertEqual( module.intel(b'123456789'),       0x23 )
+        self.assertEqual( module.bcc(b'123456789'),         0x31 )
+        self.assertEqual( module.lrc(b'123456789'),         0x23 )
+        self.assertEqual( module.itu8(b'123456789'),        0xA1 )
+        self.assertEqual( module.smbus(b'123456789'),       0xF4 )
+        self.assertEqual( module.autosar8(b'123456789'),    0xDF )
+        self.assertEqual( module.lte8(b'123456789'),        0xEA )
+        self.assertEqual( module.sae_j1855(b'123456789'),   0x4B )
+        self.assertEqual( module.icode(b'123456789'),       0x7E )
+        self.assertEqual( module.gsm8_a(b'123456789'),      0x37 )
+        self.assertEqual( module.gsm8_b(b'123456789'),      0x94 )
+        self.assertEqual( module.nrsc_5(b'123456789'),      0xF7 )
+        self.assertEqual( module.wcdma(b'123456789'),       0x25 )
+        self.assertEqual( module.bluetooth(b'123456789'),   0x26 )
+        self.assertEqual( module.dvb_s2(b'123456789'),      0xBC )
+        self.assertEqual( module.ebu8(b'123456789'),        0x97 )
+        self.assertEqual( module.darc(b'123456789'),        0x15 )
+        self.assertEqual( module.opensafety8(b'123456789'), 0x3E )
 
     def test_basics( self ):
         """ Test basic functionality.

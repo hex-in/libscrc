@@ -15,18 +15,18 @@ libscrc is a library for calculating CRC4 CRC5 CRC6 CRC7 CRC8 CRC16 CRC24 CRC32 
 | CAN15 | CRC8    | SICK     | FLEXRAY-B | BZIP2 |        |
 | CAN17 | SUM8    | DNP      | INTERLAKEN | JAMCRC |        |
 | CAN21 |FLETCHER8| X25      |       | AUTOSAR |        |
-|  |         | USB      |       | C |        |
-|          |         | MAXIM16  |   | D |        |
-|          |         | DECT     |      | Q |        |
-|          |         | TCP/UDP  |       | XFER |        |
-|          |         | CDMA2000 |       |          |        |
-|          |         |FLETCHER16||          |        |
-|          |         |EPC16     |     |          |        |
-| | |PROFIBUS | | | |
-| | |BUYPASS | | | |
-| | |GENIBUS | | | |
-| | |GSM16 | | | |
-| | |RIELLO | | | |
+|  | SMBUS | USB      |       | C |        |
+|          | AUTOSAR | MAXIM16  |   | D |        |
+|          | LTE | DECT     |      | Q |        |
+|          | SAE-J1855 | TCP/UDP  |       | XFER |        |
+|          | I-CODE | CDMA2000 |       |          |        |
+|          | GSM-A |FLETCHER16||          |        |
+|          | NRSC-5 |EPC16     |     |          |        |
+| | WCDMA |PROFIBUS | | | |
+| | BLUETOOTH |BUYPASS | | | |
+| | DVB-S2 |GENIBUS | | | |
+| | EBU |GSM16 | | | |
+| | DARC |RIELLO | | | |
 | | |OPENSAFETY | | | |
 | | |EN13757 | | | |
 
@@ -66,6 +66,10 @@ Installation
 
 ```
 #python3 -m libscrc.test.modbus
+#python3 -m libscrc.test.crc8
+#python3 -m libscrc.test.crc16
+#python3 -m libscrc.test.crc24
+#python3 -m libscrc.test.crc32
 #python3 -m libscrc.test.crc64
 ```
 
@@ -119,6 +123,19 @@ crc8 = libscrc.maxim8(b'1234')
 crc8 = libscrc.rohc(b'1234')
 crc8 = libscrc.itu8(b'1234')
 crc8 = libscrc.crc8(b'1234')
+crc8 = libscrc.smbus(b'1234')
+crc8 = libscrc.autosar8(b'1234')
+crc8 = libscrc.lte8(b'1234')
+crc8 = libscrc.sae_j1855(b'1234')
+crc8 = libscrc.icode(b'1234')
+crc8 = libscrc.gsm8_a(b'1234')
+crc8 = libscrc.nrsc_5(b'1234')
+crc8 = libscrc.wcdma(b'1234')
+crc8 = libscrc.bluetooth(b'1234')
+crc8 = libscrc.dvb_s2(b'1234')
+crc8 = libscrc.ebu8(b'1234')
+crc8 = libscrc.darc(b'1234')
+crc8 = libscrc.opensafety8(b'1234')
 ```
 
 3. CRC16
@@ -238,18 +255,18 @@ NOTICE
 ------------
 * New CRC4-ITU      Poly = 0x03 Initial = 0x00 Xorout=0x00 Refin=True Refout=True
 * New CRC5-ITU      Poly = 0x15 Initial = 0x00 Xorout=0x00 Refin=True Refout=True
-* New CRC5-EPC      Poly = 0x09 Initial = 0x09 Xorout=0x00 Refin=False Refout=False
-* New CRC5-USB      Poly = 0x05 Initial = 0x1F Xorout=0x1F Refin=True Refout=True
+* New CRC5-EPC     Poly = 0x09 Initial = 0x09 Xorout=0x00 Refin=False Refout=False
+* New CRC5-USB     Poly = 0x05 Initial = 0x1F Xorout=0x1F Refin=True Refout=True
 * New CRC6-ITU      Poly = 0x03 Initial = 0x00 Xorout=0x00 Refin=True Refout=True
-* New CRC7-MMC      Poly = 0x09 Initial = 0x00 Xorout=0x00 Refin=False Refout=False
+* New CRC7-MMC   Poly = 0x09 Initial = 0x00 Xorout=0x00 Refin=False Refout=False
 
 ### **V0.1.4 (2017-09-21)**
 
 ------------
 * New CRC8-MAXIM8   Poly = 0x31 Initial = 0x00 Xorout=0x00 Refin=True  Refout=True
-* New CRC8-ROHC     Poly = 0x07 Initial = 0xFF Xorout=0x00 Refin=True  Refout=True
-* New CRC8-ITU      Poly = 0x07 Initial = 0x00 Xorout=0x55 Refin=False Refout=False
-* New CRC8-CRC8     Poly = 0x07 Initial = 0x00 Xorout=0x00 Refin=False Refout=False
+* New CRC8-ROHC       Poly = 0x07 Initial = 0xFF Xorout=0x00 Refin=True  Refout=True
+* New CRC8-ITU            Poly = 0x07 Initial = 0x00 Xorout=0x55 Refin=False Refout=False
+* New CRC8-CRC8         Poly = 0x07 Initial = 0x00 Xorout=0x00 Refin=False Refout=False
 
 ### **V0.1.3 (2017-09-19)**
 
@@ -280,5 +297,5 @@ Bugfixes
 ### **V0.1.1 (2017-08-20)**
 
 ------------
-* New CRC16-NDP and CRC16-SICK
+* New CRC16-DNP and CRC16-SICK
 

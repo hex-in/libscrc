@@ -24,29 +24,29 @@ libscrc is a library for calculating CRC4 CRC5 CRC6 CRC7 CRC8 CRC16 CRC24 CRC32 
 +------------+------------+------------+-----------+-----------+-----------+ 
 | CAN21      | FLETCHER8  | X25        |           | AUTOSAR   |           |
 +------------+------------+------------+-----------+-----------+-----------+ 
-|            |            | USB        |           |    C      |           |
+|            | SMBUS      | USB        |           |    C      |           |
 +------------+------------+------------+-----------+-----------+-----------+
-|            |            | MAXIM16    |           |    D      |           |
+|            | AUTOSAR    | MAXIM16    |           |    D      |           |
 +------------+------------+------------+-----------+-----------+-----------+
-|            |            | DECT       |           |    Q      |           |
+|            | LTE        | DECT       |           |    Q      |           |
 +------------+------------+------------+-----------+-----------+-----------+
-|            |            | TCP/UDP    |           |   XFER    |           |
+|            | SAE-J1855  | TCP/UDP    |           |   XFER    |           |
 +------------+------------+------------+-----------+-----------+-----------+
-|            |            | CDMA2000   |           |           |           |
+|            | I-CODE     | CDMA2000   |           |           |           |
 +------------+------------+------------+-----------+-----------+-----------+
-|            |            | FLETCHER16 |           |           |           |
+|            | GSM-A      | FLETCHER16 |           |           |           |
 +------------+------------+------------+-----------+-----------+-----------+
-|            |            | EPC16      |           |           |           |
+|            | NRSC-5     | EPC16      |           |           |           |
 +------------+------------+------------+-----------+-----------+-----------+
-|            |            | PROFIBUS   |           |           |           |
+|            | WCDMA      | PROFIBUS   |           |           |           |
 +------------+------------+------------+-----------+-----------+-----------+
-|            |            | BUYPASS    |           |           |           |
+|            | BLUETOOTH  | BUYPASS    |           |           |           |
 +------------+------------+------------+-----------+-----------+-----------+
-|            |            | GENIBUS    |           |           |           |
+|            | DVB-S2     | GENIBUS    |           |           |           |
 +------------+------------+------------+-----------+-----------+-----------+
-|            |            | GSM16      |           |           |           |
+|            | EBU        | GSM16      |           |           |           |
 +------------+------------+------------+-----------+-----------+-----------+
-|            |            | RIELLO     |           |           |           |
+|            | DARC       | RIELLO     |           |           |           |
 +------------+------------+------------+-----------+-----------+-----------+
 |            |            | OPENSAFETY |           |           |           |
 +------------+------------+------------+-----------+-----------+-----------+
@@ -62,8 +62,8 @@ Installation
 
   or::
 
-    python setup.py build
-    python setup.py install
+    python3 setup.py build
+    python3 setup.py install
 
   You will need the administrative privileges to execute the last command.
 
@@ -83,8 +83,12 @@ Installation
     
 * After installation you can run unit tests to make sure that the library works fine.  Execute::
 
-    python -m libscrc.test.modbus
-    python -m libscrc.test.crc64
+    # python3 -m libscrc.test.modbus
+    # python3 -m libscrc.test.crc8
+    # python3 -m libscrc.test.crc16
+    # python3 -m libscrc.test.crc24
+    # python3 -m libscrc.test.crc32
+    # python3 -m libscrc.test.crc64
 
 Usage
 -----
@@ -126,6 +130,19 @@ Example
     crc8 = libscrc.rohc(b'1234')
     crc8 = libscrc.itu8(b'1234')
     crc8 = libscrc.crc8(b'1234')
+    crc8 = libscrc.smbus(b'1234')
+    crc8 = libscrc.autosar8(b'1234')
+    crc8 = libscrc.lte8(b'1234')
+    crc8 = libscrc.sae_j1855(b'1234')
+    crc8 = libscrc.icode(b'1234')
+    crc8 = libscrc.gsm8_a(b'1234')
+    crc8 = libscrc.nrsc_5(b'1234')
+    crc8 = libscrc.wcdma(b'1234')
+    crc8 = libscrc.bluetooth(b'1234')
+    crc8 = libscrc.dvb_s2(b'1234')
+    crc8 = libscrc.ebu8(b'1234')
+    crc8 = libscrc.darc(b'1234')
+    crc8 = libscrc.opensafety8(b'1234')
 
 * CRC16::
 
@@ -246,5 +263,5 @@ V0.1.2 (2017-08-22)
 
 V0.1.1 (2017-08-20)
 +++++++++++++++++++
-* New CRC16-NDP and CRC16-SICK
+* New CRC16-DNP and CRC16-SICK
 

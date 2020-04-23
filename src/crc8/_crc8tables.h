@@ -4,7 +4,7 @@
 *                                           All Rights Reserved
 * File    : _crc8tables.h
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V0.1.6
+* Version : V1.1
 *
 * LICENSING TERMS:
 * ---------------
@@ -34,6 +34,22 @@
 
 #define CRC8_POLYNOMIAL_31                                      0x31
 #define CRC8_POLYNOMIAL_07                                      0x07
+#define CRC8_POLYNOMIAL_1D                                      0x1D
+
+
+struct _crc8_parameters {
+    unsigned char is_initial;
+    unsigned char crc8;         /* Initial remainder    */
+    unsigned char poly;         /* polynomial           */
+
+    unsigned char *table;       /* CRC8 table           */
+    unsigned char *data;
+    unsigned int   size;        /* Data size            */
+
+    unsigned int (*initial_table_function)( unsigned char, unsigned char * );
+};
+
+
 
 unsigned char hexin_reverse8( unsigned char data );
 
@@ -47,8 +63,13 @@ unsigned char hexin_calc_crc8_sum( const unsigned char *pSrc, unsigned int len, 
 unsigned char hexin_calc_crc8_maxim( const unsigned char *pSrc, unsigned int len, unsigned char crc8 );
 unsigned char hexin_calc_crc8_rohc(  const unsigned char *pSrc, unsigned int len, unsigned char crc8 );
 unsigned char hexin_calc_crc8_07(    const unsigned char *pSrc, unsigned int len, unsigned char crc8 );
+unsigned char hexin_calc_crc8_1d(    const unsigned char *pSrc, unsigned int len, unsigned char crc8 );
+unsigned char hexin_calc_crc8_31(    const unsigned char *pSrc, unsigned int len, unsigned char crc8 );
+
 unsigned char hexin_calc_crc8_hacker(const unsigned char *pSrc, unsigned int len, unsigned char crc8, unsigned char polynomial );
 
 unsigned char hexin_calc_crc8_fletcher( const unsigned char *pSrc, unsigned int len, unsigned char crc8 /*reserved*/ );
+
+unsigned char hexin_calc_crc8_compute( struct _crc8_parameters *param );
 
 #endif //__CRC8_TABLES_H__

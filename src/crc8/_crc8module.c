@@ -62,6 +62,37 @@ static unsigned char hexin_PyArg_ParseTuple( PyObject *self, PyObject *args,
     return TRUE;
 }
 
+static unsigned char hexin_PyArg_ParseTuple_Parameters( PyObject *self, PyObject *args, struct _crc8_parameters *param, unsigned char *result )
+{
+    Py_buffer data = { NULL, NULL };
+
+#if PY_MAJOR_VERSION >= 3
+    if ( !PyArg_ParseTuple( args, "y*", &data ) ) {
+        if ( data.obj ) {
+            PyBuffer_Release( &data );
+        }
+        return FALSE;
+    }
+#else
+    if ( !PyArg_ParseTuple( args, "s*", &data ) ) {
+        if ( data.obj ) {
+            PyBuffer_Release( &data );
+        }
+        return FALSE;
+    }
+#endif /* PY_MAJOR_VERSION */
+
+    param->data = ( unsigned char * )data.buf;
+    param->size = ( unsigned int    )data.len;
+
+    *result = hexin_calc_crc8_compute( param );
+
+    if ( data.obj )
+       PyBuffer_Release( &data );
+
+    return TRUE;
+}
+
 static PyObject * _crc8_intel( PyObject *self, PyObject *args )
 {
     unsigned char result = 0x00;
@@ -121,7 +152,6 @@ static PyObject * _crc8_rohc( PyObject *self, PyObject *args )
 
     return Py_BuildValue( "B", result );
 }
-
 
 static PyObject * _crc8_itu( PyObject *self, PyObject *args )
 {
@@ -248,6 +278,225 @@ static PyObject * _crc8_fletcher( PyObject *self, PyObject *args )
     return Py_BuildValue( "B", result );
 }
 
+static PyObject * _crc8_smbus( PyObject *self, PyObject *args )
+{
+    unsigned char result = 0x00;
+    static unsigned char crc8_smbus_table[MAX_TABLE_ARRAY] = { 0x00 };
+    static struct _crc8_parameters param = { .is_initial = FALSE,
+                                             .crc8  = 0x00,
+                                             .poly  = 0x07,
+                                             .table = crc8_smbus_table,
+                                             .initial_table_function = hexin_crc8_init_table_poly_is_low };
+
+    if ( !hexin_PyArg_ParseTuple_Parameters( self, args, &param, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "B", result );
+}
+
+static PyObject * _crc8_autosar8( PyObject *self, PyObject *args )
+{
+    unsigned char result = 0x00;
+    static unsigned char crc8_autosar_table[MAX_TABLE_ARRAY] = { 0x00 };
+    static struct _crc8_parameters param = { .is_initial = FALSE,
+                                             .crc8  = 0xFF,
+                                             .poly  = 0x2F,
+                                             .table = crc8_autosar_table,
+                                             .initial_table_function = hexin_crc8_init_table_poly_is_low };
+
+    if ( !hexin_PyArg_ParseTuple_Parameters( self, args, &param, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "B", (result ^ 0xFF) );
+}
+
+static PyObject * _crc8_lte8( PyObject *self, PyObject *args )
+{
+    unsigned char result = 0x00;
+    static unsigned char crc8_lte8_table[MAX_TABLE_ARRAY] = { 0x00 };
+    static struct _crc8_parameters param = { .is_initial = FALSE,
+                                             .crc8  = 0x00,
+                                             .poly  = 0x9B,
+                                             .table = crc8_lte8_table,
+                                             .initial_table_function = hexin_crc8_init_table_poly_is_low };
+
+    if ( !hexin_PyArg_ParseTuple_Parameters( self, args, &param, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "B", result );
+}
+
+static PyObject * _crc8_wcdma( PyObject *self, PyObject *args )
+{
+    unsigned char result = 0x00;
+    static unsigned char crc8_wcdma_table[MAX_TABLE_ARRAY] = { 0x00 };
+    static struct _crc8_parameters param = { .is_initial = FALSE,
+                                             .crc8  = 0x00,
+                                             .poly  = 0x9B,
+                                             .table = crc8_wcdma_table,
+                                             .initial_table_function = hexin_crc8_init_table_poly_is_high };
+
+    param.poly = hexin_reverse8( param.poly );
+    if ( !hexin_PyArg_ParseTuple_Parameters( self, args, &param, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "B", result );
+}
+
+static PyObject * _crc8_sae_j1855( PyObject *self, PyObject *args )
+{
+    unsigned char result = 0x00;
+    unsigned char init   = 0xFF;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc8_1d, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "B", result ^ 0xFF );
+}
+
+static PyObject * _crc8_icode( PyObject *self, PyObject *args )
+{
+    unsigned char result = 0x00;
+    unsigned char init   = 0xFD;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc8_1d, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "B", result );
+}
+
+static PyObject * _crc8_gsm8_a( PyObject *self, PyObject *args )
+{
+    unsigned char result = 0x00;
+    unsigned char init   = 0x00;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc8_1d, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "B", result );
+}
+
+static PyObject * _crc8_gsm8_b( PyObject *self, PyObject *args )
+{
+    unsigned char result = 0x00;
+    static unsigned char crc8_gsmb_table[MAX_TABLE_ARRAY] = { 0x00 };
+    static struct _crc8_parameters param = { .is_initial = FALSE,
+                                             .crc8  = 0x00,
+                                             .poly  = 0x49,
+                                             .table = crc8_gsmb_table,
+                                             .initial_table_function = hexin_crc8_init_table_poly_is_low };
+
+    if ( !hexin_PyArg_ParseTuple_Parameters( self, args, &param, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "B", ( result ^ 0xFF ) );
+}
+
+static PyObject * _crc8_nrsc_5( PyObject *self, PyObject *args )
+{
+    unsigned char result = 0x00;
+    unsigned char init   = 0xFF;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc8_31, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "B", result );
+}
+
+static PyObject * _crc8_bluetooth( PyObject *self, PyObject *args )
+{
+    unsigned char result = 0x00;
+    static unsigned char crc8_bluetooth_table[MAX_TABLE_ARRAY] = { 0x00 };
+    static struct _crc8_parameters param = { .is_initial = FALSE,
+                                             .crc8  = 0x00,
+                                             .poly  = 0xA7,
+                                             .table = crc8_bluetooth_table,
+                                             .initial_table_function = hexin_crc8_init_table_poly_is_high };
+    param.poly = hexin_reverse8( param.poly );
+    if ( !hexin_PyArg_ParseTuple_Parameters( self, args, &param, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "B", result );
+}
+
+static PyObject * _crc8_dvb_s2( PyObject *self, PyObject *args )
+{
+    unsigned char result = 0x00;
+    static unsigned char crc8_dvb_s2_table[MAX_TABLE_ARRAY] = { 0x00 };
+    static struct _crc8_parameters param = { .is_initial = FALSE,
+                                             .crc8  = 0x00,
+                                             .poly  = 0xD5,
+                                             .table = crc8_dvb_s2_table,
+                                             .initial_table_function = hexin_crc8_init_table_poly_is_low };
+
+    if ( !hexin_PyArg_ParseTuple_Parameters( self, args, &param, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "B", result );
+}
+
+static PyObject * _crc8_ebu8( PyObject *self, PyObject *args )
+{
+    unsigned char result = 0x00;
+    static unsigned char crc8_ebu8_table[MAX_TABLE_ARRAY] = { 0x00 };
+    static struct _crc8_parameters param = { .is_initial = FALSE,
+                                             .crc8  = 0xFF,
+                                             .poly  = 0x1D,
+                                             .table = crc8_ebu8_table,
+                                             .initial_table_function = hexin_crc8_init_table_poly_is_high };
+    param.poly = hexin_reverse8( param.poly );
+    if ( !hexin_PyArg_ParseTuple_Parameters( self, args, &param, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "B", result );
+}
+
+static PyObject * _crc8_darc( PyObject *self, PyObject *args )
+{
+    unsigned char result = 0x00;
+    static unsigned char crc8_darc_table[MAX_TABLE_ARRAY] = { 0x00 };
+    static struct _crc8_parameters param = { .is_initial = FALSE,
+                                             .crc8  = 0x00,
+                                             .poly  = 0x39,
+                                             .table = crc8_darc_table,
+                                             .initial_table_function = hexin_crc8_init_table_poly_is_high };
+    param.poly = hexin_reverse8( param.poly );
+    if ( !hexin_PyArg_ParseTuple_Parameters( self, args, &param, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "B", result );
+}
+
+static PyObject * _crc8_opensafety8( PyObject *self, PyObject *args )
+{
+    unsigned char result = 0x00;
+    static unsigned char crc8_opensafety_table[MAX_TABLE_ARRAY] = { 0x00 };
+    static struct _crc8_parameters param = { .is_initial = FALSE,
+                                             .crc8  = 0x00,
+                                             .poly  = 0x2F,
+                                             .table = crc8_opensafety_table,
+                                             .initial_table_function = hexin_crc8_init_table_poly_is_low };
+
+    if ( !hexin_PyArg_ParseTuple_Parameters( self, args, &param, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "B", result );
+}
+
 /* method table */
 static PyMethodDef _crc8Methods[] = {
     { "intel",      (PyCFunction)_crc8_intel,        METH_VARARGS, "Calculate Intel hexadecimal of CRC8 [Initial = 0x00]" },
@@ -266,6 +515,21 @@ static PyMethodDef _crc8Methods[] = {
                                                                                  "@xorout : default=0x00\n"
                                                                                  "@ref    : default=False" },
     { "fletcher8",  (PyCFunction)_crc8_fletcher,     METH_VARARGS, "Calculate fletcher8" },
+    { "smbus",      (PyCFunction)_crc8_smbus,        METH_VARARGS, "Calculate SMBUS of CRC8 [Poly = 0x07 Initial = 0x00 Xorout=0x00 Refin=True Refout=True]" },
+    { "autosar8",   (PyCFunction)_crc8_autosar8,     METH_VARARGS, "Calculate AUTOSAR of CRC8 [Poly = 0x2F Initial = 0xFF Xorout=0xFF Refin=True Refout=True]" },
+    { "lte8",       (PyCFunction)_crc8_lte8,         METH_VARARGS, "Calculate LTE of CRC8 [Poly = 0x9B Initial = 0x00 Xorout=0x00 Refin=True Refout=True]" },
+    { "sae_j1855",  (PyCFunction)_crc8_sae_j1855,    METH_VARARGS, "Calculate SAE-J1855 of CRC8 [Poly = 0x1D Initial = 0xFF Xorout=0xFF Refin=True Refout=True]" },
+    { "icode",      (PyCFunction)_crc8_icode,        METH_VARARGS, "Calculate I-CODE of CRC8 [Poly = 0x1D Initial = 0xFD Xorout=0x00 Refin=True Refout=True]" },
+    { "gsm8_a",     (PyCFunction)_crc8_gsm8_a,       METH_VARARGS, "Calculate GSM8-A of CRC8 [Poly = 0x1D Initial = 0x00 Xorout=0x00 Refin=True Refout=True]" },
+    { "gsm8_b",     (PyCFunction)_crc8_gsm8_b,       METH_VARARGS, "Calculate GSM8-B of CRC8 [Poly = 0x49 Initial = 0x00 Xorout=0xFF Refin=True Refout=True]" },
+    { "nrsc_5",     (PyCFunction)_crc8_nrsc_5,       METH_VARARGS, "Calculate NRSC-5 of CRC8 [Poly = 0x31 Initial = 0xFF Xorout=0x00 Refin=True Refout=True]" },
+    { "wcdma",      (PyCFunction)_crc8_wcdma,        METH_VARARGS, "Calculate WCDMA of CRC8 [Poly = 0x9B Initial = 0x00 Xorout=0x00 Refin=True Refout=True]" },
+    { "bluetooth",  (PyCFunction)_crc8_bluetooth,    METH_VARARGS, "Calculate BLUETOOTH of CRC8 [Poly = 0xA7 Initial = 0x00 Xorout=0x00 Refin=True Refout=True]" },
+    { "dvb_s2",     (PyCFunction)_crc8_dvb_s2,       METH_VARARGS, "Calculate DVB-S2 of CRC8 [Poly = 0xD5 Initial = 0x00 Xorout=0x00 Refin=True Refout=True]" },
+    { "ebu8",       (PyCFunction)_crc8_ebu8,         METH_VARARGS, "Calculate EBU of CRC8 [Poly = 0x1D Initial = 0xFF Xorout=0x00 Refin=True Refout=True]" },
+    { "darc",       (PyCFunction)_crc8_darc,         METH_VARARGS, "Calculate DARC of CRC8 [Poly = 0x39 Initial = 0x00 Xorout=0x00 Refin=True Refout=True]" },
+    { "opensafety8",(PyCFunction)_crc8_opensafety8,  METH_VARARGS, "Calculate OPENSAFETY of CRC8 [Poly = 0x2F Initial = 0x00 Xorout=0x00 Refin=True Refout=True]" },
+    
     { NULL, NULL, 0, NULL }        /* Sentinel */
 };
 
@@ -283,6 +547,20 @@ PyDoc_STRVAR( _crc8_doc,
 "libscrc.sum8       -> Calculate SUM  of CRC8 [Initial = 0x00]\n"
 "libscrc.hacker8    -> Free calculation CRC8 [poly=any(default=0x31), init=any(default=0xFF), xorout=0x00 Refin=False Refout=False]\n"
 "libscrc.fletcher8  -> Calculate fletcher8 \n"
+"libscrc.smbus      -> Calculate SMBUS of CRC8 [Poly = 0x07 Initial = 0x00 Xorout=0x00 Refin=True Refout=True]\n"
+"libscrc.autosar8   -> Calculate AUTOSAR of CRC8 [Poly = 0x2F Initial = 0xFF Xorout=0xFF Refin=True Refout=True]\n"
+"libscrc.lte8       -> Calculate LTE of CRC8 [Poly = 0x9B Initial = 0x00 Xorout=0x00 Refin=True Refout=True]\n"
+"libscrc.sae_j1855  -> Calculate SAE-J1855 of CRC8 [Poly = 0x1D Initial = 0xFF Xorout=0xFF Refin=True Refout=True]\n"
+"libscrc.icode      -> Calculate I-CODE of CRC8 [Poly = 0x1D Initial = 0xFD Xorout=0x00 Refin=True Refout=True]\n"
+"libscrc.gsm8_a     -> Calculate GSM8-A of CRC8 [Poly = 0x1D Initial = 0x00 Xorout=0x00 Refin=True Refout=True]\n"
+"libscrc.gsm8_b     -> Calculate GSM8-B of CRC8 [Poly = 0x49 Initial = 0x00 Xorout=0xFF Refin=True Refout=True]\n"
+"libscrc.nrsc_5     -> Calculate NRSC-5 of CRC8 [Poly = 0x31 Initial = 0xFF Xorout=0x00 Refin=True Refout=True]\n"
+"libscrc.wcdma      -> Calculate WCDMA of CRC8 [Poly = 0x9B Initial = 0x00 Xorout=0x00 Refin=True Refout=True]\n"
+"libscrc.bluetooth  -> Calculate BLUETOOTH of CRC8 [Poly = 0xA7 Initial = 0x00 Xorout=0x00 Refin=True Refout=True]\n"
+"libscrc.dvb_s2     -> Calculate DVB-S2 of CRC8 [Poly = 0xD5 Initial = 0x00 Xorout=0x00 Refin=True Refout=True]\n"
+"libscrc.ebu8       -> Calculate EBU of CRC8 [Poly = 0x1D Initial = 0xFF Xorout=0x00 Refin=True Refout=True]\n"
+"libscrc.darc       -> Calculate DARC of CRC8 [Poly = 0x39 Initial = 0x00 Xorout=0x00 Refin=True Refout=True]\n"
+"libscrc.opensafety8-> Calculate OPENSAFETY of CRC8 [Poly = 0x2F Initial = 0x00 Xorout=0x00 Refin=True Refout=True]\n"
 "\n" );
 
 
