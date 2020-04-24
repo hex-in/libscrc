@@ -4,7 +4,7 @@
 *                                           All Rights Reserved
 * File    : _crcxtables.h
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V0.1.6
+* Version : V1.1
 *
 * LICENSING TERMS:
 * ---------------
@@ -37,11 +37,21 @@ enum hexin_crcx_mask {
     HEXIN_CRC7_MASK = 0x40,
 } CRCx_MASK;
 
-unsigned char hexin_calc_crc4_0c( const unsigned char *pSrc, unsigned int len, unsigned char crc8 );
+unsigned char hexin_reverse8( unsigned char data );
+
+unsigned char hexin_calc_crc3_gsm(  const unsigned char *pSrc, unsigned int len, unsigned char crc3 );
+unsigned char hexin_calc_crc3_rohc( const unsigned char *pSrc, unsigned int len, unsigned char crc3 );
+
+unsigned char hexin_calc_crc4_0c( const unsigned char *pSrc, unsigned int len, unsigned char crc4 );
+unsigned char hexin_calc_crc4_03( const unsigned char *pSrc, unsigned int len, unsigned char crc4 );
+
 unsigned char hexin_calc_crc5_15( const unsigned char *pSrc, unsigned int len, unsigned char crc5 );
-unsigned char hexin_calc_crc5_48( const unsigned char *pSrc, unsigned int len, unsigned char crc5 );
+unsigned char hexin_calc_crc5_09( const unsigned char *pSrc, unsigned int len, unsigned char crc5 );
 unsigned char hexin_calc_crc5_14( const unsigned char *pSrc, unsigned int len, unsigned char crc5 );
 unsigned char hexin_calc_crc6_30( const unsigned char *pSrc, unsigned int len, unsigned char crc6 );
-unsigned char hexin_calc_crc7_12( const unsigned char *pSrc, unsigned int len, unsigned char crc7 );
-
+unsigned char hexin_calc_crc6_2f( const unsigned char *pSrc, unsigned int len, unsigned char crc6 );
+unsigned char hexin_calc_crc6_19( const unsigned char *pSrc, unsigned int len, unsigned char crc6 );
+unsigned char hexin_calc_crc7_09( const unsigned char *pSrc, unsigned int len, unsigned char crc7 );
+unsigned char hexin_calc_crc7_45( const unsigned char *pSrc, unsigned int len, unsigned char crc7 );
+unsigned char hexin_calc_crc7_4f( const unsigned char *pSrc, unsigned int len, unsigned char crc7 );
 #endif //__CRCX_TABLES_H__

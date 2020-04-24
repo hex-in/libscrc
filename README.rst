@@ -1,44 +1,44 @@
 libscrc
 =======
 
-libscrc is a library for calculating CRC4 CRC5 CRC6 CRC7 CRC8 CRC16 CRC24 CRC32 CRC64.
+libscrc is a library for calculating CRC3 CRC4 CRC5 CRC6 CRC7 CRC8 CRC16 CRC24 CRC32 CRC64.
 
 +------------+------------+------------+-----------+-----------+-----------+ 
 | CRCx       | CRC8       | CRC16      | CRC24     | CRC32     | CRC64     |
 +============+============+============+===========+===========+===========+ 
-| CRC4-ITU   | INTEL      | MODBUS     | BLE       |    FSC    | GO-ISO    |
+| CRC3-GSM   | INTEL      | MODBUS     | BLE       |    FSC    | GO-ISO    |
 +------------+------------+------------+-----------+-----------+-----------+ 
-| CRC5-ITU   | BCC        | IBM        | OPENPGP   |   CRC32   | ECMA182   |
+| CRC3-ROHC  | BCC        | IBM        | OPENPGP   |   CRC32   | ECMA182   |
 +------------+------------+------------+-----------+-----------+-----------+
-| CRC5-EPC   | LRC        | XMODEM     | LTE-A     |   MPEG2   | WE        |
+| CRC4-ITU   | LRC        | XMODEM     | LTE-A     |   MPEG2   | WE        |
 +------------+------------+------------+-----------+-----------+-----------+ 
-| CRC5-USB   | MAXIM8     | CCITT      | LTE-B     |  ADLER32  | XZ64      |
+| CRC5-ITU   | MAXIM8     | CCITT      | LTE-B     |  ADLER32  | XZ64      |
 +------------+------------+------------+-----------+-----------+-----------+ 
-| CRC6-ITU   | ROHC       | KERMIT     | OS9       | FLETCHER32|           |
+| CRC5-EPC   | ROHC       | KERMIT     | OS9       | FLETCHER32|           |
 +------------+------------+------------+-----------+-----------+-----------+
-| CRC7-MMC   | ITU8       | MCRF4XX    | FLEXRAY-A |   POSIX   |           |
+| CRC5-USB   | ITU8       | MCRF4XX    | FLEXRAY-A |   POSIX   |           |
 +------------+------------+------------+-----------+-----------+-----------+
-| CAN15      | CRC8       | SICK       | FLEXRAY-B |   BZIP2   |           |
+| CRC6-ITU   | CRC8       | SICK       | FLEXRAY-B |   BZIP2   |           |
 +------------+------------+------------+-----------+-----------+-----------+ 
-| CAN17      | SUM8       | DNP        | INTERLAKEN|   JAMCRC  |           |
+| CRC6-GSM   | SUM8       | DNP        | INTERLAKEN|   JAMCRC  |           |
 +------------+------------+------------+-----------+-----------+-----------+ 
-| CAN21      | FLETCHER8  | X25        | CRC24     |  AUTOSAR  |           |
+| CRC6-DARC  | FLETCHER8  | X25        | CRC24     |  AUTOSAR  |           |
 +------------+------------+------------+-----------+-----------+-----------+ 
-|            | SMBUS      | USB        |           | C / ISCSI |           |
+| CRC7       | SMBUS      | USB        |           | C / ISCSI |           |
 +------------+------------+------------+-----------+-----------+-----------+
-|            | AUTOSAR    | MAXIM16    |           | D/BASE91-D|           |
+| CRC7-MMC   | AUTOSAR    | MAXIM16    |           | D/BASE91-D|           |
 +------------+------------+------------+-----------+-----------+-----------+
-|            | LTE        | DECT(R/X)  |           | Q / AIXM  |           |
+| CRC7-UMTS  | LTE        | DECT(R/X)  |           | Q / AIXM  |           |
 +------------+------------+------------+-----------+-----------+-----------+
-|            | SAE-J1855  | TCP/UDP    |           |   XFER    |           |
+| CRC7-ROHC  | SAE-J1855  | TCP/UDP    |           |   XFER    |           |
 +------------+------------+------------+-----------+-----------+-----------+
 |            | I-CODE     | CDMA2000   |           |   CKSUM   |           |
 +------------+------------+------------+-----------+-----------+-----------+
-|            | GSM-A      | FLETCHER16 |           |   XZ32    |           |
+| CAN15      | GSM-A      | FLETCHER16 |           |   XZ32    |           |
 +------------+------------+------------+-----------+-----------+-----------+
-|            | NRSC-5     | EPC16      |           |   AAL5    |           |
+| CAN17      | NRSC-5     | EPC16      |           |   AAL5    |           |
 +------------+------------+------------+-----------+-----------+-----------+
-|            | WCDMA      | PROFIBUS   |           | ISO-HDLC  |           |
+| CAN21      | WCDMA      | PROFIBUS   |           | ISO-HDLC  |           |
 +------------+------------+------------+-----------+-----------+-----------+
 |            | BLUETOOTH  | BUYPASS    |           |   PKZIP   |           |
 +------------+------------+------------+-----------+-----------+-----------+
@@ -112,12 +112,19 @@ Example
 -------
 * CRCx::
 
+    crc3 = libscrc.gsm3(b'1234')
+    crc3 = libscrc.rohc3(b'1234')
     crc4 = libscrc.itu4(b'1234')
+    crc4 = libscrc.g_704(b'1234')
     crc5 = libscrc.itu5(b'1234')
     crc5 = libscrc.epc(b'1234')
     crc5 = libscrc.usb5(b'1234')
     crc6 = libscrc.itu6(b'1234')
+    crc6 = libscrc.darc6(b'1234')
     crc7 = libscrc.mmc(b'1234')
+    crc7 = libscrc.crc7(b'1234')
+    crc7 = libscrc.umts7(b'1234')
+    crc7 = libscrc.rohc7(b'1234')
 
     crc15 = libscrc.can15(b'1234')
     crc17 = libscrc.can17(b'1234')

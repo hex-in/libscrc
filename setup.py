@@ -29,7 +29,7 @@ setup(
     name='libscrc',
     version='1.1',
 
-    description='Library for calculating CRC4/CRC8/CRC16/CRC24/CRC32/CRC64',
+    description='Library for calculating CRC3 CRC4/CRC8/CRC16/CRC24/CRC32/CRC64',
     long_description=long_description,
 
     url='https://github.com/hex-in/libscrc',
@@ -70,7 +70,7 @@ setup(
         'Programming Language :: Python :: Implementation :: PyPy',
     ],
 
-    keywords=['CRC4', 'CRC5', 'CRC6', 'CRC7', 'CRC8', 'CRC16', 'CRC24', 'CRC32', 'CRC64'],
+    keywords=['CRC3', 'CRC4', 'CRC5', 'CRC6', 'CRC7', 'CRC8', 'CRC16', 'CRC24', 'CRC32', 'CRC64'],
 
     packages=['libscrc'],
 
