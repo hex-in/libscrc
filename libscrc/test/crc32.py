@@ -43,6 +43,9 @@ class TestCRC32( unittest.TestCase ):
         self.assertEqual( module.base91_d(b'123456789'),0x87315576 )
         self.assertEqual( module.aal5(b'123456789'),    0xFC891918 )
 
+        self.assertEqual( module.cmda(b'123456789'),    0x04C34ABF )
+        self.assertEqual( module.philips(b'123456789'), 0x0CE9E46C )
+
         self.assertEqual( module.crc32( b'A' * 4096),           0xFEA63440 )
         self.assertEqual( module.crc32( b'A' * 4096 * 10),      0x1521C066 )
         self.assertEqual( module.fletcher32( b'123456789' ),    0xDF09D509 )

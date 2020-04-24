@@ -22,10 +22,15 @@ static unsigned int     crc32_table_edb88320[MAX_TABLE_ARRAY] = { 0x00000000L };
 static unsigned int     crc32_table_hacker[  MAX_TABLE_ARRAY] = { 0x00000000L };
 static unsigned int     crc32_table_shared[  MAX_TABLE_ARRAY] = { 0x00000000L };
 
+static unsigned int     crc30_table_cmda[MAX_TABLE_ARRAY]     = { 0x00000000L };
+static unsigned int     crc31_table_philips[MAX_TABLE_ARRAY]  = { 0x00000000L };
+
 static unsigned int  	crc32_table_04c11db7_init		      = FALSE;
 static unsigned int		crc32_table_edb88320_init	          = FALSE;
 static unsigned int     crc32_table_hacker_init               = FALSE;
 static unsigned int     crc32_table_shared_init               = FALSE;
+static unsigned int     crc30_table_cmda_init                 = FALSE;
+static unsigned int     crc31_table_philips_init              = FALSE;
 
 unsigned int hexin_reverse32( unsigned int data )
 {
@@ -262,4 +267,52 @@ unsigned int hexin_calc_crc32_shared( const unsigned char *pSrc,
     }
 
 	return crc;
+}
+
+/*
+*********************************************************************************************************
+width=30 poly=0x2030b9c7 init=0x3fffffff 
+refin=false refout=false 
+xorout=0x3fffffff check=0x04c34abf residue=0x34efa55a name="CRC-30/CDMA"
+*********************************************************************************************************
+*/
+unsigned int hexin_calc_crc30_cdma( const unsigned char *pSrc, unsigned int len, unsigned int crc32 )
+{
+    unsigned int i = 0;
+    unsigned int crc  = ( crc32 << ( 32-30 ) );
+    unsigned int poly = ( CRC30_POLYNOMIAL_2030B9C7 << ( 32-30 ) );
+
+    if ( crc30_table_cmda_init == FALSE ) {
+        crc30_table_cmda_init = hexin_crc32_init_table_poly_is_low( poly, crc30_table_cmda );
+    }
+
+	for ( i=0; i<len; i++ ) {
+		crc = hexin_crc32_poly_is_low_calc( crc, pSrc[i], crc30_table_cmda );
+	}
+
+	return ( crc >> ( 32-30 ) );    
+}
+
+/*
+*********************************************************************************************************
+width=31 poly=0x04C11DB7 init=0x7FFFFFFF
+refin=False refout=False
+xorout=0x7FFFFFFF check=0x0CE9E46C residue=0x4eaf26f1 name="CRC-31/PHILIPS"
+*********************************************************************************************************
+*/
+unsigned int hexin_calc_crc31_philips( const unsigned char *pSrc, unsigned int len, unsigned int crc32 )
+{
+    unsigned int i = 0;
+    unsigned int crc  = ( crc32 << ( 32-31 ) );
+    unsigned int poly = ( CRC31_POLYNOMIAL_04C11DB7 << ( 32-31 ) );
+
+    if ( crc31_table_philips_init == FALSE ) {
+        crc31_table_philips_init = hexin_crc32_init_table_poly_is_low( poly, crc31_table_philips );
+    }
+
+	for ( i=0; i<len; i++ ) {
+		crc = hexin_crc32_poly_is_low_calc( crc, pSrc[i], crc31_table_philips );
+	}
+
+	return ( crc >> ( 32-31 ) );    
 }

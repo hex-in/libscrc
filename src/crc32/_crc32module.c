@@ -364,6 +364,30 @@ static PyObject * _crc32_xfer( PyObject *self, PyObject *args )
     return Py_BuildValue( "I", result );
 }
 
+static PyObject * _crc30_cmda( PyObject *self, PyObject *args )
+{
+    unsigned int result = 0x00000000L;
+    unsigned int init   = 0x3FFFFFFFL;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc30_cdma, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "I", result ^ 0x3FFFFFFFL );
+}
+
+static PyObject * _crc31_philips( PyObject *self, PyObject *args )
+{
+    unsigned int result = 0x00000000L;
+    unsigned int init   = 0x7FFFFFFFL;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc31_philips, &result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "I", result ^ 0x7FFFFFFFL );
+}
+
 /* method table */
 static PyMethodDef _crc32Methods[] = {
     { "mpeg2",       (PyCFunction)_crc32_mpeg_2,     METH_VARARGS,   "Calculate CRC (MPEG2) of CRC32 [Poly=0x04C11DB7, Init=0xFFFFFFFF, Xorout=0x00000000 Refin=False Refout=False]"},
@@ -397,6 +421,8 @@ static PyMethodDef _crc32Methods[] = {
     { "crc32_q",    (PyCFunction)_crc32_crc32_q,     METH_VARARGS,   "Calculate CRC (CRC32-Q) of CRC32 [Poly=0x814141AB, Init=0x00000000, Xorout=0x00000000 Refin=True Refout=True]"},
     { "aixm",       (PyCFunction)_crc32_crc32_q,     METH_VARARGS,   "Calculate CRC (AIXM) of CRC32 [Poly=0x814141AB, Init=0x00000000, Xorout=0x00000000 Refin=True Refout=True]"},
     { "xfer",       (PyCFunction)_crc32_xfer,        METH_VARARGS,   "Calculate CRC (XFER) of CRC32 [Poly=0x000000AF, Init=0x00000000, Xorout=0x00000000 Refin=True Refout=True]"},
+    { "cmda",       (PyCFunction)_crc30_cmda,        METH_VARARGS,   "Calculate CMDA of CRC30 [Poly=0x2030B9C7, Init=0x3FFFFFFF, Xorout=0x3FFFFFFF Refin=False Refout=False]"},
+    { "philips",    (PyCFunction)_crc31_philips,     METH_VARARGS,   "Calculate PHILIPS of CRC31 [Poly=0x04C11DB7, Init=0x7FFFFFFF, Xorout=0x7FFFFFFF Refin=False Refout=False]"},
     { NULL, NULL, 0, NULL }        /* Sentinel */
 };
 
@@ -426,6 +452,8 @@ PyDoc_STRVAR( _crc32_doc,
 "libscrc.crc32_q    -> Calculate CRC (CRC32-Q) [Poly=0x814141AB, Init=0x00000000, Xorout=0x00000000 Refin=True  Refout=True]\n"
 "libscrc.aixm       -> Calculate CRC (AIXM) [Poly=0x814141AB, Init=0x00000000, Xorout=0x00000000 Refin=True  Refout=True]\n"
 "libscrc.xfer       -> Calculate CRC (XFER) [Poly=0x000000AF, Init=0x00000000, Xorout=0x00000000 Refin=True  Refout=True]\n"
+"libscrc.cdma       -> Calculate CMDA of CRC30 [Poly=0x2030B9C7, Init=0x3FFFFFFF, Xorout=0x3FFFFFFF Refin=False Refout=False]\n"
+"libscrc.philips    -> Calculate PHILIPS of CRC31 Calculate PHILIPS of CRC31 [Poly=0x04C11DB7, Init=0x7FFFFFFF, Xorout=0x7FFFFFFF Refin=False Refout=False]\n"
 "\n" );
 
 

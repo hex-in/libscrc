@@ -26,9 +26,9 @@ libscrc is a library for calculating CRC3 CRC4 CRC5 CRC6 CRC7 CRC8 CRC16 CRC24 C
 | | BLUETOOTH |BUYPASS | | PKZIP | |
 | | DVB-S2 |GENIBUS | | ADCCP | |
 | | EBU |GSM16 | | V-42 | |
-| | DARC |RIELLO | | | |
-| | MIFARE |OPENSAFETY | | | |
-| | |EN13757 | | | |
+| | DARC |RIELLO | |  | |
+| | MIFARE |OPENSAFETY | | CRC30-CDMA | |
+| | |EN13757 | | CRC31-PHILIPS | |
 | | |CMS | | | |
 
 
@@ -120,6 +120,9 @@ crc7 = libscrc.rohc7(b'1234')
 crc15 = libscrc.can15(b'1234')
 crc17 = libscrc.can17(b'1234')
 crc21 = libscrc.can21(b'1234')
+
+crc30 = libscrc.cdma(b'1234')
+crc31 = libscrc.philips(b'1234')
 ```
 
 2. CRC8

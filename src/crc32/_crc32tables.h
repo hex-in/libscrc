@@ -33,9 +33,10 @@
 #define                 HEXIN_POLYNOMIAL_IS_HIGH(x)             ( x & 0x80000000L )
 #define                 HEXIN_REFIN_OR_REFOUT_IS_TRUE(x)        ( x == 0x00000001L ? TRUE : FALSE )
 
+#define                 CRC30_POLYNOMIAL_2030B9C7               0x2030B9C7L
+#define                 CRC31_POLYNOMIAL_04C11DB7               0x04C11DB7L
 #define		            CRC32_POLYNOMIAL_04C11DB7		        0x04C11DB7L
 #define		            CRC32_POLYNOMIAL_EDB88320		        0xEDB88320L
-
 
 unsigned int hexin_reverse32( unsigned int data );
 
@@ -55,4 +56,8 @@ unsigned int hexin_calc_crc32_shared( const unsigned char *pSrc,
                                       unsigned int crc32,
                                       unsigned int polynomial,
                                       unsigned char mask        /* TRUE -> high, FALSE -> low */ );
+
+unsigned int hexin_calc_crc30_cdma(    const unsigned char *pSrc, unsigned int len, unsigned int crc32 );
+unsigned int hexin_calc_crc31_philips( const unsigned char *pSrc, unsigned int len, unsigned int crc32 );
+
 #endif //__CRC32_TABLES_H__
