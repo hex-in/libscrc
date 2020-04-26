@@ -1,10 +1,10 @@
 /*
  ********************************************************************************************************
-*                              		(c) Copyright 2018-2020, Hexin
+*                              		(c) Copyright 2017-2020, Hexin
  *                                           All Rights Reserved
  * File    : _crc32module.c
  * Author  : Heyn (heyunhuan@gmail.com)
- * Version : V1.1
+ * Version : V1.3
  *
  * LICENSING TERMS:
  * ---------------
@@ -15,6 +15,7 @@
  *                      2017-09-22 [Heyn] Optimized Code. New add table32() function.
  *                      2020-03-20 [Heyn] New add adler32 and fletcher32 functions.
  *                      2020-04-17 [Heyn] Issues #1
+ *                      2020-04-26 [Heyn] Optimized Code
  * 
  * Web : https://en.wikipedia.org/wiki/Polynomial_representations_of_cyclic_redundancy_checks
  *
@@ -57,29 +58,19 @@ static unsigned char hexin_PyArg_ParseTuple( PyObject *self, PyObject *args,
     return TRUE;
 }
 
-
-static unsigned char hexin_PyArg_ParseTuple_Parametes( PyObject *self, PyObject *args,
-                                                       unsigned int  init,
-                                                       unsigned int  polynomial,
-                                                       unsigned char mask,
-                                                       unsigned int (*function)( const unsigned char *,
-                                                                                 unsigned int,
-                                                                                 unsigned int,
-                                                                                 unsigned int,
-                                                                                 unsigned char ),
-                                                       unsigned int *result )
+static unsigned char hexin_PyArg_ParseTuple_Paramete( PyObject *self, PyObject *args, struct _hexin_crc32 *param )
 {
     Py_buffer data = { NULL, NULL };
 
 #if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTuple( args, "y*|I", &data, &init ) ) {
+    if ( !PyArg_ParseTuple( args, "y*", &data ) ) {
         if ( data.obj ) {
             PyBuffer_Release( &data );
         }
         return FALSE;
     }
 #else
-    if ( !PyArg_ParseTuple( args, "s*|I", &data, &init ) ) {
+    if ( !PyArg_ParseTuple( args, "s*", &data ) ) {
         if ( data.obj ) {
             PyBuffer_Release( &data );
         }
@@ -87,7 +78,7 @@ static unsigned char hexin_PyArg_ParseTuple_Parametes( PyObject *self, PyObject 
     }
 #endif /* PY_MAJOR_VERSION */
 
-    *result = (* function)( (const unsigned char *)data.buf, (unsigned int)data.len, init, polynomial, mask  );
+    param->result = hexin_crc32_compute( (const unsigned char *)data.buf, (unsigned int)data.len, param  );
 
     if ( data.obj )
        PyBuffer_Release( &data );
@@ -95,53 +86,40 @@ static unsigned char hexin_PyArg_ParseTuple_Parametes( PyObject *self, PyObject 
     return TRUE;
 }
 
-/*
- ********************************************************************************************************
- *                                   POLY=0x4C11DB7 [MPEG2 ]
- * Poly:    0x4C11DB7
- * Init:    0xFFFFFFF
- * Refin:   False
- * Refout:  False
- * Xorout:  0x00000000
- *
- ********************************************************************************************************
- */
-
 static PyObject * _crc32_mpeg_2( PyObject *self, PyObject *args )
 {
-    unsigned int result = 0x00000000L;
-    unsigned int init   = 0xFFFFFFFFL;
- 
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc32_04c11db7, ( unsigned int * )&result ) ) {
+    static struct _hexin_crc32 crc32_param_mpeg2 = { .is_initial=FALSE,
+                                                     .width  = HEXIN_CRC32_WIDTH,
+                                                     .poly   = CRC32_POLYNOMIAL_04C11DB7,
+                                                     .init   = 0xFFFFFFFFL,
+                                                     .refin  = FALSE,
+                                                     .refout = FALSE,
+                                                     .xorout = 0x00000000L,
+                                                     .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc32_param_mpeg2 ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "I", result );
+    return Py_BuildValue( "I", crc32_param_mpeg2.result );
 }
-
-/*
- ********************************************************************************************************
- *                                   POLY=0x4C11DB7 [CRC_32 ADCCP ]
- * Poly:    0x4C11DB7
- * Init:    0xFFFFFFF
- * Refin:   True
- * Refout:  True
- * Xorout:  0xFFFFFFFF
- * Use:     WinRAR,ect
- *
- ********************************************************************************************************
- */
 
 static PyObject * _crc32_crc32( PyObject *self, PyObject *args )
 {
-    unsigned int result = 0x00000000L;
-    unsigned int init   = 0xFFFFFFFFL;
- 
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc32_edb88320, ( unsigned int * )&result ) ) {
+    static struct _hexin_crc32 crc32_param_crc32 = { .is_initial=FALSE,
+                                                     .width  = HEXIN_CRC32_WIDTH,
+                                                     .poly   = CRC32_POLYNOMIAL_04C11DB7,
+                                                     .init   = 0xFFFFFFFFL,
+                                                     .refin  = TRUE,
+                                                     .refout = TRUE,
+                                                     .xorout = 0xFFFFFFFFL,
+                                                     .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc32_param_crc32 ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "I", result ^ 0xFFFFFFFFL );
+    return Py_BuildValue( "I", crc32_param_crc32.result );
 }
 
 /*
@@ -152,22 +130,22 @@ static PyObject * _crc32_crc32( PyObject *self, PyObject *args )
 static PyObject * _crc32_table( PyObject *self, PyObject *args )
 {
     unsigned int i = 0x00000000L;
-    unsigned int poly = CRC32_POLYNOMIAL_04C11DB7;
+    unsigned int poly = CRC32_POLYNOMIAL_04C11DB7, ref = 0;
     unsigned int table[MAX_TABLE_ARRAY] = { 0x00000000L };
     PyObject* plist = PyList_New( MAX_TABLE_ARRAY );
 
 #if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTuple( args, "I", &poly ) )
+    if ( !PyArg_ParseTuple( args, "I|p", &poly, &ref ) )
         return NULL;
 #else
-    if ( !PyArg_ParseTuple( args, "I", &poly ) )
+    if ( !PyArg_ParseTuple( args, "I|p", &poly, &ref ) )
         return NULL;
 #endif /* PY_MAJOR_VERSION */
 
-    if ( HEXIN_POLYNOMIAL_IS_HIGH( poly ) ) {
-        hexin_crc32_init_table_poly_is_high( poly, table );
-    } else {
+    if ( ref == 0 ) {
         hexin_crc32_init_table_poly_is_low ( poly, table );
+    } else {
+        hexin_crc32_init_table_poly_is_high( poly, table );
     }
 
     for ( i=0; i<MAX_TABLE_ARRAY; i++ ) {
@@ -186,22 +164,36 @@ static PyObject * _crc32_table( PyObject *self, PyObject *args )
 static PyObject * _crc32_hacker( PyObject *self, PyObject *args, PyObject* kws )
 {
     Py_buffer data = { NULL, NULL };
-    unsigned int init     = 0xFFFFFFFFL;
-    unsigned int xorout   = 0x00000000L;
-    unsigned int ref      = 0x00000000L;
-    unsigned int result   = 0x00000000L;
-    unsigned int polynomial = CRC32_POLYNOMIAL_EDB88320;
-    static char* kwlist[]={ "data", "poly", "init", "xorout", "ref", NULL };
+    struct _hexin_crc32 crc32_param_hacker = { .is_initial=FALSE,
+                                               .width  = HEXIN_CRC32_WIDTH,
+                                               .poly   = CRC32_POLYNOMIAL_04C11DB7,
+                                               .init   = 0xFFFFFFFFL,
+                                               .refin  = TRUE,
+                                               .refout = TRUE,
+                                               .xorout = 0xFFFFFFFFL,
+                                               .result = 0 };
+
+    static char* kwlist[]={ "data", "poly", "init", "xorout", "refin", "refout", NULL };
 
 #if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y*|IIIp", kwlist, &data, &polynomial, &init, &xorout, &ref ) ) {
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y*|IIIpp", kwlist, &data,
+                                                                      &crc32_param_hacker.poly,
+                                                                      &crc32_param_hacker.init,
+                                                                      &crc32_param_hacker.xorout,
+                                                                      &crc32_param_hacker.refin,
+                                                                      &crc32_param_hacker.refout ) ) {
         if ( data.obj ) {
             PyBuffer_Release( &data );
         }
         return NULL;        
     }
 #else
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s*|IIIp", kwlist, &data, &polynomial, &init, &xorout, &ref ) ) {
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s*|IIIpp", kwlist, &data,
+                                                                      &crc32_param_hacker.poly,
+                                                                      &crc32_param_hacker.init,
+                                                                      &crc32_param_hacker.xorout,
+                                                                      &crc32_param_hacker.refin,
+                                                                      &crc32_param_hacker.refout ) ) {
         if ( data.obj ) {
             PyBuffer_Release( &data );
         }
@@ -209,17 +201,12 @@ static PyObject * _crc32_hacker( PyObject *self, PyObject *args, PyObject* kws )
     }
 #endif /* PY_MAJOR_VERSION */
 
-    if ( HEXIN_REFIN_OR_REFOUT_IS_TRUE( ref ) ) {
-        polynomial = hexin_reverse32( polynomial );
-    }
-
-    result = hexin_calc_crc32_hacker( (unsigned char *)data.buf, (unsigned int)data.len, init, polynomial );
-    result = result ^ xorout;
+    crc32_param_hacker.result = hexin_crc32_compute( (const unsigned char *)data.buf, (unsigned int)data.len, &crc32_param_hacker );
 
     if ( data.obj )
        PyBuffer_Release( &data );
 
-    return Py_BuildValue( "I", result );
+    return Py_BuildValue( "I", crc32_param_hacker.result );
 }
 
 
@@ -235,12 +222,6 @@ static PyObject * _crc32_adler32( PyObject *self, PyObject *args )
     return Py_BuildValue( "I", result );
 }
 
-/*
-*********************************************************************************************************
-                                    For fletcher32 checksum
-*********************************************************************************************************
-*/
-
 static PyObject * _crc32_fletcher32( PyObject *self, PyObject *args )
 {
     unsigned int result   = 0x00000000L;
@@ -255,14 +236,20 @@ static PyObject * _crc32_fletcher32( PyObject *self, PyObject *args )
 
 static PyObject * _crc32_posix( PyObject *self, PyObject *args )
 {
-    unsigned int result = 0x00000000L;
-    unsigned int init   = 0x00000000L;
- 
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc32_04c11db7, ( unsigned int * )&result ) ) {
+    static struct _hexin_crc32 crc32_param_posix = { .is_initial=FALSE,
+                                                     .width  = HEXIN_CRC32_WIDTH,
+                                                     .poly   = CRC32_POLYNOMIAL_04C11DB7,
+                                                     .init   = 0x00000000L,
+                                                     .refin  = FALSE,
+                                                     .refout = FALSE,
+                                                     .xorout = 0xFFFFFFFFL,
+                                                     .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc32_param_posix ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "I", result ^ 0xFFFFFFFFL );
+    return Py_BuildValue( "I", crc32_param_posix.result );
 }
 
 /*
@@ -270,122 +257,164 @@ static PyObject * _crc32_posix( PyObject *self, PyObject *args )
 */
 static PyObject * _crc32_bzip2( PyObject *self, PyObject *args )
 {
-    unsigned int result = 0x00000000L;
-    unsigned int init   = 0xFFFFFFFFL;
- 
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc32_04c11db7, ( unsigned int * )&result ) ) {
+    static struct _hexin_crc32 crc32_param_bzip2 = { .is_initial=FALSE,
+                                                     .width  = HEXIN_CRC32_WIDTH,
+                                                     .poly   = CRC32_POLYNOMIAL_04C11DB7,
+                                                     .init   = 0xFFFFFFFFL,
+                                                     .refin  = FALSE,
+                                                     .refout = FALSE,
+                                                     .xorout = 0xFFFFFFFFL,
+                                                     .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc32_param_bzip2 ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "I", result ^ 0xFFFFFFFFL );
+    return Py_BuildValue( "I", crc32_param_bzip2.result );
 }
 
 static PyObject * _crc32_jamcrc( PyObject *self, PyObject *args )
 {
-    unsigned int result = 0x00000000L;
-    unsigned int init   = 0xFFFFFFFFL;
-    unsigned int poly   = hexin_reverse32( 0x04C11DB7L );
-    unsigned char mask  = TRUE;
- 
-    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc32_shared, ( unsigned int * )&result ) ) {
+    static struct _hexin_crc32 crc32_param_jamcrc = { .is_initial=FALSE,
+                                                      .width  = HEXIN_CRC32_WIDTH,
+                                                      .poly   = 0x04C11DB7L,
+                                                      .init   = 0xFFFFFFFFL,
+                                                      .refin  = TRUE,
+                                                      .refout = TRUE,
+                                                      .xorout = 0x00000000L,
+                                                      .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc32_param_jamcrc ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "I", result );
+    return Py_BuildValue( "I", crc32_param_jamcrc.result );
 }
 
 static PyObject * _crc32_autosar( PyObject *self, PyObject *args )
 {
-    unsigned int result = 0x00000000L;
-    unsigned int init   = 0xFFFFFFFFL;
-    unsigned int poly   = hexin_reverse32( 0xF4ACFB13L );
-    unsigned char mask  = TRUE;
- 
-    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc32_shared, ( unsigned int * )&result ) ) {
+    static struct _hexin_crc32 crc32_param_autosar = { .is_initial=FALSE,
+                                                       .width  = HEXIN_CRC32_WIDTH,
+                                                       .poly   = 0xF4ACFB13L,
+                                                       .init   = 0xFFFFFFFFL,
+                                                       .refin  = TRUE,
+                                                       .refout = TRUE,
+                                                       .xorout = 0xFFFFFFFFL,
+                                                       .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc32_param_autosar ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "I", result ^ 0xFFFFFFFFL );
+    return Py_BuildValue( "I", crc32_param_autosar.result );
 }
 
 static PyObject * _crc32_crc32_c( PyObject *self, PyObject *args )
 {
-    unsigned int result = 0x00000000L;
-    unsigned int init   = 0xFFFFFFFFL;
-    unsigned int poly   = hexin_reverse32( 0x1EDC6F41L );
-    unsigned char mask  = TRUE;
- 
-    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc32_shared, ( unsigned int * )&result ) ) {
+    static struct _hexin_crc32 crc32_iscsi = { .is_initial=FALSE,
+                                               .width  = HEXIN_CRC32_WIDTH,
+                                               .poly   = 0x1EDC6F41L,
+                                               .init   = 0xFFFFFFFFL,
+                                               .refin  = TRUE,
+                                               .refout = TRUE,
+                                               .xorout = 0xFFFFFFFFL,
+                                               .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc32_iscsi ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "I", result ^ 0xFFFFFFFFL );
+    return Py_BuildValue( "I", crc32_iscsi.result );
 }
 
 static PyObject * _crc32_crc32_d( PyObject *self, PyObject *args )
 {
-    unsigned int result = 0x00000000L;
-    unsigned int init   = 0xFFFFFFFFL;
-    unsigned int poly   = hexin_reverse32( 0xA833982BL );
-    unsigned char mask  = TRUE;
- 
-    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc32_shared, ( unsigned int * )&result ) ) {
+    static struct _hexin_crc32 crc32_base91 = { .is_initial=FALSE,
+                                                .width  = HEXIN_CRC32_WIDTH,
+                                                .poly   = 0xA833982BL,
+                                                .init   = 0xFFFFFFFFL,
+                                                .refin  = TRUE,
+                                                .refout = TRUE,
+                                                .xorout = 0xFFFFFFFFL,
+                                                .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc32_base91 ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "I", result ^ 0xFFFFFFFFL );
+    return Py_BuildValue( "I", crc32_base91.result );
 }
 
 static PyObject * _crc32_crc32_q( PyObject *self, PyObject *args )
 {
-    unsigned int result = 0x00000000L;
-    unsigned int init   = 0x00000000L;
-    unsigned int poly   = 0x814141ABL;
-    unsigned char mask  = FALSE;
- 
-    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc32_shared, ( unsigned int * )&result ) ) {
+    static struct _hexin_crc32 crc32_aixm = { .is_initial=FALSE,
+                                              .width  = HEXIN_CRC32_WIDTH,
+                                              .poly   = 0x814141ABL,
+                                              .init   = 0,
+                                              .refin  = FALSE,
+                                              .refout = FALSE,
+                                              .xorout = 0,
+                                              .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc32_aixm ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "I", result );
+    return Py_BuildValue( "I", crc32_aixm.result );
 }
 
 static PyObject * _crc32_xfer( PyObject *self, PyObject *args )
 {
-    unsigned int result = 0x00000000L;
-    unsigned int init   = 0x00000000L;
-    unsigned int poly   = 0x000000AFL;
-    unsigned char mask  = FALSE;
- 
-    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc32_shared, ( unsigned int * )&result ) ) {
+    static struct _hexin_crc32 crc32_param_xfer = { .is_initial=FALSE,
+                                                    .width  = HEXIN_CRC32_WIDTH,
+                                                    .poly   = 0x000000AFL,
+                                                    .init   = 0x00000000L,
+                                                    .refin  = FALSE,
+                                                    .refout = FALSE,
+                                                    .xorout = 0x00000000L,
+                                                    .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc32_param_xfer ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "I", result );
+    return Py_BuildValue( "I", crc32_param_xfer.result );
 }
 
 static PyObject * _crc30_cmda( PyObject *self, PyObject *args )
 {
-    unsigned int result = 0x00000000L;
-    unsigned int init   = 0x3FFFFFFFL;
- 
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc30_cdma, ( unsigned int * )&result ) ) {
+    static struct _hexin_crc32 crc30_cmda_param = { .is_initial=FALSE,
+                                                    .width  = 30,
+                                                    .poly   = CRC30_POLYNOMIAL_2030B9C7,
+                                                    .init   = 0x3FFFFFFFL,
+                                                    .refin  = FALSE,
+                                                    .refout = FALSE,
+                                                    .xorout = 0x3FFFFFFFL,
+                                                    .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc30_cmda_param ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "I", result ^ 0x3FFFFFFFL );
+    return Py_BuildValue( "I", crc30_cmda_param.result );
 }
 
 static PyObject * _crc31_philips( PyObject *self, PyObject *args )
 {
-    unsigned int result = 0x00000000L;
-    unsigned int init   = 0x7FFFFFFFL;
- 
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc31_philips, ( unsigned int * )&result ) ) {
+    static struct _hexin_crc32 crc31_philips_param = { .is_initial=FALSE,
+                                                       .width  = 31,
+                                                       .poly   = CRC31_POLYNOMIAL_04C11DB7,
+                                                       .init   = 0x7FFFFFFFL,
+                                                       .refin  = FALSE,
+                                                       .refout = FALSE,
+                                                       .xorout = 0x7FFFFFFFL,
+                                                       .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc31_philips_param ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "I", result ^ 0x7FFFFFFFL );
+    return Py_BuildValue( "I", crc31_philips_param.result );
 }
 
 /* method table */
@@ -431,12 +460,12 @@ PyDoc_STRVAR( _crc32_doc,
 "Calculation of CRC32 \n"
 "libscrc.fsc        -> Calculate CRC for Ethernet frame sequence (FSC) [Poly=0x04C11DB7, Init=0xFFFFFFFF, Xorout=0x00000000 Refin=False Refout=False]\n"
 "libscrc.mpeg2      -> Calculate CRC for Media file (MPEG2) [Poly=0x04C11DB7, Init=0xFFFFFFFF, Xorout=0x00000000 Refin=False Refout=False]\n"
-"libscrc.crc32      -> Calculate CRC for file [Poly=0xEDB88320L, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]\n"
-"libscrc.iso_hdlc32 -> Calculate ISO-HDLC [Poly=0xEDB88320L, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]\n"
-"libscrc.xz32       -> Calculate XZ [Poly=0xEDB88320L, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]\n"
-"libscrc.pkzip      -> Calculate PKZIP [Poly=0xEDB88320L, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]\n"
-"libscrc.adccp      -> Calculate ADCCP [Poly=0xEDB88320L, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]\n"
-"libscrc.v_42       -> Calculate V-42 [Poly=0xEDB88320L, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]\n"
+"libscrc.crc32      -> Calculate CRC for file [Poly=0x04C11DB7L, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]\n"
+"libscrc.iso_hdlc32 -> Calculate ISO-HDLC [Poly=0x04C11DB7L, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]\n"
+"libscrc.xz32       -> Calculate XZ [Poly=0x04C11DB7L, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]\n"
+"libscrc.pkzip      -> Calculate PKZIP [Poly=0x04C11DB7L, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]\n"
+"libscrc.adccp      -> Calculate ADCCP [Poly=0x04C11DB7L, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]\n"
+"libscrc.v_42       -> Calculate V-42 [Poly=0x04C11DB7L, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]\n"
 "libscrc.table32    -> Print CRC32 table to list\n"
 "libscrc.hacker32   -> Free calculation CRC32 (not support python2 series) Xorout=0x00000000 Refin=False Refout=False\n"
 "libscrc.adler32    -> Calculate adler32 (MOD=65521)\n"
@@ -479,7 +508,7 @@ PyInit__crc32( void )
         return NULL;
     }
 
-    PyModule_AddStringConstant( m, "__version__", "1.1"  );
+    PyModule_AddStringConstant( m, "__version__", "1.3"  );
     PyModule_AddStringConstant( m, "__author__",  "Heyn" );
 
     return m;

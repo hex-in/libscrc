@@ -1,15 +1,15 @@
 /*
 *********************************************************************************************************
-*                              		(c) Copyright 2018-2020, Hexin
+*                              		(c) Copyright 2017-2020, Hexin
 *                                           All Rights Reserved
 * File    : _crc32tables.h
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V0.1.6
+* Version : V1.3
 *
 * LICENSING TERMS:
 * ---------------
 *		New Create at 	2020-03-17 [Heyn] Initialize.
-*
+ *                      2020-04-26 [Heyn] Optimized Code
 *********************************************************************************************************
 */
 
@@ -30,34 +30,36 @@
 
 #define                 HEXIN_MOD_ADLER                         65521
 
+#define                 HEXIN_CRC32_WIDTH                       32
+
 #define                 HEXIN_POLYNOMIAL_IS_HIGH(x)             ( x & 0x80000000L )
 #define                 HEXIN_REFIN_OR_REFOUT_IS_TRUE(x)        ( x == 0x00000001L ? TRUE : FALSE )
 
 #define                 CRC30_POLYNOMIAL_2030B9C7               0x2030B9C7L
 #define                 CRC31_POLYNOMIAL_04C11DB7               0x04C11DB7L
 #define		            CRC32_POLYNOMIAL_04C11DB7		        0x04C11DB7L
-#define		            CRC32_POLYNOMIAL_EDB88320		        0xEDB88320L
+
+
+struct _hexin_crc32 {
+    unsigned int  is_initial;
+    unsigned int  width;
+    unsigned int  poly;
+    unsigned int  init;
+    unsigned int  refin;
+    unsigned int  refout;
+    unsigned int  xorout;
+    unsigned int  result;
+    unsigned int  table[MAX_TABLE_ARRAY];
+};
+
 
 unsigned int hexin_reverse32( unsigned int data );
 
 unsigned int hexin_crc32_init_table_poly_is_high( unsigned int polynomial, unsigned int *table );
 unsigned int hexin_crc32_init_table_poly_is_low(  unsigned int polynomial, unsigned int *table );
 
-unsigned int hexin_calc_crc32_04c11db7( const unsigned char *pSrc, unsigned int len, unsigned int crc32 );
-unsigned int hexin_calc_crc32_edb88320( const unsigned char *pSrc, unsigned int len, unsigned int crc32 );
-unsigned int hexin_calc_crc32_hacker(   const unsigned char *pSrc, unsigned int len, unsigned int crc32, unsigned int polynomial );
-
 unsigned int hexin_calc_crc32_adler(    const unsigned char *pSrc, unsigned int len, unsigned int crc32 /*reserved*/ );
 unsigned int hexin_calc_crc32_fletcher( const unsigned char *pSrc, unsigned int len, unsigned int crc32 /*reserved*/ );
-
-
-unsigned int hexin_calc_crc32_shared( const unsigned char *pSrc,
-                                      unsigned int len,         /* pSrc length. */
-                                      unsigned int crc32,
-                                      unsigned int polynomial,
-                                      unsigned char mask        /* TRUE -> high, FALSE -> low */ );
-
-unsigned int hexin_calc_crc30_cdma(    const unsigned char *pSrc, unsigned int len, unsigned int crc32 );
-unsigned int hexin_calc_crc31_philips( const unsigned char *pSrc, unsigned int len, unsigned int crc32 );
+unsigned int hexin_crc32_compute(       const unsigned char *pSrc, unsigned int len, struct _hexin_crc32 *crc32 );
 
 #endif //__CRC32_TABLES_H__

@@ -7,6 +7,7 @@
 # Program:  Test library CRC32 Module.
 # Package:  pip install libscrc.
 # History:  2020-03-13 Wheel Ver:0.1.6 [Heyn] Initialize
+#           2020-04-26 Wheel Ver:1.3   [Heyn] Optimized Code
 
 import unittest
 
@@ -51,7 +52,16 @@ class TestCRC32( unittest.TestCase ):
         self.assertEqual( module.fletcher32( b'123456789' ),    0xDF09D509 )
 
         # test when there are no data
-        self.assertEqual( module.crc32( b'' ),          0x00000000 )
+        self.assertEqual( module.crc32( b'' ),                  0x00000000 )
+
+        # test hacker.
+        self.assertEqual( module.hacker32( b'123456789' ),      0xCBF43926 )
+        self.assertEqual( module.hacker32( data=b'123456789',
+                                           poly=0x04C11DB7,
+                                           init=0xFFFFFFFF,
+                                           xorout=0xFFFFFFFF,
+                                           refin=True,
+                                           refout=True ),       0xCBF43926 )
 
     def test_basics( self ):
         """ Test basic functionality.

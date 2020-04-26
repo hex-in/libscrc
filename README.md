@@ -251,7 +251,7 @@ crc32 = libscrc.crc32(b'1234')          # WinRAR, File
 # init=0xFFFFFFFF(default)
 # xorout=0x00000000(default)
 crc32 = libscrc.hacker32( b'123456789', poly=0x04C11DB7 )
-crc32 = libscrc.hacker32( b'123456789', poly=0x04C11DB7, init=0, xorout=0xFFFFFFFF )
+crc32 = libscrc.hacker32( b'123456789', poly=0x04C11DB7, init=0, xorout=0xFFFFFFFF, refin=True, refout=True )
 
 crc32 = libscrc.posix(b'1234')
 crc32 = libscrc.bzip2(b'1234')
