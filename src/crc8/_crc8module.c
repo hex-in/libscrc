@@ -31,7 +31,7 @@
 
 static unsigned char hexin_PyArg_ParseTuple( PyObject *self, PyObject *args,
                                              unsigned char init,
-                                             unsigned char (*function)( unsigned char *,
+                                             unsigned char (*function)( const unsigned char *,
                                                                         unsigned int,
                                                                         unsigned char ),
                                              unsigned char *result )
@@ -54,7 +54,7 @@ static unsigned char hexin_PyArg_ParseTuple( PyObject *self, PyObject *args,
     }
 #endif /* PY_MAJOR_VERSION */
 
-    *result = function( (unsigned char *)data.buf, (unsigned int)data.len, init );
+    *result = (* function)( (unsigned char *)data.buf, (unsigned int)data.len, init );
 
     if ( data.obj )
        PyBuffer_Release( &data );
@@ -98,7 +98,7 @@ static PyObject * _crc8_intel( PyObject *self, PyObject *args )
     unsigned char result = 0x00;
     unsigned char init   = 0x00;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc8_lrc, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc8_lrc, ( unsigned char * )&result ) ) {
         return NULL;
     }
 
@@ -110,7 +110,7 @@ static PyObject * _crc8_bcc( PyObject *self, PyObject *args )
     unsigned char result = 0x00;
     unsigned char init   = 0x00;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc8_bcc, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc8_bcc, ( unsigned char * )&result ) ) {
         return NULL;
     }
 
@@ -122,7 +122,7 @@ static PyObject * _crc8_lrc( PyObject *self, PyObject *args )
     unsigned char result = 0x00;
     unsigned char init   = 0x00;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc8_lrc, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc8_lrc, ( unsigned char * )&result ) ) {
         return NULL;
     }
 
@@ -134,7 +134,7 @@ static PyObject * _crc8_maxim( PyObject *self, PyObject *args )
     unsigned char result = 0x00;
     unsigned char init   = 0x00;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc8_maxim, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc8_maxim, ( unsigned char * )&result ) ) {
         return NULL;
     }
 
@@ -146,7 +146,7 @@ static PyObject * _crc8_rohc( PyObject *self, PyObject *args )
     unsigned char result = 0x00;
     unsigned char init   = 0xFF;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc8_rohc, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc8_rohc, ( unsigned char * )&result ) ) {
         return NULL;
     }
 
@@ -158,7 +158,7 @@ static PyObject * _crc8_itu( PyObject *self, PyObject *args )
     unsigned char result = 0x00;
     unsigned char init   = 0x00;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc8_07, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc8_07, ( unsigned char * )&result ) ) {
         return NULL;
     }
 
@@ -170,7 +170,7 @@ static PyObject * _crc8_crc8( PyObject *self, PyObject *args )
     unsigned char result = 0x00;
     unsigned char init   = 0x00;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc8_07, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc8_07, ( unsigned char * )&result ) ) {
         return NULL;
     }
 
@@ -182,7 +182,7 @@ static PyObject * _crc8_sum( PyObject *self, PyObject *args )
     unsigned char result = 0x00;
     unsigned char init   = 0x00;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc8_sum, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc8_sum, ( unsigned char * )&result ) ) {
         return NULL;
     }
 
@@ -271,7 +271,7 @@ static PyObject * _crc8_fletcher( PyObject *self, PyObject *args )
     unsigned char result   = 0x00;
     unsigned char reserved = 0x00;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, reserved, hexin_calc_crc8_fletcher, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, reserved, hexin_calc_crc8_fletcher, ( unsigned char * )&result ) ) {
         return NULL;
     }
 
@@ -288,7 +288,7 @@ static PyObject * _crc8_autosar8( PyObject *self, PyObject *args )
                                              .table = crc8_autosar_table,
                                              .initial_table_function = hexin_crc8_init_table_poly_is_low };
 
-    if ( !hexin_PyArg_ParseTuple_Parameters( self, args, &param, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple_Parameters( self, args, &param, ( unsigned char * )&result ) ) {
         return NULL;
     }
 
@@ -305,7 +305,7 @@ static PyObject * _crc8_lte8( PyObject *self, PyObject *args )
                                              .table = crc8_lte8_table,
                                              .initial_table_function = hexin_crc8_init_table_poly_is_low };
 
-    if ( !hexin_PyArg_ParseTuple_Parameters( self, args, &param, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple_Parameters( self, args, &param, ( unsigned char * )&result ) ) {
         return NULL;
     }
 
@@ -323,7 +323,7 @@ static PyObject * _crc8_wcdma( PyObject *self, PyObject *args )
                                              .initial_table_function = hexin_crc8_init_table_poly_is_high };
 
     param.poly = hexin_reverse8( param.poly );
-    if ( !hexin_PyArg_ParseTuple_Parameters( self, args, &param, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple_Parameters( self, args, &param, ( unsigned char * )&result ) ) {
         return NULL;
     }
 
@@ -335,7 +335,7 @@ static PyObject * _crc8_sae_j1855( PyObject *self, PyObject *args )
     unsigned char result = 0x00;
     unsigned char init   = 0xFF;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc8_1d, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc8_1d, ( unsigned char * )&result ) ) {
         return NULL;
     }
 
@@ -347,7 +347,7 @@ static PyObject * _crc8_icode( PyObject *self, PyObject *args )
     unsigned char result = 0x00;
     unsigned char init   = 0xFD;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc8_1d, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc8_1d, ( unsigned char * )&result ) ) {
         return NULL;
     }
 
@@ -359,7 +359,7 @@ static PyObject * _crc8_gsm8_a( PyObject *self, PyObject *args )
     unsigned char result = 0x00;
     unsigned char init   = 0x00;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc8_1d, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc8_1d, ( unsigned char * )&result ) ) {
         return NULL;
     }
 
@@ -376,7 +376,7 @@ static PyObject * _crc8_gsm8_b( PyObject *self, PyObject *args )
                                              .table = crc8_gsmb_table,
                                              .initial_table_function = hexin_crc8_init_table_poly_is_low };
 
-    if ( !hexin_PyArg_ParseTuple_Parameters( self, args, &param, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple_Parameters( self, args, &param, ( unsigned char * )&result ) ) {
         return NULL;
     }
 
@@ -388,7 +388,7 @@ static PyObject * _crc8_nrsc_5( PyObject *self, PyObject *args )
     unsigned char result = 0x00;
     unsigned char init   = 0xFF;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc8_31, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc8_31, ( unsigned char * )&result ) ) {
         return NULL;
     }
 
@@ -405,7 +405,7 @@ static PyObject * _crc8_bluetooth( PyObject *self, PyObject *args )
                                              .table = crc8_bluetooth_table,
                                              .initial_table_function = hexin_crc8_init_table_poly_is_high };
     param.poly = hexin_reverse8( param.poly );
-    if ( !hexin_PyArg_ParseTuple_Parameters( self, args, &param, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple_Parameters( self, args, &param, ( unsigned char * )&result ) ) {
         return NULL;
     }
 
@@ -422,7 +422,7 @@ static PyObject * _crc8_dvb_s2( PyObject *self, PyObject *args )
                                              .table = crc8_dvb_s2_table,
                                              .initial_table_function = hexin_crc8_init_table_poly_is_low };
 
-    if ( !hexin_PyArg_ParseTuple_Parameters( self, args, &param, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple_Parameters( self, args, &param, ( unsigned char * )&result ) ) {
         return NULL;
     }
 
@@ -439,7 +439,7 @@ static PyObject * _crc8_ebu8( PyObject *self, PyObject *args )
                                              .table = crc8_ebu8_table,
                                              .initial_table_function = hexin_crc8_init_table_poly_is_high };
     param.poly = hexin_reverse8( param.poly );
-    if ( !hexin_PyArg_ParseTuple_Parameters( self, args, &param, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple_Parameters( self, args, &param, ( unsigned char * )&result ) ) {
         return NULL;
     }
 
@@ -456,7 +456,7 @@ static PyObject * _crc8_darc( PyObject *self, PyObject *args )
                                              .table = crc8_darc_table,
                                              .initial_table_function = hexin_crc8_init_table_poly_is_high };
     param.poly = hexin_reverse8( param.poly );
-    if ( !hexin_PyArg_ParseTuple_Parameters( self, args, &param, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple_Parameters( self, args, &param, ( unsigned char * )&result ) ) {
         return NULL;
     }
 
@@ -473,7 +473,7 @@ static PyObject * _crc8_opensafety8( PyObject *self, PyObject *args )
                                              .table = crc8_opensafety_table,
                                              .initial_table_function = hexin_crc8_init_table_poly_is_low };
 
-    if ( !hexin_PyArg_ParseTuple_Parameters( self, args, &param, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple_Parameters( self, args, &param, ( unsigned char * )&result ) ) {
         return NULL;
     }
 
@@ -490,7 +490,7 @@ static PyObject * _crc8_mifare_mad( PyObject *self, PyObject *args )
                                              .table = crc8_mifare_table,
                                              .initial_table_function = hexin_crc8_init_table_poly_is_low };
 
-    if ( !hexin_PyArg_ParseTuple_Parameters( self, args, &param, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple_Parameters( self, args, &param, ( unsigned char * )&result ) ) {
         return NULL;
     }
 

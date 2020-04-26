@@ -26,7 +26,7 @@
 
 static unsigned char hexin_PyArg_ParseTuple( PyObject *self, PyObject *args,
                                              unsigned int init,
-                                             unsigned int (*function)( unsigned char *,
+                                             unsigned int (*function)( const unsigned char *,
                                                                        unsigned int,
                                                                        unsigned int ),
                                              unsigned int *result )
@@ -49,7 +49,7 @@ static unsigned char hexin_PyArg_ParseTuple( PyObject *self, PyObject *args,
     }
 #endif /* PY_MAJOR_VERSION */
 
-    *result = function( (unsigned char *)data.buf, (unsigned int)data.len, init );
+    *result = (* function)( (unsigned char *)data.buf, (unsigned int)data.len, init );
 
     if ( data.obj )
        PyBuffer_Release( &data );
@@ -62,7 +62,7 @@ static unsigned char hexin_PyArg_ParseTuple_Parametes( PyObject *self, PyObject 
                                                        unsigned int  init,
                                                        unsigned int  polynomial,
                                                        unsigned char mask,
-                                                       unsigned int (*function)( unsigned char *,
+                                                       unsigned int (*function)( const unsigned char *,
                                                                                  unsigned int,
                                                                                  unsigned int,
                                                                                  unsigned int,
@@ -87,7 +87,7 @@ static unsigned char hexin_PyArg_ParseTuple_Parametes( PyObject *self, PyObject 
     }
 #endif /* PY_MAJOR_VERSION */
 
-    *result = function( (unsigned char *)data.buf, (unsigned int)data.len, init, polynomial, mask  );
+    *result = (* function)( (unsigned char *)data.buf, (unsigned int)data.len, init, polynomial, mask  );
 
     if ( data.obj )
        PyBuffer_Release( &data );
@@ -112,7 +112,7 @@ static PyObject * _crc32_mpeg_2( PyObject *self, PyObject *args )
     unsigned int result = 0x00000000L;
     unsigned int init   = 0xFFFFFFFFL;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc32_04c11db7, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc32_04c11db7, ( unsigned int * )&result ) ) {
         return NULL;
     }
 
@@ -137,7 +137,7 @@ static PyObject * _crc32_crc32( PyObject *self, PyObject *args )
     unsigned int result = 0x00000000L;
     unsigned int init   = 0xFFFFFFFFL;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc32_edb88320, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc32_edb88320, ( unsigned int * )&result ) ) {
         return NULL;
     }
 
@@ -228,7 +228,7 @@ static PyObject * _crc32_adler32( PyObject *self, PyObject *args )
     unsigned int result   = 0x00000000L;
     unsigned int reserved = 0x00000000L;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, reserved, hexin_calc_crc32_adler, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, reserved, hexin_calc_crc32_adler, ( unsigned int * )&result ) ) {
         return NULL;
     }
 
@@ -246,7 +246,7 @@ static PyObject * _crc32_fletcher32( PyObject *self, PyObject *args )
     unsigned int result   = 0x00000000L;
     unsigned int reserved = 0x00000000L;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, reserved, hexin_calc_crc32_fletcher, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, reserved, hexin_calc_crc32_fletcher, ( unsigned int * )&result ) ) {
         return NULL;
     }
 
@@ -258,7 +258,7 @@ static PyObject * _crc32_posix( PyObject *self, PyObject *args )
     unsigned int result = 0x00000000L;
     unsigned int init   = 0x00000000L;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc32_04c11db7, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc32_04c11db7, ( unsigned int * )&result ) ) {
         return NULL;
     }
 
@@ -273,7 +273,7 @@ static PyObject * _crc32_bzip2( PyObject *self, PyObject *args )
     unsigned int result = 0x00000000L;
     unsigned int init   = 0xFFFFFFFFL;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc32_04c11db7, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc32_04c11db7, ( unsigned int * )&result ) ) {
         return NULL;
     }
 
@@ -287,7 +287,7 @@ static PyObject * _crc32_jamcrc( PyObject *self, PyObject *args )
     unsigned int poly   = hexin_reverse32( 0x04C11DB7L );
     unsigned char mask  = TRUE;
  
-    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc32_shared, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc32_shared, ( unsigned int * )&result ) ) {
         return NULL;
     }
 
@@ -301,7 +301,7 @@ static PyObject * _crc32_autosar( PyObject *self, PyObject *args )
     unsigned int poly   = hexin_reverse32( 0xF4ACFB13L );
     unsigned char mask  = TRUE;
  
-    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc32_shared, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc32_shared, ( unsigned int * )&result ) ) {
         return NULL;
     }
 
@@ -315,7 +315,7 @@ static PyObject * _crc32_crc32_c( PyObject *self, PyObject *args )
     unsigned int poly   = hexin_reverse32( 0x1EDC6F41L );
     unsigned char mask  = TRUE;
  
-    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc32_shared, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc32_shared, ( unsigned int * )&result ) ) {
         return NULL;
     }
 
@@ -329,7 +329,7 @@ static PyObject * _crc32_crc32_d( PyObject *self, PyObject *args )
     unsigned int poly   = hexin_reverse32( 0xA833982BL );
     unsigned char mask  = TRUE;
  
-    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc32_shared, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc32_shared, ( unsigned int * )&result ) ) {
         return NULL;
     }
 
@@ -343,7 +343,7 @@ static PyObject * _crc32_crc32_q( PyObject *self, PyObject *args )
     unsigned int poly   = 0x814141ABL;
     unsigned char mask  = FALSE;
  
-    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc32_shared, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc32_shared, ( unsigned int * )&result ) ) {
         return NULL;
     }
 
@@ -357,7 +357,7 @@ static PyObject * _crc32_xfer( PyObject *self, PyObject *args )
     unsigned int poly   = 0x000000AFL;
     unsigned char mask  = FALSE;
  
-    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc32_shared, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc32_shared, ( unsigned int * )&result ) ) {
         return NULL;
     }
 
@@ -369,7 +369,7 @@ static PyObject * _crc30_cmda( PyObject *self, PyObject *args )
     unsigned int result = 0x00000000L;
     unsigned int init   = 0x3FFFFFFFL;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc30_cdma, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc30_cdma, ( unsigned int * )&result ) ) {
         return NULL;
     }
 
@@ -381,7 +381,7 @@ static PyObject * _crc31_philips( PyObject *self, PyObject *args )
     unsigned int result = 0x00000000L;
     unsigned int init   = 0x7FFFFFFFL;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc31_philips, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc31_philips, ( unsigned int * )&result ) ) {
         return NULL;
     }
 

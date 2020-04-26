@@ -18,7 +18,7 @@
 
 static unsigned char hexin_PyArg_ParseTuple( PyObject *self, PyObject *args,
                                              unsigned int init,
-                                             unsigned int (*function)( unsigned char *,
+                                             unsigned int (*function)( const unsigned char *,
                                                                        unsigned int,
                                                                        unsigned int ),
                                              unsigned int *result )
@@ -41,7 +41,7 @@ static unsigned char hexin_PyArg_ParseTuple( PyObject *self, PyObject *args,
     }
 #endif /* PY_MAJOR_VERSION */
 
-    *result = function( (unsigned char *)data.buf, (unsigned int)data.len, init );
+    *result = (* function)( (unsigned char *)data.buf, (unsigned int)data.len, init );
 
     if ( data.obj )
        PyBuffer_Release( &data );
@@ -54,7 +54,7 @@ static PyObject * _canx_can15( PyObject *self, PyObject *args )
     unsigned int result = 0x00000000L;
     unsigned int init   = 0x00000000L;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_can15, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_can15, ( unsigned int * )&result ) ) {
         return NULL;
     }
 
@@ -66,7 +66,7 @@ static PyObject * _canx_can17( PyObject *self, PyObject *args )
     unsigned int result = 0x00000000L;
     unsigned int init   = 0x00000000L;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_can17, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_can17, ( unsigned int * )&result ) ) {
         return NULL;
     }
 
@@ -78,7 +78,7 @@ static PyObject * _canx_can21( PyObject *self, PyObject *args )
     unsigned int result = 0x00000000L;
     unsigned int init   = 0x00000000L;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_can21, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_can21, ( unsigned int * )&result ) ) {
         return NULL;
     }
 

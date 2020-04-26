@@ -23,7 +23,7 @@
 
 static unsigned char hexin_PyArg_ParseTuple( PyObject *self, PyObject *args,
                                              unsigned long long init,
-                                             unsigned long long (*function)( unsigned char *,
+                                             unsigned long long (*function)( const unsigned char *,
                                                                              unsigned int,
                                                                              unsigned long long ),
                                              unsigned long long *result )
@@ -46,7 +46,7 @@ static unsigned char hexin_PyArg_ParseTuple( PyObject *self, PyObject *args,
     }
 #endif /* PY_MAJOR_VERSION */
 
-    *result = function( (unsigned char *)data.buf, (unsigned int)data.len, init );
+    *result = (* function)( (unsigned char *)data.buf, (unsigned int)data.len, init );
 
     if ( data.obj )
        PyBuffer_Release( &data );
@@ -59,7 +59,7 @@ static PyObject * _crc64_iso( PyObject *self, PyObject *args )
     unsigned long long result = 0x0000000000000000L;
     unsigned long long init   = 0xFFFFFFFFFFFFFFFFL;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc64_iso, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc64_iso, ( unsigned long long * )&result ) ) {
         return NULL;
     }
 
@@ -71,7 +71,7 @@ static PyObject * _crc64_ecma182( PyObject *self, PyObject *args )
     unsigned long long result = 0x0000000000000000L;
     unsigned long long init   = 0x0000000000000000L;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc64_ecma182, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc64_ecma182, ( unsigned long long * )&result ) ) {
         return NULL;
     }
 
@@ -83,7 +83,7 @@ static PyObject * _crc64_we( PyObject *self, PyObject *args )
     unsigned long long result = 0x0000000000000000L;
     unsigned long long init   = 0xFFFFFFFFFFFFFFFFL;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc64_ecma182, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc64_ecma182, ( unsigned long long * )&result ) ) {
         return NULL;
     }
 
@@ -95,7 +95,7 @@ static PyObject * _crc64_xz( PyObject *self, PyObject *args )
     unsigned long long result = 0x0000000000000000L;
     unsigned long long init   = 0xFFFFFFFFFFFFFFFFL;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc64_xz, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc64_xz, ( unsigned long long * )&result ) ) {
         return NULL;
     }
 

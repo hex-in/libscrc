@@ -18,7 +18,7 @@
 
 static unsigned char hexin_PyArg_ParseTuple( PyObject *self, PyObject *args,
                                              unsigned int init,
-                                             unsigned int (*function)( unsigned char *,
+                                             unsigned int (*function)( const unsigned char *,
                                                                        unsigned int,
                                                                        unsigned int ),
                                              unsigned int *result )
@@ -41,7 +41,7 @@ static unsigned char hexin_PyArg_ParseTuple( PyObject *self, PyObject *args,
     }
 #endif /* PY_MAJOR_VERSION */
 
-    *result = function( (unsigned char *)data.buf, (unsigned int)data.len, init );
+    *result = (* function)( (unsigned char *)data.buf, (unsigned int)data.len, init );
 
     if ( data.obj )
        PyBuffer_Release( &data );
@@ -54,7 +54,7 @@ static PyObject * _crc24_ble( PyObject *self, PyObject *args )
     unsigned int result = 0x00000000;
     unsigned int init   = 0x00AAAAAA;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc24_00065b, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc24_00065b, ( unsigned int * )&result ) ) {
         return NULL;
     }
     return Py_BuildValue( "I", result );
@@ -65,7 +65,7 @@ static PyObject * _crc24_flexraya( PyObject *self, PyObject *args )
     unsigned int result = 0x00000000;
     unsigned int init   = 0x00FEDCBA;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc24_5d6dcb, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc24_5d6dcb, ( unsigned int * )&result ) ) {
         return NULL;
     }
     return Py_BuildValue( "I", result );
@@ -76,7 +76,7 @@ static PyObject * _crc24_flexrayb( PyObject *self, PyObject *args )
     unsigned int result = 0x00000000;
     unsigned int init   = 0x00ABCDEF;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc24_5d6dcb, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc24_5d6dcb, ( unsigned int * )&result ) ) {
         return NULL;
     }
     return Py_BuildValue( "I", result );
@@ -87,7 +87,7 @@ static PyObject * _crc24_openpgp( PyObject *self, PyObject *args )
     unsigned int result = 0x00000000;
     unsigned int init   = 0x00B704CE;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc24_864cfb, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc24_864cfb, ( unsigned int * )&result ) ) {
         return NULL;
     }
     return Py_BuildValue( "I", result );
@@ -98,7 +98,7 @@ static PyObject * _crc24_lte_a( PyObject *self, PyObject *args )
     unsigned int result = 0x00000000;
     unsigned int init   = 0x00000000;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc24_864cfb, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc24_864cfb, ( unsigned int * )&result ) ) {
         return NULL;
     }
     return Py_BuildValue( "I", result );
@@ -109,7 +109,7 @@ static PyObject * _crc24_lte_b( PyObject *self, PyObject *args )
     unsigned int result = 0x00000000;
     unsigned int init   = 0x00000000;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc24_800063, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc24_800063, ( unsigned int * )&result ) ) {
         return NULL;
     }
     return Py_BuildValue( "I", result );
@@ -120,7 +120,7 @@ static PyObject * _crc24_os9( PyObject *self, PyObject *args )
     unsigned int result = 0x00000000;
     unsigned int init   = 0x00FFFFFF;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc24_800063, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc24_800063, ( unsigned int * )&result ) ) {
         return NULL;
     }
     return Py_BuildValue( "I", result ^ 0xFFFFFF );
@@ -131,7 +131,7 @@ static PyObject * _crc24_interlaken( PyObject *self, PyObject *args )
     unsigned int result = 0x00000000;
     unsigned int init   = 0x00FFFFFF;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc24_328b63, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc24_328b63, ( unsigned int * )&result ) ) {
         return NULL;
     }
     return Py_BuildValue( "I", result ^ 0xFFFFFF );

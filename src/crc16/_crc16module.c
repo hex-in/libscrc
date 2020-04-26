@@ -34,7 +34,7 @@
 
 static unsigned char hexin_PyArg_ParseTuple( PyObject *self, PyObject *args,
                                              unsigned short init,
-                                             unsigned short (*function)( unsigned char *,
+                                             unsigned short (*function)( const unsigned char *,
                                                                          unsigned int,
                                                                          unsigned short ),
                                              unsigned short *result )
@@ -57,7 +57,7 @@ static unsigned char hexin_PyArg_ParseTuple( PyObject *self, PyObject *args,
     }
 #endif /* PY_MAJOR_VERSION */
 
-    *result = function( (unsigned char *)data.buf, (unsigned int)data.len, init );
+    *result = (* function)( (unsigned char *)data.buf, (unsigned int)data.len, init );
 
     if ( data.obj )
        PyBuffer_Release( &data );
@@ -70,7 +70,7 @@ static unsigned char hexin_PyArg_ParseTuple_Parametes( PyObject *self, PyObject 
                                                        unsigned short init,
                                                        unsigned short polynomial,
                                                        unsigned char  mask,
-                                                       unsigned short (*function)( unsigned char *,
+                                                       unsigned short (*function)( const unsigned char *,
                                                                                    unsigned int,
                                                                                    unsigned short,
                                                                                    unsigned short,
@@ -95,7 +95,7 @@ static unsigned char hexin_PyArg_ParseTuple_Parametes( PyObject *self, PyObject 
     }
 #endif /* PY_MAJOR_VERSION */
 
-    *result = function( (unsigned char *)data.buf, (unsigned int)data.len, init, polynomial, mask  );
+    *result = (* function)( (unsigned char *)data.buf, (unsigned int)data.len, init, polynomial, mask  );
 
     if ( data.obj )
        PyBuffer_Release( &data );
@@ -114,7 +114,7 @@ static PyObject * _crc16_modbus( PyObject *self, PyObject *args )
     unsigned short result = 0x0000;
     unsigned short init   = 0xFFFF;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_a001, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_a001, ( unsigned short * )&result ) ) {
         return NULL;
     }
 
@@ -139,7 +139,7 @@ static PyObject * _crc16_usb( PyObject *self, PyObject *args )
     unsigned short result = 0x0000;
     unsigned short init   = 0xFFFF;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_a001, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_a001, ( unsigned short * )&result ) ) {
         return NULL;
     }
 
@@ -164,7 +164,7 @@ static PyObject * _crc16_ibm( PyObject *self, PyObject *args )
     unsigned short result = 0x0000;
     unsigned short init   = 0x0000;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_a001, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_a001, ( unsigned short * )&result ) ) {
         return NULL;
     }
 
@@ -187,7 +187,7 @@ static PyObject * _crc16_xmodem( PyObject *self, PyObject *args )
     unsigned short result = 0x0000;
     unsigned short init   = 0x0000;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_1021, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_1021, ( unsigned short * )&result ) ) {
         return NULL;
     }
 
@@ -209,7 +209,7 @@ static PyObject * _crc16_ccitt( PyObject *self, PyObject *args )
     unsigned short result = 0x0000;
     unsigned short init   = 0xFFFF;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_1021, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_1021, ( unsigned short * )&result ) ) {
         return NULL;
     }
 
@@ -221,7 +221,7 @@ static PyObject * _crc16_ccitt_aug( PyObject *self, PyObject *args )
     unsigned short result = 0x0000;
     unsigned short init   = 0x1D0F;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_1021, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_1021, ( unsigned short * )&result ) ) {
         return NULL;
     }
 
@@ -247,7 +247,7 @@ static PyObject * _crc16_kermit( PyObject *self, PyObject *args )
     unsigned short result = 0x0000;
     unsigned short init   = 0x0000;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_8408, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_8408, ( unsigned short * )&result ) ) {
         return NULL;
     }
 
@@ -272,7 +272,7 @@ static PyObject * _crc16_mcrf4xx( PyObject *self, PyObject *args )
     unsigned short result = 0x0000;
     unsigned short init   = 0xFFFF;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_8408, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_8408, ( unsigned short * )&result ) ) {
         return NULL;
     }
 
@@ -296,7 +296,7 @@ static PyObject * _crc16_x25( PyObject *self, PyObject *args )
     unsigned short result = 0x0000;
     unsigned short init   = 0xFFFF;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_8408, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_8408, ( unsigned short * )&result ) ) {
         return NULL;
     }
 
@@ -314,7 +314,7 @@ static PyObject * _crc16_sick( PyObject *self, PyObject *args )
     unsigned short result = 0x0000;
     unsigned short init   = 0x0000;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_sick, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_sick, ( unsigned short * )&result ) ) {
         return NULL;
     }
 
@@ -339,7 +339,7 @@ static PyObject * _crc16_dnp( PyObject *self, PyObject *args )
     unsigned short result = 0x0000;
     unsigned short init   = 0x0000;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_a6bc, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_a6bc, ( unsigned short * )( unsigned short * )&result ) ) {
         return NULL;
     }
 
@@ -364,7 +364,7 @@ static PyObject * _crc16_maxim( PyObject *self, PyObject *args )
     unsigned short result = 0x0000;
     unsigned short init   = 0x0000;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_a001, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_a001, ( unsigned short * )&result ) ) {
         return NULL;
     }
 
@@ -387,7 +387,7 @@ static PyObject * _crc16_dect_r( PyObject *self, PyObject *args )
     unsigned short result = 0x0000;
     unsigned short init   = 0x0000;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_0589, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_0589, ( unsigned short * )&result ) ) {
         return NULL;
     }
 
@@ -399,7 +399,7 @@ static PyObject * _crc16_dect_x( PyObject *self, PyObject *args )
     unsigned short result = 0x0000;
     unsigned short init   = 0x0000;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_0589, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_0589, ( unsigned short * )&result ) ) {
         return NULL;
     }
 
@@ -493,7 +493,7 @@ static PyObject * _crc16_network( PyObject *self, PyObject *args )
     unsigned short result   = 0x0000;
     unsigned short reserved = 0x0000;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, reserved, hexin_calc_crc16_network, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, reserved, hexin_calc_crc16_network, ( unsigned short * )&result ) ) {
         return NULL;
     }
 
@@ -511,7 +511,7 @@ static PyObject * _crc16_fletcher( PyObject *self, PyObject *args )
     unsigned short result   = 0x0000;
     unsigned short reserved = 0x0000;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, reserved, hexin_calc_crc16_fletcher, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, reserved, hexin_calc_crc16_fletcher, ( unsigned short * )&result ) ) {
         return NULL;
     }
 
@@ -523,7 +523,7 @@ static PyObject * _crc16_rfid_epc( PyObject *self, PyObject *args )
     unsigned short result = 0x0000;
     unsigned short init   = 0xFFFF;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_1021, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_1021, ( unsigned short * )&result ) ) {
         return NULL;
     }
 
@@ -540,7 +540,7 @@ static PyObject * _crc16_profibus( PyObject *self, PyObject *args )
     unsigned short result = 0x0000;
     unsigned short init   = 0xFFFF;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_1dcf, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_1dcf, ( unsigned short * )&result ) ) {
         return NULL;
     }
 
@@ -554,7 +554,7 @@ static PyObject * _crc16_buypass( PyObject *self, PyObject *args )
     unsigned short poly   = 0x8005;
     unsigned char  mask   = FALSE;
  
-    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, ( unsigned short * )&result ) ) {
         return NULL;
     }
 
@@ -566,7 +566,7 @@ static PyObject * _crc16_gsm16( PyObject *self, PyObject *args )
     unsigned short result = 0x0000;
     unsigned short init   = 0x0000;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_1021, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_1021, ( unsigned short * )&result ) ) {
         return NULL;
     }
 
@@ -580,7 +580,7 @@ static PyObject * _crc16_riello( PyObject *self, PyObject *args )
     unsigned short poly   = hexin_reverse16( 0x1021 );
     unsigned char  mask   = TRUE;
  
-    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, ( unsigned short * )&result ) ) {
         return NULL;
     }
 
@@ -594,7 +594,7 @@ static PyObject * _crc16_crc16_a( PyObject *self, PyObject *args )
     unsigned short poly   = hexin_reverse16( 0x1021 );
     unsigned char  mask   = TRUE;
  
-    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, ( unsigned short * )&result ) ) {
         return NULL;
     }
 
@@ -608,7 +608,7 @@ static PyObject * _crc16_cdma2000( PyObject *self, PyObject *args )
     unsigned short poly   = 0xC867;
     unsigned char  mask   = FALSE;
  
-    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, ( unsigned short * )&result ) ) {
         return NULL;
     }
 
@@ -622,7 +622,7 @@ static PyObject * _crc16_teledisk( PyObject *self, PyObject *args )
     unsigned short poly   = 0xA097;
     unsigned char  mask   = FALSE;
  
-    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, ( unsigned short * )&result ) ) {
         return NULL;
     }
 
@@ -636,7 +636,7 @@ static PyObject * _crc16_tms37157( PyObject *self, PyObject *args )
     unsigned short poly   = hexin_reverse16( 0x1021 );
     unsigned char  mask   = TRUE; 
  
-    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, ( unsigned short * )&result ) ) {
         return NULL;
     }
 
@@ -650,7 +650,7 @@ static PyObject * _crc16_en13757( PyObject *self, PyObject *args )
     unsigned short poly   = 0x3D65;
     unsigned char  mask   = FALSE; 
  
-    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, ( unsigned short * )&result ) ) {
         return NULL;
     }
 
@@ -664,7 +664,7 @@ static PyObject * _crc16_t10_dif( PyObject *self, PyObject *args )
     unsigned short poly   = 0x8BB7;
     unsigned char  mask   = FALSE; 
  
-    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, ( unsigned short * )&result ) ) {
         return NULL;
     }
 
@@ -676,7 +676,7 @@ static PyObject * _crc16_dds_110( PyObject *self, PyObject *args )
     unsigned short result = 0x0000;
     unsigned short init   = 0x800D;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_8005, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_8005, ( unsigned short * )&result ) ) {
         return NULL;
     }
 
@@ -688,7 +688,7 @@ static PyObject * _crc16_cms( PyObject *self, PyObject *args )
     unsigned short result = 0x0000;
     unsigned short init   = 0xFFFF;
  
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_8005, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_8005, ( unsigned short * )&result ) ) {
         return NULL;
     }
 
@@ -702,7 +702,7 @@ static PyObject * _crc16_lj1200( PyObject *self, PyObject *args )
     unsigned short poly   = 0x6F63;
     unsigned char  mask   = FALSE; 
  
-    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, ( unsigned short * )&result ) ) {
         return NULL;
     }
 
@@ -716,7 +716,7 @@ static PyObject * _crc16_nrsc5( PyObject *self, PyObject *args )
     unsigned short poly   = hexin_reverse16( 0x080B );
     unsigned char  mask   = TRUE; 
  
-    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, ( unsigned short * )&result ) ) {
         return NULL;
     }
 
@@ -730,7 +730,7 @@ static PyObject * _crc16_opensafety_a( PyObject *self, PyObject *args )
     unsigned short poly   = 0x5935;
     unsigned char  mask   = FALSE;
  
-    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, ( unsigned short * )&result ) ) {
         return NULL;
     }
 
@@ -744,7 +744,7 @@ static PyObject * _crc16_opensafety_b( PyObject *self, PyObject *args )
     unsigned short poly   = 0x755B;
     unsigned char  mask   = FALSE;
  
-    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, &result ) ) {
+    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, ( unsigned short * )&result ) ) {
         return NULL;
     }
 
