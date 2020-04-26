@@ -49,7 +49,7 @@ static unsigned char hexin_PyArg_ParseTuple( PyObject *self, PyObject *args,
     }
 #endif /* PY_MAJOR_VERSION */
 
-    *result = (* function)( (unsigned char *)data.buf, (unsigned int)data.len, init );
+    *result = (* function)( (const unsigned char *)data.buf, (unsigned int)data.len, init );
 
     if ( data.obj )
        PyBuffer_Release( &data );
@@ -87,7 +87,7 @@ static unsigned char hexin_PyArg_ParseTuple_Parametes( PyObject *self, PyObject 
     }
 #endif /* PY_MAJOR_VERSION */
 
-    *result = (* function)( (unsigned char *)data.buf, (unsigned int)data.len, init, polynomial, mask  );
+    *result = (* function)( (const unsigned char *)data.buf, (unsigned int)data.len, init, polynomial, mask  );
 
     if ( data.obj )
        PyBuffer_Release( &data );
