@@ -1,14 +1,15 @@
 /*
 *********************************************************************************************************
-*                              		(c) Copyright 2018-2020, Hexin
+*                              		(c) Copyright 2020-2020, Hexin
 *                                           All Rights Reserved
 * File    : _crc24tables.h
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V1.1
+* Version : V1.3
 *
 * LICENSING TERMS:
 * ---------------
 *		New Create at 	2020-04-17 [Heyn] Initialize.
+*                       2020-04-27 [Heyn] Optimized code.
 *
 *********************************************************************************************************
 */
@@ -28,8 +29,10 @@
 #define                 MAX_TABLE_ARRAY                         256
 #endif
 
+#define                 HEXIN_CRC24_WIDTH                       24
+
 #define                 HEXIN_POLYNOMIAL_IS_HIGH(x)             ( x & 0x800000L )
-#define                 HEXIN_REFIN_OR_REFOUT_IS_TRUE(x)        ( x == 0x000001L ? TRUE : FALSE )
+#define                 HEXIN_REFIN_REFOUT_IS_TRUE(x)           ( ( x->refin == TRUE ) && ( x->refout == TRUE ) )
 
 
 #define                 CRC24_POLYNOMIAL_00065B                 0x00065B
@@ -39,12 +42,18 @@
 #define                 CRC24_POLYNOMIAL_328B63                 0x328B63
 
 
-unsigned int hexin_reverse24( unsigned int data );
-unsigned int hexin_calc_crc24_hacker( const unsigned char *pSrc, unsigned int len, unsigned int crc24, unsigned int polynomial );
-unsigned int hexin_calc_crc24_00065b( const unsigned char *pSrc, unsigned int len, unsigned int crc24 );
-unsigned int hexin_calc_crc24_5d6dcb( const unsigned char *pSrc, unsigned int len, unsigned int crc24 );
-unsigned int hexin_calc_crc24_864cfb( const unsigned char *pSrc, unsigned int len, unsigned int crc24 );
-unsigned int hexin_calc_crc24_800063( const unsigned char *pSrc, unsigned int len, unsigned int crc24 );
-unsigned int hexin_calc_crc24_328b63( const unsigned char *pSrc, unsigned int len, unsigned int crc24 );
+struct _hexin_crc24 {
+    unsigned int  is_initial;
+    unsigned int  width;
+    unsigned int  poly;
+    unsigned int  init;
+    unsigned int  refin;
+    unsigned int  refout;
+    unsigned int  xorout;
+    unsigned int  result;
+    unsigned int  table[MAX_TABLE_ARRAY];
+};
+
+unsigned int hexin_crc24_compute( const unsigned char *pSrc, unsigned int len, struct _hexin_crc24 *param );
 
 #endif //__CRC24_TABLES_H__

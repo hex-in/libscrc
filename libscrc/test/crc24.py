@@ -32,6 +32,13 @@ class TestCRC24( unittest.TestCase ):
 
         self.assertEqual( module.os9(b'123456789'),         0x200FA5 )
 
+        self.assertEqual( module.hacker24( data=b'123456789',
+                                           poly=0x800063,
+                                           init=0xFFFFFF,
+                                           xorout=0xFFFFFF,
+                                           refin=False,
+                                           refout=False ),   0x200FA5 )
+
     def test_basics( self ):
         """ Test basic functionality.
         """

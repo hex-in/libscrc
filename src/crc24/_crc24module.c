@@ -1,39 +1,35 @@
 /*
  ********************************************************************************************************
-*                              		(c) Copyright 2018-2020, Hexin
- *                                           All Rights Reserved
- * File    : _crc24module.c
- * Author  : Heyn (heyunhuan@gmail.com)
- * Version : V1.1
- *
- * LICENSING TERMS:
- * ---------------
- *		New Create at 	2020-04-17 [Heyn] Initialize.
- *
- ********************************************************************************************************
- */
+*                              		(c) Copyright 2020-2020, Hexin
+*                                           All Rights Reserved
+* File    : _crc24module.c
+* Author  : Heyn (heyunhuan@gmail.com)
+* Version : V1.3
+*
+* LICENSING TERMS:
+* ---------------
+*		New Create at 	2020-04-17 [Heyn] Initialize.
+*                       2020-04-27 [Heyn] Optimized code.
+*
+********************************************************************************************************
+*/
 
 #include <Python.h>
 #include "_crc24tables.h"
 
-static unsigned char hexin_PyArg_ParseTuple( PyObject *self, PyObject *args,
-                                             unsigned int init,
-                                             unsigned int (*function)( const unsigned char *,
-                                                                       unsigned int,
-                                                                       unsigned int ),
-                                             unsigned int *result )
+static unsigned char hexin_PyArg_ParseTuple_Paramete( PyObject *self, PyObject *args, struct _hexin_crc24 *param )
 {
     Py_buffer data = { NULL, NULL };
 
 #if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTuple( args, "y*|I", &data, &init ) ) {
+    if ( !PyArg_ParseTuple( args, "y*", &data ) ) {
         if ( data.obj ) {
             PyBuffer_Release( &data );
         }
         return FALSE;
     }
 #else
-    if ( !PyArg_ParseTuple( args, "s*|I", &data, &init ) ) {
+    if ( !PyArg_ParseTuple( args, "s*", &data ) ) {
         if ( data.obj ) {
             PyBuffer_Release( &data );
         }
@@ -41,7 +37,7 @@ static unsigned char hexin_PyArg_ParseTuple( PyObject *self, PyObject *args,
     }
 #endif /* PY_MAJOR_VERSION */
 
-    *result = (* function)( (unsigned char *)data.buf, (unsigned int)data.len, init );
+    param->result = hexin_crc24_compute( (const unsigned char *)data.buf, (unsigned int)data.len, param  );
 
     if ( data.obj )
        PyBuffer_Release( &data );
@@ -51,90 +47,146 @@ static unsigned char hexin_PyArg_ParseTuple( PyObject *self, PyObject *args,
 
 static PyObject * _crc24_ble( PyObject *self, PyObject *args )
 {
-    unsigned int result = 0x00000000;
-    unsigned int init   = 0x00AAAAAA;
- 
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc24_00065b, ( unsigned int * )&result ) ) {
+    static struct _hexin_crc24 crc24_param_ble = { .is_initial=FALSE,
+                                                   .width  = HEXIN_CRC24_WIDTH,
+                                                   .poly   = CRC24_POLYNOMIAL_00065B,
+                                                   .init   = 0x00555555,
+                                                   .refin  = TRUE,
+                                                   .refout = TRUE,
+                                                   .xorout = 0x00000000,
+                                                   .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc24_param_ble ) ) {
         return NULL;
     }
-    return Py_BuildValue( "I", result );
+
+    return Py_BuildValue( "I", crc24_param_ble.result );
 }
 
 static PyObject * _crc24_flexraya( PyObject *self, PyObject *args )
 {
-    unsigned int result = 0x00000000;
-    unsigned int init   = 0x00FEDCBA;
- 
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc24_5d6dcb, ( unsigned int * )&result ) ) {
+    static struct _hexin_crc24 crc24_param_flexraya = { .is_initial=FALSE,
+                                                        .width  = HEXIN_CRC24_WIDTH,
+                                                        .poly   = CRC24_POLYNOMIAL_5D6DCB,
+                                                        .init   = 0x00FEDCBA,
+                                                        .refin  = FALSE,
+                                                        .refout = FALSE,
+                                                        .xorout = 0x00000000,
+                                                        .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc24_param_flexraya ) ) {
         return NULL;
     }
-    return Py_BuildValue( "I", result );
+
+    return Py_BuildValue( "I", crc24_param_flexraya.result );
 }
 
 static PyObject * _crc24_flexrayb( PyObject *self, PyObject *args )
 {
-    unsigned int result = 0x00000000;
-    unsigned int init   = 0x00ABCDEF;
- 
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc24_5d6dcb, ( unsigned int * )&result ) ) {
+    static struct _hexin_crc24 crc24_param_flexrayb = { .is_initial=FALSE,
+                                                        .width  = HEXIN_CRC24_WIDTH,
+                                                        .poly   = CRC24_POLYNOMIAL_5D6DCB,
+                                                        .init   = 0x00ABCDEF,
+                                                        .refin  = FALSE,
+                                                        .refout = FALSE,
+                                                        .xorout = 0x00000000,
+                                                        .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc24_param_flexrayb ) ) {
         return NULL;
     }
-    return Py_BuildValue( "I", result );
+
+    return Py_BuildValue( "I", crc24_param_flexrayb.result );
 }
 
 static PyObject * _crc24_openpgp( PyObject *self, PyObject *args )
 {
-    unsigned int result = 0x00000000;
-    unsigned int init   = 0x00B704CE;
- 
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc24_864cfb, ( unsigned int * )&result ) ) {
+    static struct _hexin_crc24 crc24_param_openpgp = { .is_initial=FALSE,
+                                                       .width  = HEXIN_CRC24_WIDTH,
+                                                       .poly   = CRC24_POLYNOMIAL_864CFB,
+                                                       .init   = 0x00B704CE,
+                                                       .refin  = FALSE,
+                                                       .refout = FALSE,
+                                                       .xorout = 0x00000000,
+                                                       .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc24_param_openpgp ) ) {
         return NULL;
     }
-    return Py_BuildValue( "I", result );
+
+    return Py_BuildValue( "I", crc24_param_openpgp.result );
 }
 
 static PyObject * _crc24_lte_a( PyObject *self, PyObject *args )
 {
-    unsigned int result = 0x00000000;
-    unsigned int init   = 0x00000000;
- 
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc24_864cfb, ( unsigned int * )&result ) ) {
+    static struct _hexin_crc24 crc24_param_lte_a = { .is_initial=FALSE,
+                                                     .width  = HEXIN_CRC24_WIDTH,
+                                                     .poly   = CRC24_POLYNOMIAL_864CFB,
+                                                     .init   = 0x00000000,
+                                                     .refin  = FALSE,
+                                                     .refout = FALSE,
+                                                     .xorout = 0x00000000,
+                                                     .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc24_param_lte_a ) ) {
         return NULL;
     }
-    return Py_BuildValue( "I", result );
+
+    return Py_BuildValue( "I", crc24_param_lte_a.result );
 }
 
 static PyObject * _crc24_lte_b( PyObject *self, PyObject *args )
 {
-    unsigned int result = 0x00000000;
-    unsigned int init   = 0x00000000;
- 
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc24_800063, ( unsigned int * )&result ) ) {
+    static struct _hexin_crc24 crc24_param_lte_b = { .is_initial=FALSE,
+                                                     .width  = HEXIN_CRC24_WIDTH,
+                                                     .poly   = CRC24_POLYNOMIAL_800063,
+                                                     .init   = 0x00000000,
+                                                     .refin  = FALSE,
+                                                     .refout = FALSE,
+                                                     .xorout = 0x00000000,
+                                                     .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc24_param_lte_b ) ) {
         return NULL;
     }
-    return Py_BuildValue( "I", result );
+
+    return Py_BuildValue( "I", crc24_param_lte_b.result );
 }
 
 static PyObject * _crc24_os9( PyObject *self, PyObject *args )
 {
-    unsigned int result = 0x00000000;
-    unsigned int init   = 0x00FFFFFF;
- 
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc24_800063, ( unsigned int * )&result ) ) {
+    static struct _hexin_crc24 crc24_param_os9 = { .is_initial=FALSE,
+                                                   .width  = HEXIN_CRC24_WIDTH,
+                                                   .poly   = CRC24_POLYNOMIAL_800063,
+                                                   .init   = 0x00FFFFFF,
+                                                   .refin  = FALSE,
+                                                   .refout = FALSE,
+                                                   .xorout = 0x00FFFFFF,
+                                                   .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc24_param_os9 ) ) {
         return NULL;
     }
-    return Py_BuildValue( "I", result ^ 0xFFFFFF );
+
+    return Py_BuildValue( "I", crc24_param_os9.result );
 }
 
 static PyObject * _crc24_interlaken( PyObject *self, PyObject *args )
 {
-    unsigned int result = 0x00000000;
-    unsigned int init   = 0x00FFFFFF;
- 
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc24_328b63, ( unsigned int * )&result ) ) {
+    static struct _hexin_crc24 crc24_param_interlaken = { .is_initial=FALSE,
+                                                          .width  = HEXIN_CRC24_WIDTH,
+                                                          .poly   = CRC24_POLYNOMIAL_328B63,
+                                                          .init   = 0x00FFFFFF,
+                                                          .refin  = FALSE,
+                                                          .refout = FALSE,
+                                                          .xorout = 0x00FFFFFF,
+                                                          .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc24_param_interlaken ) ) {
         return NULL;
     }
-    return Py_BuildValue( "I", result ^ 0xFFFFFF );
+
+    return Py_BuildValue( "I", crc24_param_interlaken.result );
 }
 
 /*
@@ -146,22 +198,36 @@ static PyObject * _crc24_interlaken( PyObject *self, PyObject *args )
 static PyObject * _crc24_hacker( PyObject *self, PyObject *args, PyObject* kws )
 {
     Py_buffer data = { NULL, NULL };
-    unsigned int init     = 0x00555555L;
-    unsigned int xorout   = 0x00000000L;
-    unsigned int ref      = 0x00000001L;
-    unsigned int result   = 0x00000000L;
-    unsigned int polynomial = CRC24_POLYNOMIAL_00065B;
-    static char* kwlist[]={ "data", "poly", "init", "xorout", "ref", NULL };
+    struct _hexin_crc24 crc24_param_hacker = { .is_initial=FALSE,
+                                               .width  = 24,
+                                               .poly   = CRC24_POLYNOMIAL_800063,
+                                               .init   = 0x00FFFFFF,
+                                               .refin  = FALSE,
+                                               .refout = FALSE,
+                                               .xorout = 0x00FFFFFF,
+                                               .result = 0 };
+
+    static char* kwlist[]={ "data", "poly", "init", "xorout", "refin", "refout", NULL };
 
 #if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y*|IIIp", kwlist, &data, &polynomial, &init, &xorout, &ref ) ) {
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y*|IIIpp", kwlist, &data,
+                                                                      &crc24_param_hacker.poly,
+                                                                      &crc24_param_hacker.init,
+                                                                      &crc24_param_hacker.xorout,
+                                                                      &crc24_param_hacker.refin,
+                                                                      &crc24_param_hacker.refout ) ) {
         if ( data.obj ) {
             PyBuffer_Release( &data );
         }
         return NULL;        
     }
 #else
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s*|IIIp", kwlist, &data, &polynomial, &init, &xorout, &ref ) ) {
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s*|IIIpp", kwlist, &data,
+                                                                      &crc24_param_hacker.poly,
+                                                                      &crc24_param_hacker.init,
+                                                                      &crc24_param_hacker.xorout,
+                                                                      &crc24_param_hacker.refin,
+                                                                      &crc24_param_hacker.refout ) ) {
         if ( data.obj ) {
             PyBuffer_Release( &data );
         }
@@ -169,17 +235,12 @@ static PyObject * _crc24_hacker( PyObject *self, PyObject *args, PyObject* kws )
     }
 #endif /* PY_MAJOR_VERSION */
 
-    if ( HEXIN_REFIN_OR_REFOUT_IS_TRUE( ref ) ) {
-        polynomial = hexin_reverse24( polynomial );
-    }
-
-    result = hexin_calc_crc24_hacker( (unsigned char *)data.buf, (unsigned int)data.len, init, polynomial );
-    result = result ^ xorout;
-
+    crc24_param_hacker.result = hexin_crc24_compute( (const unsigned char *)data.buf, (unsigned int)data.len, &crc24_param_hacker );
+    
     if ( data.obj )
        PyBuffer_Release( &data );
 
-    return Py_BuildValue( "I", result );
+    return Py_BuildValue( "I", crc24_param_hacker.result );
 }
 
 /* method table */
@@ -239,7 +300,7 @@ PyInit__crc24( void )
         return NULL;
     }
 
-    PyModule_AddStringConstant( m, "__version__", "1.1"  );
+    PyModule_AddStringConstant( m, "__version__", "1.3"  );
     PyModule_AddStringConstant( m, "__author__",  "Heyn" );
 
     return m;
