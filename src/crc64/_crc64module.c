@@ -21,39 +21,6 @@
 #include <Python.h>
 #include "_crc64tables.h"
 
-static unsigned char hexin_PyArg_ParseTuple( PyObject *self, PyObject *args,
-                                             unsigned long long init,
-                                             unsigned long long (*function)( const unsigned char *,
-                                                                             unsigned int,
-                                                                             unsigned long long ),
-                                             unsigned long long *result )
-{
-    Py_buffer data = { NULL, NULL };
-
-#if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTuple( args, "y*|K", &data, &init ) ) {
-        if ( data.obj ) {
-            PyBuffer_Release( &data );
-        }
-        return FALSE;
-    }
-#else
-    if ( !PyArg_ParseTuple( args, "s*|K", &data, &init ) ) {
-        if ( data.obj ) {
-            PyBuffer_Release( &data );
-        }
-        return FALSE;
-    }
-#endif /* PY_MAJOR_VERSION */
-
-    *result = (* function)( (const unsigned char *)data.buf, (unsigned int)data.len, init );
-
-    if ( data.obj )
-       PyBuffer_Release( &data );
-
-    return TRUE;
-}
-
 static unsigned char hexin_PyArg_ParseTuple_Paramete( PyObject *self, PyObject *args, struct _hexin_crc64 *param )
 {
     Py_buffer data = { NULL, NULL };
