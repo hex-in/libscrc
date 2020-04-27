@@ -1,10 +1,10 @@
 /*
 *********************************************************************************************************
-*                              		(c) Copyright 2018-2020, Hexin
+*                              		(c) Copyright 2017-2020, Hexin
 *                                           All Rights Reserved
 * File    : _crc16module.c
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V1.1
+* Version : V1.3
 *
 * LICENSING TERMS:
 * ---------------
@@ -25,6 +25,7 @@
 *                       2020-03-23 [Blazin64] Adds support for the CRC method used by MCRF4XX RFID hardware.
 *                       2020-04-08 [Heyn] New add libscrc.epc16() for RFID tag EPC
 *                       2020-04-17 [Heyn] Issues #1
+*                       2020-04-27 [Heyn] Optimized code.
 *
 *********************************************************************************************************
 */
@@ -65,29 +66,19 @@ static unsigned char hexin_PyArg_ParseTuple( PyObject *self, PyObject *args,
     return TRUE;
 }
 
-
-static unsigned char hexin_PyArg_ParseTuple_Parametes( PyObject *self, PyObject *args,
-                                                       unsigned short init,
-                                                       unsigned short polynomial,
-                                                       unsigned char  mask,
-                                                       unsigned short (*function)( const unsigned char *,
-                                                                                   unsigned int,
-                                                                                   unsigned short,
-                                                                                   unsigned short,
-                                                                                   unsigned char ),
-                                                       unsigned short *result )
+static unsigned char hexin_PyArg_ParseTuple_Paramete( PyObject *self, PyObject *args, struct _hexin_crc16 *param )
 {
     Py_buffer data = { NULL, NULL };
 
 #if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTuple( args, "y*|H", &data, &init ) ) {
+    if ( !PyArg_ParseTuple( args, "y*", &data ) ) {
         if ( data.obj ) {
             PyBuffer_Release( &data );
         }
         return FALSE;
     }
 #else
-    if ( !PyArg_ParseTuple( args, "s*|H", &data, &init ) ) {
+    if ( !PyArg_ParseTuple( args, "s*", &data ) ) {
         if ( data.obj ) {
             PyBuffer_Release( &data );
         }
@@ -95,7 +86,7 @@ static unsigned char hexin_PyArg_ParseTuple_Parametes( PyObject *self, PyObject 
     }
 #endif /* PY_MAJOR_VERSION */
 
-    *result = (* function)( (const unsigned char *)data.buf, (unsigned int)data.len, init, polynomial, mask  );
+    param->result = hexin_crc16_compute( (const unsigned char *)data.buf, (unsigned int)data.len, param  );
 
     if ( data.obj )
        PyBuffer_Release( &data );
@@ -103,211 +94,168 @@ static unsigned char hexin_PyArg_ParseTuple_Parametes( PyObject *self, PyObject 
     return TRUE;
 }
 
-/*
-*********************************************************************************************************
-                                    POLY=0xA001 [Modbus USB]
-*********************************************************************************************************
-*/
-
 static PyObject * _crc16_modbus( PyObject *self, PyObject *args )
 {
-    unsigned short result = 0x0000;
-    unsigned short init   = 0xFFFF;
- 
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_a001, ( unsigned short * )&result ) ) {
+    static struct _hexin_crc16 crc16_param_modbus = { .is_initial=FALSE,
+                                                      .width  = HEXIN_CRC16_WIDTH,
+                                                      .poly   = CRC16_POLYNOMIAL_8005,
+                                                      .init   = 0xFFFF,
+                                                      .refin  = TRUE,
+                                                      .refout = TRUE,
+                                                      .xorout = 0x0000,
+                                                      .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc16_param_modbus ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "H", result );
+    return Py_BuildValue( "H", crc16_param_modbus.result );
 }
 
-/*
-*********************************************************************************************************
-*                                   POLY=0x8005 [USB]
-* Poly:    0x8005
-* Init:    0xFFFF
-* Refin:   True
-* Refout:  True
-* Xorout:  0xFFFF
-* Alias:   CCITT_TRUE
-*
-* 0xA001 = reverse 0x8005
-*********************************************************************************************************
-*/
 static PyObject * _crc16_usb( PyObject *self, PyObject *args )
 {
-    unsigned short result = 0x0000;
-    unsigned short init   = 0xFFFF;
- 
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_a001, ( unsigned short * )&result ) ) {
+    static struct _hexin_crc16 crc16_param_usb = { .is_initial=FALSE,
+                                                   .width  = HEXIN_CRC16_WIDTH,
+                                                   .poly   = CRC16_POLYNOMIAL_8005,
+                                                   .init   = 0xFFFF,
+                                                   .refin  = TRUE,
+                                                   .refout = TRUE,
+                                                   .xorout = 0xFFFF,
+                                                   .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc16_param_usb ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "H", result ^ 0xFFFF );
+    return Py_BuildValue( "H", crc16_param_usb.result );
 }
-
-/*
-*********************************************************************************************************
-*                                   POLY=0x8005 [IBM]
-* Poly:    0x8005
-* Init:    0x0000
-* Refin:   True
-* Refout:  True
-* Xorout:  0x0000
-*
-* 0xA001 = reverse 0x8005
-*********************************************************************************************************
-*/
 
 static PyObject * _crc16_ibm( PyObject *self, PyObject *args )
 {
-    unsigned short result = 0x0000;
-    unsigned short init   = 0x0000;
- 
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_a001, ( unsigned short * )&result ) ) {
+    static struct _hexin_crc16 crc16_param_ibm = { .is_initial=FALSE,
+                                                   .width  = HEXIN_CRC16_WIDTH,
+                                                   .poly   = CRC16_POLYNOMIAL_8005,
+                                                   .init   = 0x0000,
+                                                   .refin  = TRUE,
+                                                   .refout = TRUE,
+                                                   .xorout = 0x0000,
+                                                   .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc16_param_ibm ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "H", result );
+    return Py_BuildValue( "H", crc16_param_ibm.result );
 }
-
-/*
-*********************************************************************************************************
-*                                  POLY=0x1021 [CCITT XModem]
-* Poly:    0x1021
-* Init:    0x0000
-* Refin:   False
-* Refout:  False
-* Xorout:  0x0000
-*********************************************************************************************************
-*/
 
 static PyObject * _crc16_xmodem( PyObject *self, PyObject *args )
 {
-    unsigned short result = 0x0000;
-    unsigned short init   = 0x0000;
- 
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_1021, ( unsigned short * )&result ) ) {
+    static struct _hexin_crc16 crc16_param_xmodem = { .is_initial=FALSE,
+                                                      .width  = HEXIN_CRC16_WIDTH,
+                                                      .poly   = CRC16_POLYNOMIAL_1021,
+                                                      .init   = 0x0000,
+                                                      .refin  = FALSE,
+                                                      .refout = FALSE,
+                                                      .xorout = 0x0000,
+                                                      .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc16_param_xmodem ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "H", result );
+    return Py_BuildValue( "H", crc16_param_xmodem.result );
 }
 
-/*
-*********************************************************************************************************
-*                                  POLY=0x1021 [CCITT-FALSE]
-* Poly:    0x1021
-* Init:    0xFFFF
-* Refin:   False
-* Refout:  False
-* Xorout:  0x0000
-*********************************************************************************************************
-*/
+
 static PyObject * _crc16_ccitt( PyObject *self, PyObject *args )
 {
-    unsigned short result = 0x0000;
-    unsigned short init   = 0xFFFF;
- 
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_1021, ( unsigned short * )&result ) ) {
+    static struct _hexin_crc16 crc16_param_ccitt_false = { .is_initial=FALSE,
+                                                           .width  = HEXIN_CRC16_WIDTH,
+                                                           .poly   = CRC16_POLYNOMIAL_1021,
+                                                           .init   = 0xFFFF,
+                                                           .refin  = FALSE,
+                                                           .refout = FALSE,
+                                                           .xorout = 0x0000,
+                                                           .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc16_param_ccitt_false ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "H", result );
+    return Py_BuildValue( "H", crc16_param_ccitt_false.result );
 }
 
 static PyObject * _crc16_ccitt_aug( PyObject *self, PyObject *args )
 {
-    unsigned short result = 0x0000;
-    unsigned short init   = 0x1D0F;
- 
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_1021, ( unsigned short * )&result ) ) {
+    static struct _hexin_crc16 crc16_param_ccitt_aug = { .is_initial=FALSE,
+                                                         .width  = HEXIN_CRC16_WIDTH,
+                                                         .poly   = CRC16_POLYNOMIAL_1021,
+                                                         .init   = 0x1D0F,
+                                                         .refin  = FALSE,
+                                                         .refout = FALSE,
+                                                         .xorout = 0x0000,
+                                                         .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc16_param_ccitt_aug ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "H", result );
+    return Py_BuildValue( "H", crc16_param_ccitt_aug.result );
 }
-
-/*
-*********************************************************************************************************
-*                                   POLY=0x8408 [Kermit]
-* Poly:    0x1021
-* Init:    0x0000
-* Refin:   True
-* Refout:  True
-* Xorout:  0x0000
-* Alias:   CCITT_TRUE
-*
-* 0x8408 = reverse 0x1021
-*********************************************************************************************************
-*/
 
 static PyObject * _crc16_kermit( PyObject *self, PyObject *args )
 {
-    unsigned short result = 0x0000;
-    unsigned short init   = 0x0000;
- 
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_8408, ( unsigned short * )&result ) ) {
+    static struct _hexin_crc16 crc16_param_kermit = { .is_initial=FALSE,
+                                                      .width  = HEXIN_CRC16_WIDTH,
+                                                      .poly   = CRC16_POLYNOMIAL_1021,
+                                                      .init   = 0x0000,
+                                                      .refin  = TRUE,
+                                                      .refout = TRUE,
+                                                      .xorout = 0x0000,
+                                                      .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc16_param_kermit ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "H", result );
+    return Py_BuildValue( "H", crc16_param_kermit.result );
 }
-
-/*
-*********************************************************************************************************
-*                                   POLY=0x1021 [MCRF4XX]
-* Poly:    0x1021
-* Init:    0xFFFF
-* Refin:   True
-* Refout:  True
-* Xorout:  0x0000
-*
-* 0x8408 = reverse 0x1021
-*********************************************************************************************************
-*/
 
 static PyObject * _crc16_mcrf4xx( PyObject *self, PyObject *args )
 {
-    unsigned short result = 0x0000;
-    unsigned short init   = 0xFFFF;
- 
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_8408, ( unsigned short * )&result ) ) {
+    static struct _hexin_crc16 crc16_param_mcrf4xx = { .is_initial=FALSE,
+                                                       .width  = HEXIN_CRC16_WIDTH,
+                                                       .poly   = CRC16_POLYNOMIAL_1021,
+                                                       .init   = 0xFFFF,
+                                                       .refin  = TRUE,
+                                                       .refout = TRUE,
+                                                       .xorout = 0x0000,
+                                                       .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc16_param_mcrf4xx ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "H", result );
+    return Py_BuildValue( "H", crc16_param_mcrf4xx.result );
 }
 
-/*
-*********************************************************************************************************
-*                                   POLY=0x1021 [X25]
-* Poly:    0x1021
-* Init:    0xFFFF
-* Refin:   True
-* Refout:  True
-* Xorout:  0xFFFF
-*
-* 0x8408 = reverse 0x1021
-*********************************************************************************************************
-*/
 static PyObject * _crc16_x25( PyObject *self, PyObject *args )
 {
-    unsigned short result = 0x0000;
-    unsigned short init   = 0xFFFF;
- 
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_8408, ( unsigned short * )&result ) ) {
+    static struct _hexin_crc16 crc16_param_x25 = { .is_initial=FALSE,
+                                                   .width  = HEXIN_CRC16_WIDTH,
+                                                   .poly   = CRC16_POLYNOMIAL_1021,
+                                                   .init   = 0xFFFF,
+                                                   .refin  = TRUE,
+                                                   .refout = TRUE,
+                                                   .xorout = 0xFFFF,
+                                                   .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc16_param_x25 ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "H", result ^ 0xFFFF );
+    return Py_BuildValue( "H", crc16_param_x25.result );
 }
-
-/*
-*********************************************************************************************************
-                                    POLY=0x8005 [SICK]
-*********************************************************************************************************
-*/
 
 static PyObject * _crc16_sick( PyObject *self, PyObject *args )
 {
@@ -321,89 +269,76 @@ static PyObject * _crc16_sick( PyObject *self, PyObject *args )
     return Py_BuildValue( "H", result );
 }
 
-/*
-*********************************************************************************************************
-                                    POLY=0xA6BC [DNP]
-* Poly:    0x3D65
-* Init:    0x0000
-* Refin:   True
-* Refout:  True
-* Xorout:  0xFFFF
-*
-* 0xA6BC = reverse 0x3D65
-*********************************************************************************************************
-*/
-
 static PyObject * _crc16_dnp( PyObject *self, PyObject *args )
 {
-    unsigned short result = 0x0000;
-    unsigned short init   = 0x0000;
- 
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_a6bc, ( unsigned short * )( unsigned short * )&result ) ) {
+    static struct _hexin_crc16 crc16_param_dnp = { .is_initial=FALSE,
+                                                   .width  = HEXIN_CRC16_WIDTH,
+                                                   .poly   = CRC16_POLYNOMIAL_3D65,
+                                                   .init   = 0x0000,
+                                                   .refin  = TRUE,
+                                                   .refout = TRUE,
+                                                   .xorout = 0xFFFF,
+                                                   .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc16_param_dnp ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "H", result );
+    return Py_BuildValue( "H", crc16_param_dnp.result );
 }
 
-
-/*
-*********************************************************************************************************
-*                                   POLY=0x8005 [MAXIM16]
-* Poly:    0x8005
-* Init:    0x0000
-* Refin:   True
-* Refout:  True
-* Xorout:  0xFFFF
-*
-* 0xA001 = reverse 0x8005
-*********************************************************************************************************
-*/
 static PyObject * _crc16_maxim( PyObject *self, PyObject *args )
 {
-    unsigned short result = 0x0000;
-    unsigned short init   = 0x0000;
- 
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_a001, ( unsigned short * )&result ) ) {
+    static struct _hexin_crc16 crc16_param_maxim = { .is_initial=FALSE,
+                                                     .width  = HEXIN_CRC16_WIDTH,
+                                                     .poly   = CRC16_POLYNOMIAL_8005,
+                                                     .init   = 0x0000,
+                                                     .refin  = TRUE,
+                                                     .refout = TRUE,
+                                                     .xorout = 0xFFFF,
+                                                     .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc16_param_maxim ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "H", result ^ 0xFFFF );
+    return Py_BuildValue( "H", crc16_param_maxim.result );
 }
-
-/*
-*********************************************************************************************************
-*                                   POLY=0x0589 [DECT]
-* Poly:    0x0589
-* Init:    0x0000
-* Refin:   FALSE
-* Refout:  FALSE
-* Xorout:  0x0000
-*********************************************************************************************************
-*/
 
 static PyObject * _crc16_dect_r( PyObject *self, PyObject *args )
 {
-    unsigned short result = 0x0000;
-    unsigned short init   = 0x0000;
- 
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_0589, ( unsigned short * )&result ) ) {
+    static struct _hexin_crc16 crc16_param_dectr = { .is_initial=FALSE,
+                                                     .width  = HEXIN_CRC16_WIDTH,
+                                                     .poly   = CRC16_POLYNOMIAL_0589,
+                                                     .init   = 0x0000,
+                                                     .refin  = FALSE,
+                                                     .refout = FALSE,
+                                                     .xorout = 0x0001,
+                                                     .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc16_param_dectr ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "H", ( result ^ 0x0001 ) );
+    return Py_BuildValue( "H", crc16_param_dectr.result );
 }
 
 static PyObject * _crc16_dect_x( PyObject *self, PyObject *args )
 {
-    unsigned short result = 0x0000;
-    unsigned short init   = 0x0000;
- 
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_0589, ( unsigned short * )&result ) ) {
+    static struct _hexin_crc16 crc16_param_dectx = { .is_initial=FALSE,
+                                                     .width  = HEXIN_CRC16_WIDTH,
+                                                     .poly   = CRC16_POLYNOMIAL_0589,
+                                                     .init   = 0x0000,
+                                                     .refin  = FALSE,
+                                                     .refout = FALSE,
+                                                     .xorout = 0x0000,
+                                                     .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc16_param_dectx ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "H", result );
+    return Py_BuildValue( "H", crc16_param_dectx.result );
 }
 
 /*
@@ -520,235 +455,308 @@ static PyObject * _crc16_fletcher( PyObject *self, PyObject *args )
 
 static PyObject * _crc16_rfid_epc( PyObject *self, PyObject *args )
 {
-    unsigned short result = 0x0000;
-    unsigned short init   = 0xFFFF;
- 
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_1021, ( unsigned short * )&result ) ) {
+    static struct _hexin_crc16 crc16_param_epc16 = { .is_initial=FALSE,
+                                                     .width  = HEXIN_CRC16_WIDTH,
+                                                     .poly   = CRC16_POLYNOMIAL_1021,
+                                                     .init   = 0xFFFF,
+                                                     .refin  = FALSE,
+                                                     .refout = FALSE,
+                                                     .xorout = 0xFFFF,
+                                                     .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc16_param_epc16 ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "H", result ^ 0xFFFF );
+    return Py_BuildValue( "H", crc16_param_epc16.result );
 }
 
-/*
-*********************************************************************************************************
-                                    POLY=0x1DCF [PROFIBUS]
-*********************************************************************************************************
-*/
 static PyObject * _crc16_profibus( PyObject *self, PyObject *args )
 {
-    unsigned short result = 0x0000;
-    unsigned short init   = 0xFFFF;
- 
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_1dcf, ( unsigned short * )&result ) ) {
+    static struct _hexin_crc16 crc16_param_profibus = { .is_initial=FALSE,
+                                                        .width  = HEXIN_CRC16_WIDTH,
+                                                        .poly   = CRC16_POLYNOMIAL_1DCF,
+                                                        .init   = 0xFFFF,
+                                                        .refin  = FALSE,
+                                                        .refout = FALSE,
+                                                        .xorout = 0xFFFF,
+                                                        .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc16_param_profibus ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "H", result ^ 0xFFFF );
+    return Py_BuildValue( "H", crc16_param_profibus.result );
 }
 
 static PyObject * _crc16_buypass( PyObject *self, PyObject *args )
 {
-    unsigned short result = 0x0000;
-    unsigned short init   = 0x0000;
-    unsigned short poly   = 0x8005;
-    unsigned char  mask   = FALSE;
- 
-    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, ( unsigned short * )&result ) ) {
+    static struct _hexin_crc16 crc16_param_buypass = { .is_initial=FALSE,
+                                                       .width  = HEXIN_CRC16_WIDTH,
+                                                       .poly   = CRC16_POLYNOMIAL_8005,
+                                                       .init   = 0x0000,
+                                                       .refin  = FALSE,
+                                                       .refout = FALSE,
+                                                       .xorout = 0x0000,
+                                                       .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc16_param_buypass ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "H", result );
+    return Py_BuildValue( "H", crc16_param_buypass.result );
 }
 
 static PyObject * _crc16_gsm16( PyObject *self, PyObject *args )
 {
-    unsigned short result = 0x0000;
-    unsigned short init   = 0x0000;
- 
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_1021, ( unsigned short * )&result ) ) {
+    static struct _hexin_crc16 crc16_param_gsm16 = { .is_initial=FALSE,
+                                                     .width  = HEXIN_CRC16_WIDTH,
+                                                     .poly   = CRC16_POLYNOMIAL_1021,
+                                                     .init   = 0x0000,
+                                                     .refin  = FALSE,
+                                                     .refout = FALSE,
+                                                     .xorout = 0xFFFF,
+                                                     .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc16_param_gsm16 ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "H", (result ^ 0xFFFF) );
+    return Py_BuildValue( "H", crc16_param_gsm16.result );
 }
 
 static PyObject * _crc16_riello( PyObject *self, PyObject *args )
 {
-    unsigned short result = 0x0000;
-    unsigned short init   = hexin_reverse16( 0xB2AA );
-    unsigned short poly   = hexin_reverse16( 0x1021 );
-    unsigned char  mask   = TRUE;
- 
-    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, ( unsigned short * )&result ) ) {
+    static struct _hexin_crc16 crc16_param_riello = { .is_initial=FALSE,
+                                                      .width  = HEXIN_CRC16_WIDTH,
+                                                      .poly   = CRC16_POLYNOMIAL_1021,
+                                                      .init   = 0xB2AA,
+                                                      .refin  = TRUE,
+                                                      .refout = TRUE,
+                                                      .xorout = 0x0000,
+                                                      .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc16_param_riello ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "H", result );
+    return Py_BuildValue( "H", crc16_param_riello.result );
 }
 
 static PyObject * _crc16_crc16_a( PyObject *self, PyObject *args )
 {
-    unsigned short result = 0x0000;
-    unsigned short init   = hexin_reverse16( 0xC6C6 );
-    unsigned short poly   = hexin_reverse16( 0x1021 );
-    unsigned char  mask   = TRUE;
- 
-    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, ( unsigned short * )&result ) ) {
+    static struct _hexin_crc16 crc16_param_crc16a = { .is_initial=FALSE,
+                                                      .width  = HEXIN_CRC16_WIDTH,
+                                                      .poly   = CRC16_POLYNOMIAL_1021,
+                                                      .init   = 0xC6C6,
+                                                      .refin  = TRUE,
+                                                      .refout = TRUE,
+                                                      .xorout = 0x0000,
+                                                      .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc16_param_crc16a ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "H", result );
+    return Py_BuildValue( "H", crc16_param_crc16a.result );
 }
 
 static PyObject * _crc16_cdma2000( PyObject *self, PyObject *args )
 {
-    unsigned short result = 0x0000;
-    unsigned short init   = 0xFFFF;
-    unsigned short poly   = 0xC867;
-    unsigned char  mask   = FALSE;
- 
-    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, ( unsigned short * )&result ) ) {
+    static struct _hexin_crc16 crc16_param_cdma2000 = { .is_initial=FALSE,
+                                                      .width  = HEXIN_CRC16_WIDTH,
+                                                      .poly   = CRC16_POLYNOMIAL_C867,
+                                                      .init   = 0xFFFF,
+                                                      .refin  = FALSE,
+                                                      .refout = FALSE,
+                                                      .xorout = 0x0000,
+                                                      .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc16_param_cdma2000 ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "H", result );
+    return Py_BuildValue( "H", crc16_param_cdma2000.result );
 }
 
 static PyObject * _crc16_teledisk( PyObject *self, PyObject *args )
 {
-    unsigned short result = 0x0000;
-    unsigned short init   = 0x0000;
-    unsigned short poly   = 0xA097;
-    unsigned char  mask   = FALSE;
- 
-    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, ( unsigned short * )&result ) ) {
+    static struct _hexin_crc16 crc16_param_teledisk = { .is_initial=FALSE,
+                                                      .width  = HEXIN_CRC16_WIDTH,
+                                                      .poly   = 0xA097,
+                                                      .init   = 0x0000,
+                                                      .refin  = FALSE,
+                                                      .refout = FALSE,
+                                                      .xorout = 0x0000,
+                                                      .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc16_param_teledisk ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "H", result );
+    return Py_BuildValue( "H", crc16_param_teledisk.result );
 }
 
 static PyObject * _crc16_tms37157( PyObject *self, PyObject *args )
 {
-    unsigned short result = 0x0000;
-    unsigned short init   = hexin_reverse16( 0x89EC );
-    unsigned short poly   = hexin_reverse16( 0x1021 );
-    unsigned char  mask   = TRUE; 
- 
-    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, ( unsigned short * )&result ) ) {
+    static struct _hexin_crc16 crc16_param_tms37157 = { .is_initial=FALSE,
+                                                      .width  = HEXIN_CRC16_WIDTH,
+                                                      .poly   = CRC16_POLYNOMIAL_1021,
+                                                      .init   = 0x89EC,
+                                                      .refin  = TRUE,
+                                                      .refout = TRUE,
+                                                      .xorout = 0x0000,
+                                                      .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc16_param_tms37157 ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "H", result );
+    return Py_BuildValue( "H", crc16_param_tms37157.result );
 }
 
 static PyObject * _crc16_en13757( PyObject *self, PyObject *args )
 {
-    unsigned short result = 0x0000;
-    unsigned short init   = 0x0000;
-    unsigned short poly   = 0x3D65;
-    unsigned char  mask   = FALSE; 
- 
-    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, ( unsigned short * )&result ) ) {
+    static struct _hexin_crc16 crc16_param_en13757 = { .is_initial=FALSE,
+                                                       .width  = HEXIN_CRC16_WIDTH,
+                                                       .poly   = CRC16_POLYNOMIAL_3D65,
+                                                       .init   = 0x0000,
+                                                       .refin  = FALSE,
+                                                       .refout = FALSE,
+                                                       .xorout = 0xFFFF,
+                                                       .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc16_param_en13757 ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "H", result ^ 0xFFFF );
+    return Py_BuildValue( "H", crc16_param_en13757.result );
 }
 
 static PyObject * _crc16_t10_dif( PyObject *self, PyObject *args )
 {
-    unsigned short result = 0x0000;
-    unsigned short init   = 0x0000;
-    unsigned short poly   = 0x8BB7;
-    unsigned char  mask   = FALSE; 
- 
-    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, ( unsigned short * )&result ) ) {
+    static struct _hexin_crc16 crc16_param_t10_dif = { .is_initial=FALSE,
+                                                       .width  = HEXIN_CRC16_WIDTH,
+                                                       .poly   = 0x8BB7,
+                                                       .init   = 0x0000,
+                                                       .refin  = FALSE,
+                                                       .refout = FALSE,
+                                                       .xorout = 0x0000,
+                                                       .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc16_param_t10_dif ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "H", result );
+    return Py_BuildValue( "H", crc16_param_t10_dif.result );
 }
 
 static PyObject * _crc16_dds_110( PyObject *self, PyObject *args )
 {
-    unsigned short result = 0x0000;
-    unsigned short init   = 0x800D;
- 
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_8005, ( unsigned short * )&result ) ) {
+    static struct _hexin_crc16 crc16_param_dds_110 = { .is_initial=FALSE,
+                                                       .width  = HEXIN_CRC16_WIDTH,
+                                                       .poly   = CRC16_POLYNOMIAL_8005,
+                                                       .init   = 0x800D,
+                                                       .refin  = FALSE,
+                                                       .refout = FALSE,
+                                                       .xorout = 0x0000,
+                                                       .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc16_param_dds_110 ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "H", result );
+    return Py_BuildValue( "H", crc16_param_dds_110.result );
 }
 
 static PyObject * _crc16_cms( PyObject *self, PyObject *args )
 {
-    unsigned short result = 0x0000;
-    unsigned short init   = 0xFFFF;
- 
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc16_8005, ( unsigned short * )&result ) ) {
+    static struct _hexin_crc16 crc16_param_cms16 = { .is_initial=FALSE,
+                                                     .width  = HEXIN_CRC16_WIDTH,
+                                                     .poly   = CRC16_POLYNOMIAL_8005,
+                                                     .init   = 0xFFFF,
+                                                     .refin  = FALSE,
+                                                     .refout = FALSE,
+                                                     .xorout = 0x0000,
+                                                     .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc16_param_cms16 ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "H", result );
+    return Py_BuildValue( "H", crc16_param_cms16.result );
 }
 
 static PyObject * _crc16_lj1200( PyObject *self, PyObject *args )
 {
-    unsigned short result = 0x0000;
-    unsigned short init   = 0x0000;
-    unsigned short poly   = 0x6F63;
-    unsigned char  mask   = FALSE; 
- 
-    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, ( unsigned short * )&result ) ) {
+    static struct _hexin_crc16 crc16_param_lj1200 = { .is_initial=FALSE,
+                                                      .width  = HEXIN_CRC16_WIDTH,
+                                                      .poly   = 0x6F63,
+                                                      .init   = 0x0000,
+                                                      .refin  = FALSE,
+                                                      .refout = FALSE,
+                                                      .xorout = 0x0000,
+                                                      .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc16_param_lj1200 ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "H", result );
+    return Py_BuildValue( "H", crc16_param_lj1200.result );
 }
 
 static PyObject * _crc16_nrsc5( PyObject *self, PyObject *args )
 {
-    unsigned short result = 0x0000;
-    unsigned short init   = 0xFFFF;
-    unsigned short poly   = hexin_reverse16( 0x080B );
-    unsigned char  mask   = TRUE; 
- 
-    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, ( unsigned short * )&result ) ) {
+    static struct _hexin_crc16 crc16_param_nrsc5 = { .is_initial=FALSE,
+                                                     .width  = HEXIN_CRC16_WIDTH,
+                                                     .poly   = 0x080B,
+                                                     .init   = 0xFFFF,
+                                                     .refin  = TRUE,
+                                                     .refout = TRUE,
+                                                     .xorout = 0x0000,
+                                                     .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc16_param_nrsc5 ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "H", result );
+    return Py_BuildValue( "H", crc16_param_nrsc5.result );
 }
 
 static PyObject * _crc16_opensafety_a( PyObject *self, PyObject *args )
 {
-    unsigned short result = 0x0000;
-    unsigned short init   = 0x0000;
-    unsigned short poly   = 0x5935;
-    unsigned char  mask   = FALSE;
- 
-    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, ( unsigned short * )&result ) ) {
+    static struct _hexin_crc16 crc16_param_opensafety_a = { .is_initial=FALSE,
+                                                            .width  = HEXIN_CRC16_WIDTH,
+                                                            .poly   = 0x5935,
+                                                            .init   = 0x0000,
+                                                            .refin  = FALSE,
+                                                            .refout = FALSE,
+                                                            .xorout = 0x0000,
+                                                            .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc16_param_opensafety_a ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "H", result );
+    return Py_BuildValue( "H", crc16_param_opensafety_a.result );
 }
 
 static PyObject * _crc16_opensafety_b( PyObject *self, PyObject *args )
 {
-    unsigned short result = 0x0000;
-    unsigned short init   = 0x0000;
-    unsigned short poly   = 0x755B;
-    unsigned char  mask   = FALSE;
- 
-    if ( !hexin_PyArg_ParseTuple_Parametes( self, args, init, poly, mask, hexin_calc_crc16_shared, ( unsigned short * )&result ) ) {
+    static struct _hexin_crc16 crc16_param_opensafety_b = { .is_initial=FALSE,
+                                                            .width  = HEXIN_CRC16_WIDTH,
+                                                            .poly   = 0x755B,
+                                                            .init   = 0x0000,
+                                                            .refin  = FALSE,
+                                                            .refout = FALSE,
+                                                            .xorout = 0x0000,
+                                                            .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc16_param_opensafety_b ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "H", result );
+    return Py_BuildValue( "H", crc16_param_opensafety_b.result );
 }
 
 /* method table */
@@ -897,7 +905,7 @@ PyInit__crc16( void )
         return NULL;
     }
 
-    PyModule_AddStringConstant( m, "__version__", "1.1"   );
+    PyModule_AddStringConstant( m, "__version__", "1.3"   );
     PyModule_AddStringConstant( m, "__author__",  "Heyn"  );
 
     return m;

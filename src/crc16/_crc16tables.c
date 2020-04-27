@@ -1,47 +1,28 @@
 /*
 *********************************************************************************************************
-*                              		(c) Copyright 2018-2020, Hexin
+*                              		(c) Copyright 2017-2020, Hexin
 *                                           All Rights Reserved
 * File    : _crc16tables.c
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V1.1
+* Version : V1.3
 *
 * LICENSING TERMS:
 * ---------------
 *		New Create at 	2017-09-20 21:57PM [Heyn]
-*                       WebTool :
-*                       http://reveng.sourceforge.net/crc-catalogue/16.htm#crc.cat-bits.16
+*                       WebTool : http://reveng.sourceforge.net/crc-catalogue/16.htm#crc.cat-bits.16
 *                       
 *                       2020-03-13 [Heyn] New add hacker code.
 *                       2020-03-20 [Heyn] New add hexin_calc_crc16_network.
+*                       2020-04-27 [Heyn] Optimized code.
 *
 *********************************************************************************************************
 */
 
 #include "_crc16tables.h"
 
-static unsigned short   crc16_table_8408[MAX_TABLE_ARRAY]   = { 0x0000 };     // Used for X25 Kermit
-static unsigned short   crc16_table_1021[MAX_TABLE_ARRAY]   = { 0x0000 };     // Used for CCITT-FALSE XModem
-static unsigned short   crc16_table_a001[MAX_TABLE_ARRAY]   = { 0x0000 };     // Used for Modbus USB
-static unsigned short   crc16_table_8005[MAX_TABLE_ARRAY]   = { 0x0000 };     // Used for
-static unsigned short   crc16_table_a6bc[MAX_TABLE_ARRAY]   = { 0x0000 };     // Used for
-static unsigned short   crc16_table_0589[MAX_TABLE_ARRAY]   = { 0x0000 };     // Used for Cordless Telephones
-static unsigned short   crc16_table_1dcf[MAX_TABLE_ARRAY]   = { 0x0000 };     // Used for profibus
-
-static unsigned int     crc16_table_8408_init               = FALSE;
-static unsigned int     crc16_table_1021_init               = FALSE;
-static unsigned int     crc16_table_a001_init               = FALSE;
-static unsigned int     crc16_table_8005_init               = FALSE;
-static unsigned int     crc16_table_a6bc_init               = FALSE;
-static unsigned int     crc16_table_0589_init               = FALSE;
-static unsigned int     crc16_table_1dcf_init               = FALSE;
-
 static unsigned short   crc16_table_hacker[MAX_TABLE_ARRAY] = { 0x0000 };     // Used for hacker.
 static unsigned short   crc16_table_hacker_init             = FALSE;          // Default value.
 
-
-static unsigned short   crc16_table_shared[MAX_TABLE_ARRAY] = { 0x0000 };     // Used for share memory.
-static unsigned short   crc16_table_shared_init             = FALSE;
 
 unsigned short hexin_reverse16( unsigned short data )
 {
@@ -111,132 +92,6 @@ unsigned short hexin_crc16_poly_is_low_calc( unsigned short crc16, unsigned char
     crc = (crc << 8) ^ table[tmp];
 
     return crc;
-}
-
-/*
-*********************************************************************************************************
-                                    POLY=0x0589 [Cordless Telephones]
-*********************************************************************************************************
-*/
-
-unsigned short hexin_calc_crc16_0589( const unsigned char *pSrc, unsigned int len, unsigned short crc16 )
-{
-    unsigned int i = 0;
-    unsigned short crc = crc16;
-
-    if ( crc16_table_0589_init == FALSE ) {
-        crc16_table_0589_init = hexin_crc16_init_table_poly_is_low( CRC16_POLYNOMIAL_0589, crc16_table_0589 );
-    }
-
-	for ( i=0; i<len; i++ ) {
-		crc = hexin_crc16_poly_is_low_calc( crc, pSrc[i], crc16_table_0589 );
-	}
-	return crc;
-}
-
-/*
-*********************************************************************************************************
-                                    POLY=0x8408 [X25 Kermit]
-*********************************************************************************************************
-*/
-
-unsigned short hexin_calc_crc16_8408( const unsigned char *pSrc, unsigned int len, unsigned short crc16 )
-{
-    unsigned int i = 0;
-    unsigned short crc = crc16;
-
-    if ( crc16_table_8408_init == FALSE ) {
-        crc16_table_8408_init = hexin_crc16_init_table_poly_is_high( CRC16_POLYNOMIAL_8408, crc16_table_8408 );
-    }
-
-	for ( i=0; i<len; i++ ) {
-		crc = hexin_crc16_poly_is_high_calc( crc, pSrc[i], crc16_table_8408 );
-	}
-	return crc;
-}
-
-/*
-*********************************************************************************************************
-                                    POLY=0x1021 [CCITT-FALSE XModem]
-*********************************************************************************************************
-*/
-
-unsigned short hexin_calc_crc16_1021( const unsigned char *pSrc, unsigned int len, unsigned short crc16 )
-{
-    unsigned int i = 0;
-    unsigned short crc = crc16;
-
-    if ( crc16_table_1021_init == FALSE ) {
-        crc16_table_1021_init = hexin_crc16_init_table_poly_is_low( CRC16_POLYNOMIAL_1021, crc16_table_1021 );
-    }
-
-	for ( i=0; i<len; i++ ) {
-		crc = hexin_crc16_poly_is_low_calc( crc, pSrc[i], crc16_table_1021 );
-	}
-	return crc;
-}
-
-/*
-*********************************************************************************************************
-                                    POLY=0xA001 [Modbus USB]
-*********************************************************************************************************
-*/
-
-unsigned short hexin_calc_crc16_a001( const unsigned char *pSrc, unsigned int len, unsigned short crc16 )
-{
-    unsigned int i = 0;
-    unsigned short crc = crc16;
-
-    if ( crc16_table_a001_init == FALSE ) {
-        crc16_table_a001_init = hexin_crc16_init_table_poly_is_high( CRC16_POLYNOMIAL_A001, crc16_table_a001 );
-    }
-
-	for ( i=0; i<len; i++ ) {
-		crc = hexin_crc16_poly_is_high_calc( crc, pSrc[i], crc16_table_a001 );
-	}
-	return crc;
-}
-
-/*
-*********************************************************************************************************
-                                    POLY=0x8005 [IBM]
-*********************************************************************************************************
-*/
-
-unsigned short hexin_calc_crc16_8005( const unsigned char *pSrc, unsigned int len, unsigned short crc16 )
-{
-    unsigned int i = 0;
-    unsigned short crc = crc16;
-
-    if ( crc16_table_8005_init == FALSE ) {
-        crc16_table_8005_init = hexin_crc16_init_table_poly_is_low( CRC16_POLYNOMIAL_8005, crc16_table_8005 );
-    }
-
-	for ( i=0; i<len; i++ ) {
-		crc = hexin_crc16_poly_is_low_calc( crc, pSrc[i], crc16_table_8005 );
-	}
-	return crc;
-}
-
-/*
-*********************************************************************************************************
-                                    POLY=0xA6BC [DNP]
-*********************************************************************************************************
-*/
-
-unsigned short hexin_calc_crc16_a6bc( const unsigned char *pSrc, unsigned int len, unsigned short crc16 )
-{
-    unsigned int i = 0;
-    unsigned short crc = crc16;
-
-    if ( crc16_table_a6bc_init == FALSE ) {
-        crc16_table_a6bc_init = hexin_crc16_init_table_poly_is_high( CRC16_POLYNOMIAL_A6BC, crc16_table_a6bc );
-    }
-
-	for ( i=0; i<len; i++ ) {
-		crc = hexin_crc16_poly_is_high_calc( crc, pSrc[i], crc16_table_a6bc );
-	}
-	return ~crc;
 }
 
 /*
@@ -367,58 +222,70 @@ unsigned short hexin_calc_crc16_fletcher( const unsigned char *pSrc, unsigned in
     return ( sum1 & 0xFF ) | ( sum2 << 8 );
 }
 
-/*
-*********************************************************************************************************
-                                    POLY=0x1DCF [PROFIBUS]
-*********************************************************************************************************
-*/
-unsigned short hexin_calc_crc16_1dcf( const unsigned char *pSrc, unsigned int len, unsigned short crc16 )
+static unsigned int hexin_crc16_compute_init_table( struct _hexin_crc16 *param )
 {
-    unsigned int i = 0;
+    unsigned int i = 0, j = 0;
+    unsigned short crc = 0, c = 0;
+
+    if ( HEXIN_REFIN_REFOUT_IS_TRUE( param ) ) {
+        for ( i=0; i<MAX_TABLE_ARRAY; i++ ) {
+            crc = 0;
+            c   = ( unsigned short ) i;
+            for ( j=0; j<8; j++ ) {
+                if ( (crc ^ c) & 0x0001 )   crc = ( crc >> 1 ) ^ param->poly;
+                else                        crc =   crc >> 1;
+                c = c >> 1;
+            }
+            param->table[i] = crc;
+        }
+    } else {
+        for ( i=0; i<MAX_TABLE_ARRAY; i++ ) {
+            crc = 0;
+            c   = ( ( unsigned short ) i ) << 8;
+            for ( j=0; j<8; j++ ) {
+                if ( (crc ^ c) & 0x8000 ) crc = ( crc << 1 ) ^ param->poly;
+                else                      crc =   crc << 1;
+                c = c << 1;
+            }
+            param->table[i] = crc;
+        }
+    }
+    return TRUE;
+}
+
+static unsigned short hexin_crc16_compute_char( unsigned short crc16, unsigned char c, struct _hexin_crc16 *param )
+{
     unsigned short crc = crc16;
 
-    if ( crc16_table_1dcf_init == FALSE ) {
-        crc16_table_1dcf_init = hexin_crc16_init_table_poly_is_low( CRC16_POLYNOMIAL_1DCF, crc16_table_1dcf );
+    if ( HEXIN_REFIN_REFOUT_IS_TRUE( param ) ) {
+        crc = (crc >> 8) ^ param->table[ ((crc >> 0 ) ^ (0x00FF & (unsigned short)c)) & 0xFF ];
+    } else {
+        crc = (crc << 8) ^ param->table[ ((crc >> 8 ) ^ (0x00FF & (unsigned short)c)) & 0xFF ];
+    }
+
+    return crc;
+}
+
+unsigned short hexin_crc16_compute( const unsigned char *pSrc, unsigned int len, struct _hexin_crc16 *param )
+{
+    unsigned int i = 0;
+    unsigned short crc = param->init;
+
+    if ( param->is_initial == FALSE ) {
+        if ( HEXIN_REFIN_REFOUT_IS_TRUE( param ) ) {
+            param->poly = hexin_reverse16( param->poly );
+        }
+        param->is_initial = hexin_crc16_compute_init_table( param );
+    }
+
+    if ( HEXIN_REFIN_REFOUT_IS_TRUE( param ) ) { 
+        crc = hexin_reverse16( param->init );
     }
 
 	for ( i=0; i<len; i++ ) {
-		crc = hexin_crc16_poly_is_low_calc( crc, pSrc[i], crc16_table_1dcf );
+		crc = hexin_crc16_compute_char( crc, pSrc[i], param );
 	}
-	return crc;
-}
+    
+	return ( crc ^ param->xorout );
 
-
-unsigned short hexin_calc_crc16_shared( const unsigned char *pSrc,
-                                        unsigned int len,
-                                        unsigned short crc16,
-                                        unsigned short polynomial,
-                                        unsigned char mask /* TRUE -> high, FALSE -> low */ )
-{
-    unsigned int i = 0;
-    unsigned short crc = crc16;
-
-    if ( crc16_table_shared_init != polynomial ) {
-        if ( TRUE == mask ) {
-            hexin_crc16_init_table_poly_is_high( polynomial, crc16_table_shared );
-        } else {
-            hexin_crc16_init_table_poly_is_low(  polynomial, crc16_table_shared );
-        }
-        crc16_table_shared_init = polynomial;
-    }
-
-    switch ( mask ) {
-        case TRUE:
-            for ( i=0; i<len; i++ ) {
-                crc = hexin_crc16_poly_is_high_calc( crc, pSrc[i], crc16_table_shared );
-            }
-            break;
-        
-        default:
-            for ( i=0; i<len; i++ ) {
-                crc = hexin_crc16_poly_is_low_calc(  crc, pSrc[i], crc16_table_shared );
-            }
-            break;
-    }
-
-	return crc;
 }

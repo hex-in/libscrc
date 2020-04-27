@@ -102,12 +102,6 @@ Usage
     crc16 = libscrc.modbus(b'\x01\x02')   # Calculate HEX of modbus
     crc16 = libscrc.modbus(bytearray( [ 0x01, 0x02 ] ))
 
-  You can also calculate CRC gradually::
-
-    import libscrc
-    crc16 = libscrc.xmodem(b'1234')
-    crc16 = libscrc.xmodem(b'5678', crc16)
-
 Example
 -------
 * CRCx::
@@ -272,6 +266,7 @@ Example
 NOTICE
 ------
 * v0.1.6+ version will not support python2 series (2020-01-20)  
+* Removed two steps compute function v1.3+
 
 V1.0 (2020-03-23)
 ++++++++++++++++++
