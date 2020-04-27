@@ -9,7 +9,7 @@
 * LICENSING TERMS:
 * ---------------
 *		New Create at 	2020-03-17 [Heyn] Initialize.
- *                      2020-04-26 [Heyn] Optimized Code
+*                       2020-04-26 [Heyn] Optimized Code.
 *********************************************************************************************************
 */
 
@@ -60,6 +60,6 @@ unsigned int hexin_crc32_init_table_poly_is_low(  unsigned int polynomial, unsig
 
 unsigned int hexin_calc_crc32_adler(    const unsigned char *pSrc, unsigned int len, unsigned int crc32 /*reserved*/ );
 unsigned int hexin_calc_crc32_fletcher( const unsigned char *pSrc, unsigned int len, unsigned int crc32 /*reserved*/ );
-unsigned int hexin_crc32_compute(       const unsigned char *pSrc, unsigned int len, struct _hexin_crc32 *crc32 );
+unsigned int hexin_crc32_compute(       const unsigned char *pSrc, unsigned int len, struct _hexin_crc32 *param );
 
 #endif //__CRC32_TABLES_H__

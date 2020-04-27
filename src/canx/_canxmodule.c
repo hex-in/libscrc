@@ -1,14 +1,15 @@
 /*
 *********************************************************************************************************
-*                              		(c) Copyright 2018-2020, Hexin
+*                              		(c) Copyright 2020-2020, Hexin
 *                                           All Rights Reserved
 * File    : _canxmodule.c
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V1.1
+* Version : V1.3
 *
 * LICENSING TERMS:
 * ---------------
 *		New Create at 	2020-04-21 [Heyn] Initialize.
+*                       2020-04-27 [Heyn] Optimized Code.
 *
 *********************************************************************************************************
 */
@@ -16,24 +17,19 @@
 #include <Python.h>
 #include "_canxtables.h"
 
-static unsigned char hexin_PyArg_ParseTuple( PyObject *self, PyObject *args,
-                                             unsigned int init,
-                                             unsigned int (*function)( const unsigned char *,
-                                                                       unsigned int,
-                                                                       unsigned int ),
-                                             unsigned int *result )
+static unsigned char hexin_PyArg_ParseTuple_Paramete( PyObject *self, PyObject *args, struct _hexin_canx *param )
 {
     Py_buffer data = { NULL, NULL };
 
 #if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTuple( args, "y*|I", &data, &init ) ) {
+    if ( !PyArg_ParseTuple( args, "y*", &data ) ) {
         if ( data.obj ) {
             PyBuffer_Release( &data );
         }
         return FALSE;
     }
 #else
-    if ( !PyArg_ParseTuple( args, "s*|I", &data, &init ) ) {
+    if ( !PyArg_ParseTuple( args, "s*", &data ) ) {
         if ( data.obj ) {
             PyBuffer_Release( &data );
         }
@@ -41,7 +37,7 @@ static unsigned char hexin_PyArg_ParseTuple( PyObject *self, PyObject *args,
     }
 #endif /* PY_MAJOR_VERSION */
 
-    *result = (* function)( (unsigned char *)data.buf, (unsigned int)data.len, init );
+    param->result = hexin_canx_compute( (const unsigned char *)data.buf, (unsigned int)data.len, param  );
 
     if ( data.obj )
        PyBuffer_Release( &data );
@@ -51,38 +47,56 @@ static unsigned char hexin_PyArg_ParseTuple( PyObject *self, PyObject *args,
 
 static PyObject * _canx_can15( PyObject *self, PyObject *args )
 {
-    unsigned int result = 0x00000000L;
-    unsigned int init   = 0x00000000L;
- 
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_can15, ( unsigned int * )&result ) ) {
+    static struct _hexin_canx canx_param_can15 = { .is_initial=FALSE,
+                                                   .width  = 15,
+                                                   .poly   = CAN15_POLYNOMIAL_00004599,
+                                                   .init   = 0x00000000L,
+                                                   .refin  = FALSE,
+                                                   .refout = FALSE,
+                                                   .xorout = 0x00000000L,
+                                                   .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &canx_param_can15 ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "H", (unsigned short)(result & 0x00007FFF) );
+    return Py_BuildValue( "H", (unsigned short)( canx_param_can15.result & 0x00007FFF ) );
 }
 
 static PyObject * _canx_can17( PyObject *self, PyObject *args )
 {
-    unsigned int result = 0x00000000L;
-    unsigned int init   = 0x00000000L;
- 
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_can17, ( unsigned int * )&result ) ) {
+    static struct _hexin_canx canx_param_can17 = { .is_initial=FALSE,
+                                                   .width  = 17,
+                                                   .poly   = CAN17_POLYNOMIAL_0001685B,
+                                                   .init   = 0x00000000L,
+                                                   .refin  = FALSE,
+                                                   .refout = FALSE,
+                                                   .xorout = 0x00000000L,
+                                                   .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &canx_param_can17 ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "I", (result & 0x0001FFFF) );
+    return Py_BuildValue( "I", (canx_param_can17.result & 0x1FFFF) );
 }
 
 static PyObject * _canx_can21( PyObject *self, PyObject *args )
 {
-    unsigned int result = 0x00000000L;
-    unsigned int init   = 0x00000000L;
- 
-    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_can21, ( unsigned int * )&result ) ) {
+    static struct _hexin_canx canx_param_can21= { .is_initial=FALSE,
+                                                   .width  = 21,
+                                                   .poly   = CAN21_POLYNOMIAL_00102899,
+                                                   .init   = 0x00000000L,
+                                                   .refin  = FALSE,
+                                                   .refout = FALSE,
+                                                   .xorout = 0x00000000L,
+                                                   .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &canx_param_can21 ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "I", (result & 0x001FFFFF) );
+    return Py_BuildValue( "I", (canx_param_can21.result & 0x001FFFFF) );
 }
 
 /* method table */
@@ -125,7 +139,7 @@ PyInit__canx( void )
         return NULL;
     }
 
-    PyModule_AddStringConstant( m, "__version__", "1.1"   );
+    PyModule_AddStringConstant( m, "__version__", "1.3"   );
     PyModule_AddStringConstant( m, "__author__",  "Heyn"  );
 
     return m;
