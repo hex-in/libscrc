@@ -1,10 +1,10 @@
 /*
 *********************************************************************************************************
-*                              		(c) Copyright 2018-2020, Hexin
+*                              		(c) Copyright 2017-2020, Hexin
 *                                           All Rights Reserved
 * File    : _crc64tables.h
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V1.1
+* Version : V1.3
 *
 * LICENSING TERMS:
 * ---------------
@@ -29,21 +29,33 @@
 #define                 MAX_TABLE_ARRAY                         256
 #endif
 
+#define                 HEXIN_CRC64_WIDTH                       64
+
 #define                 HEXIN_POLYNOMIAL_IS_HIGH(x)             ( x & 0x8000000000000000L )
 #define                 HEXIN_REFIN_OR_REFOUT_IS_TRUE(x)        ( x == 0x0000000000000001L ? TRUE : FALSE )
+#define                 HEXIN_REFIN_REFOUT_IS_TRUE(x)           ( ( x->refin == TRUE ) && ( x->refout == TRUE ) )
 
-#define		            CRC64_POLYNOMIAL_ISO                    0xD800000000000000L
 #define		            CRC64_POLYNOMIAL_ECMA182                0x42F0E1EBA9EA3693L
+
+
+struct _hexin_crc64 {
+    unsigned int  is_initial;
+    unsigned int  width;
+    unsigned long long  poly;
+    unsigned long long  init;
+    unsigned int  refin;
+    unsigned int  refout;
+    unsigned long long  xorout;
+    unsigned long long  result;
+    unsigned long long  table[MAX_TABLE_ARRAY];
+};
+
 
 unsigned long long hexin_reverse64( unsigned long long data );
 
 unsigned char hexin_crc64_init_table_poly_is_high( unsigned long long polynomial, unsigned long long *table );
 unsigned char hexin_crc64_init_table_poly_is_low(  unsigned long long polynomial, unsigned long long *table );
 
-unsigned long long hexin_calc_crc64_iso(     const unsigned char *pSrc, unsigned int len, unsigned long long crc64 );
-unsigned long long hexin_calc_crc64_ecma182( const unsigned char *pSrc, unsigned int len, unsigned long long crc64 );
-unsigned long long hexin_calc_crc64_xz(      const unsigned char *pSrc, unsigned int len, unsigned long long crc64 );
-unsigned long long hexin_calc_crc64_hacker(  const unsigned char *pSrc, unsigned int len, unsigned long long crc64, unsigned long long polynomial );
-
+unsigned long long hexin_crc64_compute( const unsigned char *pSrc, unsigned int len, struct _hexin_crc64 *param );
 
 #endif //__CRC64_TABLES_H__

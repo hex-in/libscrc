@@ -123,6 +123,8 @@ crc21 = libscrc.can21(b'1234')
 
 crc30 = libscrc.cdma(b'1234')
 crc31 = libscrc.philips(b'1234')
+
+crc40 = libscrc.gsm40(b'1234')
 ```
 
 2. CRC8
@@ -248,8 +250,8 @@ crc32 = libscrc.fsc(b'1234')            # Ethernet frame sequence (FSC)
 crc32 = libscrc.mpeg2(b'1234')          # MPEG2
 crc32 = libscrc.crc32(b'1234')          # WinRAR, File
 
-# init=0xFFFFFFFF(default)
-# xorout=0x00000000(default)
+# init=0x00000000(default)
+# xorout=0xFFFFFFFF(default)
 crc32 = libscrc.hacker32( b'123456789', poly=0x04C11DB7 )
 crc32 = libscrc.hacker32( b'123456789', poly=0x04C11DB7, init=0, xorout=0xFFFFFFFF, refin=True, refout=True )
 
@@ -282,9 +284,9 @@ crc64 = libscrc.ecma182(b'1234')
 crc64 = libscrc.we(b'1234')
 crc64 = libscrc.xz64(b'1234')
 
-# init=0xFFFFFFFFFFFFFFFF(default)
+# init=0x0000000000000000L(default)
 # xorout=0x0000000000000000(default)
-crc64 = libscrc.hacker64( b'123456789', poly=0xD800000000000000, init=0 )
+crc64 = libscrc.hacker64(b'123456789', poly=0x42F0E1EBA9EA3693, init=0, xorout=0, refin=False, refout=False )
 ```
 
 

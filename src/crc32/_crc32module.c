@@ -142,7 +142,7 @@ static PyObject * _crc32_table( PyObject *self, PyObject *args )
         return NULL;
 #endif /* PY_MAJOR_VERSION */
 
-    if ( ref == 0 ) {
+    if ( ref == FALSE ) {
         hexin_crc32_init_table_poly_is_low ( poly, table );
     } else {
         hexin_crc32_init_table_poly_is_high( poly, table );

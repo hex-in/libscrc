@@ -132,6 +132,8 @@ Example
 
     crc30 = libscrc.cdma(b'1234')
     crc31 = libscrc.philips(b'1234')
+
+    crc40 = libscrc.gsm40(b'1234')
     
 * CRC8::
 

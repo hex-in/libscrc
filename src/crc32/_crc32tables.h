@@ -33,7 +33,7 @@
 #define                 HEXIN_CRC32_WIDTH                       32
 
 #define                 HEXIN_POLYNOMIAL_IS_HIGH(x)             ( x & 0x80000000L )
-#define                 HEXIN_REFIN_OR_REFOUT_IS_TRUE(x)        ( x == 0x00000001L ? TRUE : FALSE )
+#define                 HEXIN_REFIN_REFOUT_IS_TRUE(x)           ( ( x->refin == TRUE ) && ( x->refout == TRUE ) )
 
 #define                 CRC30_POLYNOMIAL_2030B9C7               0x2030B9C7L
 #define                 CRC31_POLYNOMIAL_04C11DB7               0x04C11DB7L
