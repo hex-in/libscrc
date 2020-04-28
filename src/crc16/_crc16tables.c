@@ -20,10 +20,6 @@
 
 #include "_crc16tables.h"
 
-static unsigned short   crc16_table_hacker[MAX_TABLE_ARRAY] = { 0x0000 };     // Used for hacker.
-static unsigned short   crc16_table_hacker_init             = FALSE;          // Default value.
-
-
 unsigned short hexin_reverse16( unsigned short data )
 {
     unsigned int   i = 0;
@@ -94,12 +90,6 @@ unsigned short hexin_crc16_poly_is_low_calc( unsigned short crc16, unsigned char
     return crc;
 }
 
-/*
-*********************************************************************************************************
-                                    POLY=0x8005 [SICK]
-*********************************************************************************************************
-*/
-
 static unsigned short __hexin_crc16_sick( unsigned short crc16, unsigned char c, char prev_byte ) 
 {
     unsigned short crc = crc16;
@@ -131,58 +121,6 @@ unsigned short hexin_calc_crc16_sick( const unsigned char *pSrc, unsigned int le
 	return crc;
 }
 
-/*
-*********************************************************************************************************
-                                    For hacker
-*********************************************************************************************************
-*/
-
-static unsigned char hexin_init_crc16_table_hacker( unsigned short polynomial  ) 
-{
-    if ( crc16_table_hacker_init == polynomial ) {
-        return FALSE;
-    }
-
-    if ( HEXIN_POLYNOMIAL_IS_HIGH( polynomial ) ) {
-        hexin_crc16_init_table_poly_is_high( polynomial, crc16_table_hacker );
-    } else {
-        hexin_crc16_init_table_poly_is_low(  polynomial, crc16_table_hacker );
-    }
-    crc16_table_hacker_init = polynomial;
-
-    return TRUE;
-}
-
-unsigned short hexin_calc_crc16_hacker( const unsigned char *pSrc, unsigned int len, unsigned short crc16, unsigned short polynomial )
-{
-    unsigned int i = 0;
-    unsigned short crc = crc16;
-
-    hexin_init_crc16_table_hacker( polynomial );
-
-    switch ( HEXIN_POLYNOMIAL_IS_HIGH( polynomial ) ) {
-        case 0x8000:
-            for ( i=0; i<len; i++ ) {
-                crc = hexin_crc16_poly_is_high_calc( crc, pSrc[i], crc16_table_hacker );
-            }
-            break;
-        
-        default:
-            for ( i=0; i<len; i++ ) {
-                crc = hexin_crc16_poly_is_low_calc(  crc, pSrc[i], crc16_table_hacker );
-            }
-            break;
-    }
-
-	return crc;
-}
-
-/*
-*********************************************************************************************************
-                                    For network(UDP/TCP) checksum
-*********************************************************************************************************
-*/
-
 unsigned short hexin_calc_crc16_network( const unsigned char *pSrc, unsigned int len, unsigned short crc16 /*reserved*/ )
 {
     unsigned int sum = 0;
@@ -203,12 +141,6 @@ unsigned short hexin_calc_crc16_network( const unsigned char *pSrc, unsigned int
  
     return ( unsigned short )( ~sum );
 }
-
-/*
-*********************************************************************************************************
-                                    For fletcher16 checksum
-*********************************************************************************************************
-*/
 
 unsigned short hexin_calc_crc16_fletcher( const unsigned char *pSrc, unsigned int len, unsigned short crc16 /*reserved*/ )
 {

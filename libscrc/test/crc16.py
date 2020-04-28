@@ -8,6 +8,7 @@
 # Package:  pip install libscrc.
 # History:  2017-08-17 Wheel Ver:0.0.3 [Heyn] Initialize
 #           2019-04-22 Wheel Ver:1.1   [Heyn] New add some functions.
+#           2020-04-28 Wheel Ver:1.3   [Heyn] Optimized code.
 
 import unittest
 
@@ -83,7 +84,13 @@ class TestCRC16( unittest.TestCase ):
         self.assertEqual( module.lte16(b'123456789'),       0x31C3 )
         self.assertEqual( module.nrsc5(b'123456789'),       0xA066 )
 
-        # the same in two steps
+        self.assertEqual( module.hacker16( data=b'123456789',
+                                           poly=0x8005,
+                                           init=0xFFFF,
+                                           xorout=0x0000,
+                                           refin=True,
+                                           refout=True ),   0x4B37 )
+        # the same in two steps ( Removed v1.3+ )
         # crc = module.x25( b'12345' )
         # crc = module.x25( b'6789', crc )
         # self.assertNotEqual( crc, 0x906E )

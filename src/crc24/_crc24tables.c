@@ -81,7 +81,7 @@ unsigned int hexin_crc24_compute( const unsigned char *pSrc, unsigned int len, s
         param->is_initial = hexin_crc24_compute_init_table( param );
     }
 
-    if ( HEXIN_REFIN_REFOUT_IS_TRUE( param ) ) {    // For BLE( XXXX )
+    if ( HEXIN_REFIN_REFOUT_IS_TRUE( param ) ) {
         crc = hexin_reverse24( param->init );
     }
 

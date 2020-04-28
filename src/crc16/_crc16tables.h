@@ -64,9 +64,7 @@ unsigned short hexin_reverse16( unsigned short data );
 unsigned int hexin_crc16_init_table_poly_is_high( unsigned short polynomial, unsigned short *table );
 unsigned int hexin_crc16_init_table_poly_is_low(  unsigned short polynomial, unsigned short *table );
 
-
 unsigned short hexin_calc_crc16_sick(     const unsigned char *pSrc, unsigned int len, unsigned short crc16 );
-unsigned short hexin_calc_crc16_hacker(   const unsigned char *pSrc, unsigned int len, unsigned short crc16, unsigned short polynomial );
 unsigned short hexin_calc_crc16_network(  const unsigned char *pSrc, unsigned int len, unsigned short crc16 /*reserved*/ );
 unsigned short hexin_calc_crc16_fletcher( const unsigned char *pSrc, unsigned int len, unsigned short crc16 /*reserved*/ );
 

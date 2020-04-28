@@ -177,9 +177,8 @@ crc16 = libscrc.udp( data )             # 13933
 
 # init=0xFFFF(default)
 # xorout=0x0000(default)
-
-crc16 = libscrc.hacker16( b'123456789', poly=0xA001 )
-crc16 = libscrc.hacker16( b'123456789', poly=0xA001, init=0, xorout=0xFFFF )
+crc16 = libscrc.hacker16( b'123456789', poly=0x8005 )
+crc16 = libscrc.hacker16( b'123456789', poly=0x8005, init=0xFFFF, xorout=0x0000, refin=True, refout=True )
 
 crc16 = libscrc.epc16(b'1234')		# RFID EPC(CRC16-PC-EPC)
 crc16 = libscrc.profibus(b'1234')

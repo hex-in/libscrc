@@ -341,27 +341,23 @@ static PyObject * _crc16_dect_x( PyObject *self, PyObject *args )
     return Py_BuildValue( "H", crc16_param_dectx.result );
 }
 
-/*
-*********************************************************************************************************
-                                    Print CRC16 table.
-*********************************************************************************************************
-*/
 static PyObject * _crc16_table( PyObject *self, PyObject *args )
 {
-    unsigned int i = 0x00000000L;
-    unsigned short poly = CRC16_POLYNOMIAL_A001;
+    unsigned int i   = 0x00000000L;
+    unsigned int ref = FALSE;
+    unsigned short poly = CRC16_POLYNOMIAL_8005;
     unsigned short table[MAX_TABLE_ARRAY] = { 0x0000 };
     PyObject* plist = PyList_New( MAX_TABLE_ARRAY );
 
 #if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTuple( args, "H", &poly ) )
+    if ( !PyArg_ParseTuple( args, "H|p", &poly, &ref ) )
         return NULL;
 #else
-    if ( !PyArg_ParseTuple( args, "H", &poly ) )
+    if ( !PyArg_ParseTuple( args, "H|p", &poly, &ref  ) )
         return NULL;
 #endif /* PY_MAJOR_VERSION */
 
-    if ( HEXIN_POLYNOMIAL_IS_HIGH( poly ) ) {
+    if ( FALSE == ref ) {
         hexin_crc16_init_table_poly_is_high( poly, table );
     } else {
         hexin_crc16_init_table_poly_is_low ( poly, table );
@@ -374,30 +370,39 @@ static PyObject * _crc16_table( PyObject *self, PyObject *args )
     return plist;
 }
 
-/*
-*********************************************************************************************************
-*                                   For hacker
-*********************************************************************************************************
-*/
 static PyObject * _crc16_hacker( PyObject *self, PyObject *args, PyObject* kws )
 {
     Py_buffer data = { NULL, NULL };
-    unsigned short init   = 0xFFFF;
-    unsigned short xorout = 0x0000;
-    unsigned int   ref    = 0x00000000L;
-    unsigned short result = 0x0000;
-    unsigned short polynomial = CRC16_POLYNOMIAL_1021;
-    static char* kwlist[]={ "data", "poly", "init", "xorout", "ref", NULL };
+    struct _hexin_crc16 crc16_param_hacker = { .is_initial=FALSE,
+                                               .width  = HEXIN_CRC16_WIDTH,
+                                               .poly   = CRC16_POLYNOMIAL_8005,
+                                               .init   = 0xFFFF,
+                                               .refin  = TRUE,
+                                               .refout = TRUE,
+                                               .xorout = 0x0000,
+                                               .result = 0 };
+
+    static char* kwlist[]={ "data", "poly", "init", "xorout", "refin", "refout", NULL };
 
 #if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y*|HHHp", kwlist, &data, &polynomial, &init, &xorout, &ref ) ) {
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y*|HHHpp", kwlist, &data,
+                                                                      &crc16_param_hacker.poly,
+                                                                      &crc16_param_hacker.init,
+                                                                      &crc16_param_hacker.xorout,
+                                                                      &crc16_param_hacker.refin,
+                                                                      &crc16_param_hacker.refout ) ) {
         if ( data.obj ) {
             PyBuffer_Release( &data );
         }
         return NULL;
     }
 #else
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s*|HHHp", kwlist, &data, &polynomial, &init, &xorout, &ref ) ) {
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s*|HHHpp", kwlist, &data,
+                                                                      &crc16_param_hacker.poly,
+                                                                      &crc16_param_hacker.init,
+                                                                      &crc16_param_hacker.xorout,
+                                                                      &crc16_param_hacker.refin,
+                                                                      &crc16_param_hacker.refout ) ) {
         if ( data.obj ) {
             PyBuffer_Release( &data );
         }
@@ -405,24 +410,14 @@ static PyObject * _crc16_hacker( PyObject *self, PyObject *args, PyObject* kws )
     }
 #endif /* PY_MAJOR_VERSION */
 
-    if ( HEXIN_REFIN_OR_REFOUT_IS_TRUE( ref ) ) {
-        polynomial = hexin_reverse16( polynomial );
-    }
-
-    result = hexin_calc_crc16_hacker( (unsigned char *)data.buf, (unsigned int)data.len, init, polynomial );
-    result = result ^ xorout;
+    crc16_param_hacker.result = hexin_crc16_compute( (const unsigned char *)data.buf, (unsigned int)data.len, &crc16_param_hacker );
 
     if ( data.obj )
        PyBuffer_Release( &data );
 
-    return Py_BuildValue( "H", result );
+    return Py_BuildValue( "H", crc16_param_hacker.result );
 }
 
-/*
-*********************************************************************************************************
-                                    For network(UDP/TCP) checksum
-*********************************************************************************************************
-*/
 static PyObject * _crc16_network( PyObject *self, PyObject *args )
 {
     unsigned short result   = 0x0000;
@@ -434,12 +429,6 @@ static PyObject * _crc16_network( PyObject *self, PyObject *args )
 
     return Py_BuildValue( "H", result );
 }
-
-/*
-*********************************************************************************************************
-                                    For fletcher16 checksum
-*********************************************************************************************************
-*/
 
 static PyObject * _crc16_fletcher( PyObject *self, PyObject *args )
 {
