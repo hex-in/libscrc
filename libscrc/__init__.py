@@ -20,3 +20,4 @@ from ._crc16 import *
 from ._crc24 import *
 from ._crc32 import *
 from ._crc64 import *
+from ._crc82 import *

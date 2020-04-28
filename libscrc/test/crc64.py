@@ -11,8 +11,8 @@
 #           2020-04-23 Wheel Ver:1.1   [Heyn] Bug fixed.
 
 import unittest
-
 import libscrc
+
 from libscrc import _crc64
 
 class TestCRC64( unittest.TestCase ):
@@ -35,10 +35,10 @@ class TestCRC64( unittest.TestCase ):
 
         self.assertEqual( module.hacker64(b'123456789', poly=0x42F0E1EBA9EA3693, init=0, xorout=0, refin=False, refout=False), 0x6C40DF5F0B497347 )
 
-
     def test_basics( self ):
         """Test basic functionality.
         """
+        self.assertEqual( libscrc.darc82(b'123456789'),  0x09EA83F625023801FD612 )
         self.do_basics( libscrc )
 
 

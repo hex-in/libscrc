@@ -29,7 +29,7 @@ libscrc is a library for calculating CRC3 CRC4 CRC5 CRC6 CRC7 CRC8 CRC16 CRC24 C
 | MPT1327 | DARC |RIELLO | |  | |
 | CDMA2000 | MIFARE |OPENSAFETY | | CRC30-CDMA | |
 | | |EN13757 | | CRC31-PHILIPS | |
-| | |CMS | | | |
+| | |CMS | | | DARC82 |
 
 
 
@@ -133,6 +133,8 @@ crc30 = libscrc.cdma(b'1234')
 crc31 = libscrc.philips(b'1234')
 
 crc40 = libscrc.gsm40(b'1234')
+
+crc82 = libscrc.darc82(b'1234')
 ```
 
 2. CRC8
