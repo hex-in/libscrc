@@ -189,12 +189,6 @@ static PyObject * _crc24_interlaken( PyObject *self, PyObject *args )
     return Py_BuildValue( "I", crc24_param_interlaken.result );
 }
 
-/*
-*********************************************************************************************************
-*                                   For hacker
-*********************************************************************************************************
-*/
-
 static PyObject * _crc24_hacker( PyObject *self, PyObject *args, PyObject* kws )
 {
     Py_buffer data = { NULL, NULL };

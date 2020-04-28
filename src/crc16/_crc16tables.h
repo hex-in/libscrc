@@ -32,18 +32,14 @@
 
 #define                 HEXIN_CRC16_WIDTH                       16
 
-#define                 CRC16_POLYNOMIAL_8408                   0x8408
 #define                 CRC16_POLYNOMIAL_1021                   0x1021
-#define                 CRC16_POLYNOMIAL_A001                   0xA001
 #define                 CRC16_POLYNOMIAL_8005                   0x8005
-#define                 CRC16_POLYNOMIAL_A6BC                   0xA6BC
 #define                 CRC16_POLYNOMIAL_0589                   0x0589
 #define                 CRC16_POLYNOMIAL_1DCF                   0x1DCF
 #define                 CRC16_POLYNOMIAL_3D65                   0x3D65
 #define                 CRC16_POLYNOMIAL_C867                   0xC867
 
 #define                 HEXIN_POLYNOMIAL_IS_HIGH(x)             ( x & 0x8000 )
-#define                 HEXIN_REFIN_OR_REFOUT_IS_TRUE(x)        ( x == 0x0001 ? TRUE : FALSE )
 #define                 HEXIN_REFIN_REFOUT_IS_TRUE(x)           ( ( x->refin == TRUE ) && ( x->refout == TRUE ) )
 
 

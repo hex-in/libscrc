@@ -36,7 +36,25 @@ class TestCRCx( unittest.TestCase ):
         self.assertEqual( module.umts7(b'123456789'),    0x61 )
         self.assertEqual( module.rohc7(b'123456789'),    0x53 )
 
-        self.assertEqual( module.interlaken4(b'123456789'),     0x0B )
+        self.assertEqual( module.interlaken4(b'123456789'),         0x0B )
+
+        self.assertEqual( module.atm10(b'123456789'),               0x199 )
+        self.assertEqual( module.gsm10(b'123456789'),               0x12A )
+        self.assertEqual( module.umts11(b'123456789'),              0x061 )
+        self.assertEqual( module.umts12(b'123456789'),              0xDAF )
+        self.assertEqual( module.crc12_3gpp(b'123456789'),          0xDAF )
+        self.assertEqual( module.flexray11(b'123456789'),           0x5A3 )
+        self.assertEqual( module.dect12(b'123456789'),              0xF5B )
+        self.assertEqual( module.crc12(b'123456789'),               0xF5B )
+        self.assertEqual( module.gsm12(b'123456789'),               0xB34 )
+
+        self.assertEqual( module.crc10_cdma2000(b'123456789'),      0x233 )
+        self.assertEqual( module.crc12_cdma2000(b'123456789'),      0xD4D )
+
+        self.assertEqual( module.bbc13(b'123456789'),               0x04FA )
+        self.assertEqual( module.darc14(b'123456789'),              0x082D )
+        self.assertEqual( module.gsm14(b'123456789'),               0x30AE )
+        self.assertEqual( module.mpt1327(b'123456789'),             0x2566 )
 
     def test_basics( self ):
         """ Test basic functionality.

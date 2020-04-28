@@ -122,11 +122,6 @@ static PyObject * _crc32_crc32( PyObject *self, PyObject *args )
     return Py_BuildValue( "I", crc32_param_crc32.result );
 }
 
-/*
-*********************************************************************************************************
-                                    Print CRC32 table.
-*********************************************************************************************************
-*/
 static PyObject * _crc32_table( PyObject *self, PyObject *args )
 {
     unsigned int i = 0x00000000L;
@@ -154,12 +149,6 @@ static PyObject * _crc32_table( PyObject *self, PyObject *args )
 
     return plist;
 }
-
-/*
-*********************************************************************************************************
-*                                   For hacker
-*********************************************************************************************************
-*/
 
 static PyObject * _crc32_hacker( PyObject *self, PyObject *args, PyObject* kws )
 {

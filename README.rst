@@ -30,7 +30,7 @@ libscrc is a library for calculating CRC3 CRC4 CRC5 CRC6 CRC7 CRC8 CRC16 CRC24 C
 +------------+------------+------------+-----------+-----------+-----------+
 | CRC7-UMTS  | LTE        | DECT(R/X)  |           | Q / AIXM  |           |
 +------------+------------+------------+-----------+-----------+-----------+
-| CRC7-ROHC  | SAE-J1855  | TCP/UDP    |           |   XFER    |           |
+| CRC7-ROHC  | SAE-J1850  | TCP/UDP    |           |   XFER    |           |
 +------------+------------+------------+-----------+-----------+-----------+
 |            | I-CODE     | CDMA2000   |           |   CKSUM   |           |
 +------------+------------+------------+-----------+-----------+-----------+
@@ -42,13 +42,13 @@ libscrc is a library for calculating CRC3 CRC4 CRC5 CRC6 CRC7 CRC8 CRC16 CRC24 C
 +------------+------------+------------+-----------+-----------+-----------+
 |            | BLUETOOTH  | BUYPASS    |           |   PKZIP   |           |
 +------------+------------+------------+-----------+-----------+-----------+
-|            | DVB-S2     | GENIBUS    |           |   ADCCP   |           |
+| CRC10-ATM  | DVB-S2     | GENIBUS    |           |   ADCCP   |           |
 +------------+------------+------------+-----------+-----------+-----------+
-|            | EBU        | GSM16      |           |    V-42   |           |
+| CRC13-BBC  | EBU        | GSM16      |           |    V-42   |           |
 +------------+------------+------------+-----------+-----------+-----------+
-|            | DARC       | RIELLO     |           |           |           |
+| MPT1327    | DARC       | RIELLO     |           |           |           |
 +------------+------------+------------+-----------+-----------+-----------+
-|            | MIFARE     | OPENSAFETY |           | CRC30-CDMA|           |
+| CDMA2000   | MIFARE     | OPENSAFETY |           | CRC30-CDMA|           |
 +------------+------------+------------+-----------+-----------+-----------+
 |            |            | EN13757    |           |  PHILIPS  |           |
 +------------+------------+------------+-----------+-----------+-----------+
@@ -110,6 +110,7 @@ Example
     crc3 = libscrc.rohc3(b'1234')
     crc4 = libscrc.itu4(b'1234')
     crc4 = libscrc.g_704(b'1234')
+    crc4 = libscrc.interlaken4(b'1234')
     crc5 = libscrc.itu5(b'1234')
     crc5 = libscrc.epc(b'1234')
     crc5 = libscrc.usb5(b'1234')
@@ -119,6 +120,21 @@ Example
     crc7 = libscrc.crc7(b'1234')
     crc7 = libscrc.umts7(b'1234')
     crc7 = libscrc.rohc7(b'1234')
+
+    crc10 = libscrc.atm10(b'1234')
+    crc10 = libscrc.gsm10(b'1234')
+    crc10 = libscrc.crc10_cdma2000(b'1234')
+    crc11 = libscrc.umts11(b'1234')
+    crc11 = libscrc.flexray11(b'1234')
+    crc12 = libscrc.umts12(b'1234')
+    crc12 = libscrc.crc12_3gpp(b'1234')
+    crc12 = libscrc.dect12(b'1234')
+    crc12 = libscrc.crc12(b'1234')
+    crc12 = libscrc.gsm12(b'1234')
+    crc12 = libscrc.crc12_cdma2000(b'1234')
+    crc13 = libscrc.bbc13(b'1234')
+    crc14 = libscrc.darc14(b'1234')
+    crc15 = libscrc.mpt1327(b'1234')
 
     crc15 = libscrc.can15(b'1234')
     crc17 = libscrc.can17(b'1234')
@@ -141,7 +157,7 @@ Example
     crc8 = libscrc.smbus(b'1234')
     crc8 = libscrc.autosar8(b'1234')
     crc8 = libscrc.lte8(b'1234')
-    crc8 = libscrc.sae_j1855(b'1234')
+    crc8 = libscrc.sae_j1850(b'1234')
     crc8 = libscrc.icode8(b'1234')
     crc8 = libscrc.gsm8_a(b'1234')
     crc8 = libscrc.nrsc_5(b'1234')

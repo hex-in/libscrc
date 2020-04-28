@@ -219,5 +219,4 @@ unsigned short hexin_crc16_compute( const unsigned char *pSrc, unsigned int len,
 	}
     
 	return ( crc ^ param->xorout );
-
 }

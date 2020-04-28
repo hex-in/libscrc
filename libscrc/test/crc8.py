@@ -33,7 +33,7 @@ class TestCRC8( unittest.TestCase ):
         self.assertEqual( module.smbus(b'123456789'),       0xF4 )
         self.assertEqual( module.autosar8(b'123456789'),    0xDF )
         self.assertEqual( module.lte8(b'123456789'),        0xEA )
-        self.assertEqual( module.sae_j1855(b'123456789'),   0x4B )
+        self.assertEqual( module.sae_j1850(b'123456789'),   0x4B )
         self.assertEqual( module.icode8(b'123456789'),      0x7E )
         self.assertEqual( module.gsm8_a(b'123456789'),      0x37 )
         self.assertEqual( module.gsm8_b(b'123456789'),      0x94 )
