@@ -7,6 +7,7 @@
 # Program:  Test library hacker16 and hacker32 Module.
 # Package:  pip install libscrc.
 # History:  2020-03-16 Wheel Ver:0.1.6 [Heyn] Initialize
+#           2020-04-30 Wheel Ver:1.3   [Heyn] Optimized code
 
 import unittest
 
@@ -21,18 +22,16 @@ class TestHacker( unittest.TestCase ):
     def do_basics_16( self, module ):
         """ Test basic functionality.
         """
-        self.assertEqual( module.hacker16( data=b'123456789', poly=0xA001 ), 0x4B37 )
-        self.assertEqual( module.hacker16( data=b'123456789', poly=0x8408, xorout=0xFFFF ), 0x906E )
-        self.assertEqual( module.hacker16( data=b'123456789', poly=0x1021, init=0x0000 ), 0x31C3 )
+        self.assertEqual( module.hacker16( data=b'123456789', poly=0xA001 ), 0x3D7B )
+        self.assertEqual( module.hacker16( data=b'123456789', poly=0x8408, xorout=0xFFFF ), 0xE245 )
+        self.assertEqual( module.hacker16( data=b'123456789', poly=0x8005, init=0xFFFF, xorout=0x0000, refin=True, refout=True ),   0x4B37 )
 
     def do_basics_32( self, module ):
         """ Test basic functionality.
         """
-        ### self.assertEqual( module.fsc(b'123456789'),     0x0376E6E7 )
-        self.assertEqual( module.hacker32( data=b'123456789', poly=0x04C11DB7 ), 0x0376E6E7 )
-        ### self.assertEqual( module.crc32(b'123456789'),   0xCBF43926 )
-        self.assertEqual( module.hacker32( data=b'123456789', poly=0xEDB88320, xorout=0xFFFFFFFF ), 0xCBF43926 )
-        self.assertEqual( module.hacker32( data=b'123456789', poly=0x04C11DB7, init=0xFFFFFFFF, xorout=0xFFFFFFFF, ref=True ), 0xCBF43926 )
+        self.assertEqual( module.hacker32( data=b'123456789', poly=0x04C11DB7 ), 0xCBF43926 )
+        self.assertEqual( module.hacker32( data=b'123456789', poly=0xEDB88320, xorout=0xFFFFFFFF ), 0xFC4F2BE9 )
+        self.assertEqual( module.hacker32( data=b'123456789', poly=0x04C11DB7, init=0xFFFFFFFF, xorout=0xFFFFFFFF, refin=True, refout=True ), 0xCBF43926 )
 
 
     def test_basics( self ):
