@@ -124,23 +124,29 @@ static PyObject * _crc32_crc32( PyObject *self, PyObject *args )
 
 static PyObject * _crc32_table( PyObject *self, PyObject *args )
 {
-    unsigned int i = 0x00000000L;
-    unsigned int poly = CRC32_POLYNOMIAL_04C11DB7, ref = 0;
+    unsigned int i    = 0;
+    unsigned int ref  = FALSE;              /* refin = refout = FALSE (default) */
+    unsigned int bits = HEXIN_CRC32_WIDTH;  /* 3 <= bits <=32                   */
+    unsigned int poly = CRC32_POLYNOMIAL_04C11DB7;
     unsigned int table[MAX_TABLE_ARRAY] = { 0x00000000L };
+
     PyObject* plist = PyList_New( MAX_TABLE_ARRAY );
 
 #if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTuple( args, "I|p", &poly, &ref ) )
+    if ( !PyArg_ParseTuple( args, "I|pI", &poly, &ref, &bits ) )
         return NULL;
 #else
-    if ( !PyArg_ParseTuple( args, "I|p", &poly, &ref ) )
+    if ( !PyArg_ParseTuple( args, "I|pI", &poly, &ref, &bits ) )
         return NULL;
 #endif /* PY_MAJOR_VERSION */
 
+    bits = ( ( bits > HEXIN_CRC32_WIDTH ) ? HEXIN_CRC32_WIDTH : bits );
+
     if ( FALSE == ref ) {
-        hexin_crc32_init_table_poly_is_low ( poly, table );
+        hexin_crc32_init_table_poly_is_low ( poly << (HEXIN_CRC32_WIDTH-bits), table );
     } else {
-        hexin_crc32_init_table_poly_is_high( hexin_reverse32( poly ), table );
+        poly = ( hexin_reverse32( poly ) >> ( HEXIN_CRC32_WIDTH - bits ) );
+        hexin_crc32_init_table_poly_is_high( poly, table );
     }
 
     for ( i=0; i<MAX_TABLE_ARRAY; i++ ) {
@@ -197,7 +203,6 @@ static PyObject * _crc32_hacker( PyObject *self, PyObject *args, PyObject* kws )
 
     return Py_BuildValue( "I", crc32_param_hacker.result );
 }
-
 
 static PyObject * _crc32_adler32( PyObject *self, PyObject *args )
 {
@@ -416,7 +421,7 @@ static PyMethodDef _crc32Methods[] = {
     { "pkzip",       (PyCFunction)_crc32_crc32,      METH_VARARGS,   "Calculate PKZIP of CRC32  [Poly=0xEDB88320, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]"},
     { "adccp",       (PyCFunction)_crc32_crc32,      METH_VARARGS,   "Calculate ADCCP of CRC32  [Poly=0xEDB88320, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]"},
     { "v_42",        (PyCFunction)_crc32_crc32,      METH_VARARGS,   "Calculate V-42 of CRC32  [Poly=0xEDB88320, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]"},
-    { "table32",     (PyCFunction)_crc32_table,      METH_VARARGS,   "Print CRC32 table to list. libscrc.table32( polynomial )" },
+    { "table32",     (PyCFunction)_crc32_table,      METH_VARARGS,   "Print CRC32 table to list. libscrc.table32( polynomial, False, 32 )" },
     { "hacker32",    (PyCFunction)_crc32_hacker,     METH_KEYWORDS|METH_VARARGS, "User calculation CRC32\n"
                                                                                  "@data   : bytes\n"
                                                                                  "@poly   : default=0xEDB88320\n"
@@ -455,7 +460,7 @@ PyDoc_STRVAR( _crc32_doc,
 "libscrc.pkzip      -> Calculate PKZIP [Poly=0x04C11DB7L, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]\n"
 "libscrc.adccp      -> Calculate ADCCP [Poly=0x04C11DB7L, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]\n"
 "libscrc.v_42       -> Calculate V-42 [Poly=0x04C11DB7L, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]\n"
-"libscrc.table32    -> Print CRC32 table to list\n"
+"libscrc.table32    -> Print CRC32 table to list. libscrc.table32( polynomial, False, 32 )\n"
 "libscrc.hacker32   -> Free calculation CRC32 (not support python2 series) Xorout=0x00000000 Refin=False Refout=False\n"
 "libscrc.adler32    -> Calculate adler32 (MOD=65521)\n"
 "libscrc.fletcher32 -> Calculate fletcher32\n"
