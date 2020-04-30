@@ -370,9 +370,9 @@ static PyObject * _crc32_xfer( PyObject *self, PyObject *args )
     return Py_BuildValue( "I", crc32_param_xfer.result );
 }
 
-static PyObject * _crc30_cmda( PyObject *self, PyObject *args )
+static PyObject * _crc30_cdma( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crc32 crc30_cmda_param = { .is_initial=FALSE,
+    static struct _hexin_crc32 crc30_cdma_param = { .is_initial=FALSE,
                                                     .width  = 30,
                                                     .poly   = CRC30_POLYNOMIAL_2030B9C7,
                                                     .init   = 0x3FFFFFFFL,
@@ -381,11 +381,11 @@ static PyObject * _crc30_cmda( PyObject *self, PyObject *args )
                                                     .xorout = 0x3FFFFFFFL,
                                                     .result = 0 };
 
-    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc30_cmda_param ) ) {
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc30_cdma_param ) ) {
         return NULL;
     }
 
-    return Py_BuildValue( "I", crc30_cmda_param.result );
+    return Py_BuildValue( "I", crc30_cdma_param.result );
 }
 
 static PyObject * _crc31_philips( PyObject *self, PyObject *args )
@@ -439,7 +439,7 @@ static PyMethodDef _crc32Methods[] = {
     { "crc32_q",    (PyCFunction)_crc32_crc32_q,     METH_VARARGS,   "Calculate CRC (CRC32-Q) of CRC32 [Poly=0x814141AB, Init=0x00000000, Xorout=0x00000000 Refin=True Refout=True]"},
     { "aixm",       (PyCFunction)_crc32_crc32_q,     METH_VARARGS,   "Calculate CRC (AIXM) of CRC32 [Poly=0x814141AB, Init=0x00000000, Xorout=0x00000000 Refin=True Refout=True]"},
     { "xfer",       (PyCFunction)_crc32_xfer,        METH_VARARGS,   "Calculate CRC (XFER) of CRC32 [Poly=0x000000AF, Init=0x00000000, Xorout=0x00000000 Refin=True Refout=True]"},
-    { "cmda",       (PyCFunction)_crc30_cmda,        METH_VARARGS,   "Calculate CMDA of CRC30 [Poly=0x2030B9C7, Init=0x3FFFFFFF, Xorout=0x3FFFFFFF Refin=False Refout=False]"},
+    { "cdma",       (PyCFunction)_crc30_cdma,        METH_VARARGS,   "Calculate CDMA of CRC30 [Poly=0x2030B9C7, Init=0x3FFFFFFF, Xorout=0x3FFFFFFF Refin=False Refout=False]"},
     { "philips",    (PyCFunction)_crc31_philips,     METH_VARARGS,   "Calculate PHILIPS of CRC31 [Poly=0x04C11DB7, Init=0x7FFFFFFF, Xorout=0x7FFFFFFF Refin=False Refout=False]"},
     { NULL, NULL, 0, NULL }        /* Sentinel */
 };
@@ -470,7 +470,7 @@ PyDoc_STRVAR( _crc32_doc,
 "libscrc.crc32_q    -> Calculate CRC (CRC32-Q) [Poly=0x814141AB, Init=0x00000000, Xorout=0x00000000 Refin=True  Refout=True]\n"
 "libscrc.aixm       -> Calculate CRC (AIXM) [Poly=0x814141AB, Init=0x00000000, Xorout=0x00000000 Refin=True  Refout=True]\n"
 "libscrc.xfer       -> Calculate CRC (XFER) [Poly=0x000000AF, Init=0x00000000, Xorout=0x00000000 Refin=True  Refout=True]\n"
-"libscrc.cdma       -> Calculate CMDA of CRC30 [Poly=0x2030B9C7, Init=0x3FFFFFFF, Xorout=0x3FFFFFFF Refin=False Refout=False]\n"
+"libscrc.cdma       -> Calculate CDMA of CRC30 [Poly=0x2030B9C7, Init=0x3FFFFFFF, Xorout=0x3FFFFFFF Refin=False Refout=False]\n"
 "libscrc.philips    -> Calculate PHILIPS of CRC31 Calculate PHILIPS of CRC31 [Poly=0x04C11DB7, Init=0x7FFFFFFF, Xorout=0x7FFFFFFF Refin=False Refout=False]\n"
 "\n" );
 
