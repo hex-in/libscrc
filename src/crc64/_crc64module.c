@@ -155,10 +155,10 @@ static PyObject * _crc64_table( PyObject *self, PyObject *args )
         return NULL;
 #endif /* PY_MAJOR_VERSION */
 
-    if ( ref == FALSE ) {
+    if ( FALSE == ref ) {
         hexin_crc64_init_table_poly_is_low ( poly, table );
     } else {
-        hexin_crc64_init_table_poly_is_high( poly, table );
+        hexin_crc64_init_table_poly_is_high( hexin_reverse64( poly ), table );
     }
 
     for ( i=0; i<MAX_TABLE_ARRAY; i++ ) {

@@ -360,7 +360,7 @@ static PyObject * _crc16_table( PyObject *self, PyObject *args )
     if ( FALSE == ref ) {
         hexin_crc16_init_table_poly_is_low ( poly, table );
     } else {
-        hexin_crc16_init_table_poly_is_high( poly, table );
+        hexin_crc16_init_table_poly_is_high( hexin_reverse16( poly ), table );
     }
 
     for ( i=0; i<MAX_TABLE_ARRAY; i++ ) {
