@@ -4,7 +4,7 @@
 *                                           All Rights Reserved
 * File    : _crc64module.c
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V1.3
+* Version : V1.4
 *
 * LICENSING TERMS:
 * ---------------
@@ -14,6 +14,7 @@
 *                       2020-03-16 [Heyn] New add hacker64 code.
 *                       2020-04-17 [Heyn] Issues #1
 *                       2020-04-23 [Heyn] New add we() and xz() functions.
+*                       2020-05-12 [Heyn] (Python2.7) FIX : Windows compilation error.
 *
 *********************************************************************************************************
 */
@@ -51,6 +52,7 @@ static unsigned char hexin_PyArg_ParseTuple_Paramete( PyObject *self, PyObject *
 
 static PyObject * _crc64_iso( PyObject *self, PyObject *args )
 {
+#if PY_MAJOR_VERSION >= 3
     static struct _hexin_crc64 crc64_param_goiso = { .is_initial=FALSE,
                                                      .width  = HEXIN_CRC64_WIDTH,
                                                      .poly   = 0x000000000000001BL,
@@ -59,6 +61,16 @@ static PyObject * _crc64_iso( PyObject *self, PyObject *args )
                                                      .refout = TRUE,
                                                      .xorout = 0xFFFFFFFFFFFFFFFFL,
                                                      .result = 0 };
+#else
+    static struct _hexin_crc64 crc64_param_goiso = { FALSE,
+                                                     HEXIN_CRC64_WIDTH,
+                                                     0x000000000000001BL,
+                                                     0xFFFFFFFFFFFFFFFFL,
+                                                     TRUE,
+                                                     TRUE,
+                                                     0xFFFFFFFFFFFFFFFFL,
+                                                     0 };
+#endif /* PY_MAJOR_VERSION */
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc64_param_goiso ) ) {
         return NULL;
@@ -69,6 +81,7 @@ static PyObject * _crc64_iso( PyObject *self, PyObject *args )
 
 static PyObject * _crc64_ecma182( PyObject *self, PyObject *args )
 {
+#if PY_MAJOR_VERSION >= 3
     static struct _hexin_crc64 crc64_param_ecma = { .is_initial=FALSE,
                                                     .width  = HEXIN_CRC64_WIDTH,
                                                     .poly   = CRC64_POLYNOMIAL_ECMA182,
@@ -77,6 +90,16 @@ static PyObject * _crc64_ecma182( PyObject *self, PyObject *args )
                                                     .refout = FALSE,
                                                     .xorout = 0x0000000000000000L,
                                                     .result = 0 };
+#else
+    static struct _hexin_crc64 crc64_param_ecma = { FALSE,
+                                                    HEXIN_CRC64_WIDTH,
+                                                    CRC64_POLYNOMIAL_ECMA182,
+                                                    0,
+                                                    FALSE,
+                                                    FALSE,
+                                                    0,
+                                                    0 };
+#endif /* PY_MAJOR_VERSION */
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc64_param_ecma ) ) {
         return NULL;
@@ -87,6 +110,7 @@ static PyObject * _crc64_ecma182( PyObject *self, PyObject *args )
 
 static PyObject * _crc64_we( PyObject *self, PyObject *args )
 {
+#if PY_MAJOR_VERSION >= 3
     static struct _hexin_crc64 crc64_param_we = { .is_initial=FALSE,
                                                   .width  = HEXIN_CRC64_WIDTH,
                                                   .poly   = CRC64_POLYNOMIAL_ECMA182,
@@ -95,6 +119,16 @@ static PyObject * _crc64_we( PyObject *self, PyObject *args )
                                                   .refout = FALSE,
                                                   .xorout = 0xFFFFFFFFFFFFFFFFL,
                                                   .result = 0 };
+#else
+    static struct _hexin_crc64 crc64_param_we = { FALSE,
+                                                  HEXIN_CRC64_WIDTH,
+                                                  CRC64_POLYNOMIAL_ECMA182,
+                                                  0xFFFFFFFFFFFFFFFFL,
+                                                  FALSE,
+                                                  FALSE,
+                                                  0xFFFFFFFFFFFFFFFFL,
+                                                  0 };
+#endif /* PY_MAJOR_VERSION */
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc64_param_we ) ) {
         return NULL;
@@ -105,6 +139,7 @@ static PyObject * _crc64_we( PyObject *self, PyObject *args )
 
 static PyObject * _crc64_xz( PyObject *self, PyObject *args )
 {
+#if PY_MAJOR_VERSION >= 3
     static struct _hexin_crc64 crc64_param_xz = { .is_initial=FALSE,
                                                   .width  = HEXIN_CRC64_WIDTH,
                                                   .poly   = CRC64_POLYNOMIAL_ECMA182,
@@ -113,6 +148,16 @@ static PyObject * _crc64_xz( PyObject *self, PyObject *args )
                                                   .refout = TRUE,
                                                   .xorout = 0xFFFFFFFFFFFFFFFFL,
                                                   .result = 0 };
+#else
+    static struct _hexin_crc64 crc64_param_xz = { FALSE,
+                                                  HEXIN_CRC64_WIDTH,
+                                                  CRC64_POLYNOMIAL_ECMA182,
+                                                  0xFFFFFFFFFFFFFFFFL,
+                                                  TRUE,
+                                                  TRUE,
+                                                  0xFFFFFFFFFFFFFFFFL,
+                                                  0 };
+#endif /* PY_MAJOR_VERSION */
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc64_param_xz ) ) {
         return NULL;
@@ -123,6 +168,7 @@ static PyObject * _crc64_xz( PyObject *self, PyObject *args )
 
 static PyObject * _crc64_gsm40( PyObject *self, PyObject *args )
 {
+#if PY_MAJOR_VERSION >= 3
     static struct _hexin_crc64 crc64_param_gsm = { .is_initial=FALSE,
                                                    .width  = 40,
                                                    .poly   = 0x0004820009,
@@ -131,6 +177,16 @@ static PyObject * _crc64_gsm40( PyObject *self, PyObject *args )
                                                    .refout = FALSE,
                                                    .xorout = 0xFFFFFFFFFFL,
                                                    .result = 0 };
+#else
+    static struct _hexin_crc64 crc64_param_gsm = { FALSE,
+                                                   40,
+                                                   0x0004820009,
+                                                   0x0000000000,
+                                                   FALSE,
+                                                   FALSE,
+                                                   0xFFFFFFFFFFL,
+                                                   0 };
+#endif /* PY_MAJOR_VERSION */
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc64_param_gsm ) ) {
         return NULL;
@@ -141,7 +197,7 @@ static PyObject * _crc64_gsm40( PyObject *self, PyObject *args )
 
 static PyObject * _crc64_table( PyObject *self, PyObject *args )
 {
-    unsigned int i = 0x00000000L;
+    unsigned int i = 0;
     unsigned int ref = FALSE;
     unsigned long long poly = CRC64_POLYNOMIAL_ECMA182;
     unsigned long long table[MAX_TABLE_ARRAY] = { 0x0000000000000000L };
@@ -171,6 +227,8 @@ static PyObject * _crc64_table( PyObject *self, PyObject *args )
 static PyObject * _crc64_hacker( PyObject *self, PyObject *args, PyObject* kws )
 {
     Py_buffer data = { NULL, NULL };
+
+#if PY_MAJOR_VERSION >= 3
     struct _hexin_crc64 crc64_param_hacker = { .is_initial=FALSE,
                                                .width  = HEXIN_CRC64_WIDTH,
                                                .poly   = CRC64_POLYNOMIAL_ECMA182,
@@ -179,7 +237,16 @@ static PyObject * _crc64_hacker( PyObject *self, PyObject *args, PyObject* kws )
                                                .refout = FALSE,
                                                .xorout = 0x0000000000000000L,
                                                .result = 0 };
-
+#else
+    struct _hexin_crc64 crc64_param_hacker = { FALSE,
+                                               HEXIN_CRC64_WIDTH,
+                                               CRC64_POLYNOMIAL_ECMA182,
+                                               0x0000000000000000L,
+                                               FALSE,
+                                               FALSE,
+                                               0x0000000000000000L,
+                                               0 };
+#endif /* PY_MAJOR_VERSION */
     static char* kwlist[]={ "data", "poly", "init", "xorout", "refin", "refout", NULL };
 
 #if PY_MAJOR_VERSION >= 3
@@ -230,20 +297,21 @@ static PyMethodDef _crc64Methods[] = {
                                                                               "@init   : default=0x0000000000000000\n"
                                                                               "@xorout : default=0x0000000000000000\n"
                                                                               "@ref    : default=False" },
-    {NULL, NULL, 0, NULL}        /* Sentinel */
+    { NULL, NULL, 0, NULL }        /* Sentinel */
 };
 
 
 /* module documentation */
-PyDoc_STRVAR(_crc64_doc,
+PyDoc_STRVAR( _crc64_doc,
 "Calculation of CRC64 \n"
+"Author : Heyn \n"
 "libscrc.iso      -> Calculate GO-IOS of CRC64 [Poly=0x000000000000001BL, Init=0xFFFFFFFFFFFFFFFFL, refin=True,  refout=True,  xorout=0xFFFFFFFFFFFFFFFFL]\n"
 "libscrc.ecma182  -> Calculate ECMA182 of CRC64 [Poly=0x42F0E1EBA9EA3693L, Init=0x0000000000000000, refin=False, refout=False, xorout=0x0000000000000000]\n"
 "libscrc.we       -> Calculate WE of CRC64 [Poly=0x42F0E1EBA9EA3693L, Init=0xFFFFFFFFFFFFFFFFL, refin=False, refout=False, xorout=0xFFFFFFFFFFFFFFFFL]\n"
 "libscrc.xz64     -> Calculate XZ of CRC64 [Poly=0x42F0E1EBA9EA3693L, Init=0xFFFFFFFFFFFFFFFFL, refin=True, refout=True, xorout=0xFFFFFFFFFFFFFFFFL]\n"
 "libscrc.gsm40    -> Calculate GSM of CRC40 [Poly=0x0004820009L, Init=0x0000000000, refin=False, refout=False, xorout=0xFFFFFFFFFF]\n"
 "libscrc.hacker64 -> Free calculation CRC64 Xorout=0 Refin=False Refout=False\n"
-"\n");
+"\n" );
 
 
 #if PY_MAJOR_VERSION >= 3
@@ -259,7 +327,7 @@ static struct PyModuleDef _crc64module = {
 
 /* initialization function for Python 3 */
 PyMODINIT_FUNC
-PyInit__crc64(void)
+PyInit__crc64( void )
 {
     PyObject *m;
 
@@ -268,7 +336,7 @@ PyInit__crc64(void)
         return NULL;
     }
 
-    PyModule_AddStringConstant( m, "__version__", "1.3" );
+    PyModule_AddStringConstant( m, "__version__", "1.4" );
     PyModule_AddStringConstant( m, "__author__",  "Heyn");
 
     return m;
@@ -278,7 +346,7 @@ PyInit__crc64(void)
 
 /* initialization function for Python 2 */
 PyMODINIT_FUNC
-init_crc64(void)
+init_crc64( void )
 {
     (void) Py_InitModule3( "_crc64", _crc64Methods, _crc64_doc );
 }
