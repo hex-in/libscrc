@@ -4,12 +4,13 @@
 *                                           All Rights Reserved
 * File    : _canxmodule.c
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V1.3
+* Version : V1.4
 *
 * LICENSING TERMS:
 * ---------------
 *		New Create at 	2020-04-21 [Heyn] Initialize.
 *                       2020-04-27 [Heyn] Optimized Code.
+*                       2020-05-12 [Heyn] (Python2.7) FIX : Windows compilation error.
 *
 *********************************************************************************************************
 */
@@ -47,6 +48,7 @@ static unsigned char hexin_PyArg_ParseTuple_Paramete( PyObject *self, PyObject *
 
 static PyObject * _canx_can15( PyObject *self, PyObject *args )
 {
+#if PY_MAJOR_VERSION >= 3
     static struct _hexin_canx canx_param_can15 = { .is_initial=FALSE,
                                                    .width  = 15,
                                                    .poly   = CAN15_POLYNOMIAL_00004599,
@@ -55,6 +57,16 @@ static PyObject * _canx_can15( PyObject *self, PyObject *args )
                                                    .refout = FALSE,
                                                    .xorout = 0x00000000L,
                                                    .result = 0 };
+#else
+    static struct _hexin_canx canx_param_can15 = { FALSE,
+                                                   15,
+                                                   CAN15_POLYNOMIAL_00004599,
+                                                   0x00000000L,
+                                                   FALSE,
+                                                   FALSE,
+                                                   0x00000000L,
+                                                   0 };
+#endif  /* PY_MAJOR_VERSION */
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &canx_param_can15 ) ) {
         return NULL;
@@ -65,6 +77,7 @@ static PyObject * _canx_can15( PyObject *self, PyObject *args )
 
 static PyObject * _canx_can17( PyObject *self, PyObject *args )
 {
+#if PY_MAJOR_VERSION >= 3
     static struct _hexin_canx canx_param_can17 = { .is_initial=FALSE,
                                                    .width  = 17,
                                                    .poly   = CAN17_POLYNOMIAL_0001685B,
@@ -73,6 +86,16 @@ static PyObject * _canx_can17( PyObject *self, PyObject *args )
                                                    .refout = FALSE,
                                                    .xorout = 0x00000000L,
                                                    .result = 0 };
+#else
+    static struct _hexin_canx canx_param_can17 = { FALSE,
+                                                   17,
+                                                   CAN17_POLYNOMIAL_0001685B,
+                                                   0x00000000L,
+                                                   FALSE,
+                                                   FALSE,
+                                                   0x00000000L,
+                                                   0 };
+#endif /* PY_MAJOR_VERSION */
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &canx_param_can17 ) ) {
         return NULL;
@@ -83,6 +106,7 @@ static PyObject * _canx_can17( PyObject *self, PyObject *args )
 
 static PyObject * _canx_can21( PyObject *self, PyObject *args )
 {
+#if PY_MAJOR_VERSION >= 3
     static struct _hexin_canx canx_param_can21= { .is_initial=FALSE,
                                                    .width  = 21,
                                                    .poly   = CAN21_POLYNOMIAL_00102899,
@@ -91,6 +115,16 @@ static PyObject * _canx_can21( PyObject *self, PyObject *args )
                                                    .refout = FALSE,
                                                    .xorout = 0x00000000L,
                                                    .result = 0 };
+#else
+    static struct _hexin_canx canx_param_can21 = { FALSE,
+                                                   21,
+                                                   CAN21_POLYNOMIAL_00102899,
+                                                   0x00000000L,
+                                                   FALSE,
+                                                   FALSE,
+                                                   0x00000000L,
+                                                   0 };
+#endif  /* PY_MAJOR_VERSION */
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &canx_param_can21 ) ) {
         return NULL;
@@ -101,9 +135,9 @@ static PyObject * _canx_can21( PyObject *self, PyObject *args )
 
 /* method table */
 static PyMethodDef _canxMethods[] = {
-    { "can15",      (PyCFunction)_canx_can15, METH_VARARGS, "Calculate CAN15 [Poly=0x4599, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]" },
-    { "can17",      (PyCFunction)_canx_can17, METH_VARARGS, "Calculate CAN17 [Poly=0x1685B, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]" },
-    { "can21",      (PyCFunction)_canx_can21, METH_VARARGS, "Calculate CAN21 [Poly=0x102899, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]" },
+    { "can15",      (PyCFunction)_canx_can15, METH_VARARGS, "Calculate CAN15 [Poly=0x004599, Init=0 Xorout=0 Refin=FALSE Refout=FALSE]"   },
+    { "can17",      (PyCFunction)_canx_can17, METH_VARARGS, "Calculate CAN17 [Poly=0x01685B, Init=0 Xorout=0 Refin=FALSE Refout=FALSE]"  },
+    { "can21",      (PyCFunction)_canx_can21, METH_VARARGS, "Calculate CAN21 [Poly=0x102899, Init=0 Xorout=0 Refin=FALSE Refout=FALSE]" },
     { NULL, NULL, 0, NULL }        /* Sentinel */
 };
 
@@ -111,9 +145,10 @@ static PyMethodDef _canxMethods[] = {
 /* module documentation */
 PyDoc_STRVAR( _canx_doc,
 "Calculation of CANx \n"
-"libscrc.can15   -> Calculate CAN15 [Poly = 0x4599 Initial = 0 Xorout=0 Refin=True Refout=True]\n"
-"libscrc.can17   -> Calculate CAN17 [Poly = 0x1685B Initial = 0 Xorout=0 Refin=True Refout=True]\n"
-"libscrc.can21   -> Calculate CAN21 [Poly = 0x102899 Initial = 0 Xorout=0 Refin=True Refout=True]\n"
+"Author : Heyn \n"
+"libscrc.can15 -> Calculate CAN15 [Poly = 0x004599 Initial = 0 Xorout=0 Refin=FALSE Refout=FALSE]\n"
+"libscrc.can17 -> Calculate CAN17 [Poly = 0x01685B Initial = 0 Xorout=0 Refin=FALSE Refout=FALSE]\n"
+"libscrc.can21 -> Calculate CAN21 [Poly = 0x102899 Initial = 0 Xorout=0 Refin=FALSE Refout=FALSE]\n"
 "\n" );
 
 
@@ -139,7 +174,7 @@ PyInit__canx( void )
         return NULL;
     }
 
-    PyModule_AddStringConstant( m, "__version__", "1.3"   );
+    PyModule_AddStringConstant( m, "__version__", "1.4"   );
     PyModule_AddStringConstant( m, "__author__",  "Heyn"  );
 
     return m;

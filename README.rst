@@ -239,6 +239,7 @@ Example
     crc16 = libscrc.nrsc5(b'1234')  
 
 * CRC24::
+
     crc24 = libscrc.ble(b'1234')  
     crc24 = libscrc.flexraya(b'1234')  
     crc24 = libscrc.flexrayb(b'1234')  
@@ -248,7 +249,7 @@ Example
     crc24 = libscrc.os9(b'1234')  
     crc24 = libscrc.interlaken(b'1234')  
     crc24 = libscrc.crc24(b'1234')  
-    
+
 * CRC32::
     
     crc32 = libscrc.fsc(b'1234')            # Ethernet frame sequence (FSC)  
