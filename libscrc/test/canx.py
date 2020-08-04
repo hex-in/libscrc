@@ -7,6 +7,7 @@
 # Program:  Test library CANx Module.
 # Package:  pip install libscrc.
 # History:  2020-04-21 Wheel Ver:1.1 [Heyn] Initialize
+#           2020-08-04 Wheel Ver:1.4 [Heyn] New add gradualy calculating
 
 import unittest
 
@@ -20,6 +21,19 @@ class TestCANx( unittest.TestCase ):
     def do_basics( self, module ):
         """ Test basic functionality.
         """
+        # the same in two steps ( v1.4+ )
+        crc = module.can15( b'12345' )
+        crc = module.can15( b'6789', crc )
+        self.assertEqual( crc, 0x059E )
+
+        crc = module.can17( b'12345' )
+        crc = module.can17( b'6789', crc )
+        self.assertEqual( crc, 0x04F03 )
+
+        crc = module.can21( b'12345' )
+        crc = module.can21( b'6789', crc )
+        self.assertEqual( crc, 0xED841 )
+
         self.assertEqual( module.can15(b'123456789'),   0x059E  )
         self.assertEqual( module.can17(b'123456789'),   0x04F03 )
         self.assertEqual( module.can21(b'123456789'),   0xED841 )

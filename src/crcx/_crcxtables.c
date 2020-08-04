@@ -4,7 +4,7 @@
 *                                           All Rights Reserved
 * File    : _crcxtables.c
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V1.3
+* Version : V1.4
 *
 * LICENSING TERMS:
 * ---------------
@@ -12,6 +12,7 @@
 *		New Create at 	2017-09-22 09:36AM
 *                       2020-03-17 [Heyn] Optimized code.
 *                       2020-04-27 [Heyn] Optimized code.
+*                       2020-08-04 [Heyn] Fixed Issues #4.
 *
 *********************************************************************************************************
 */
@@ -82,11 +83,11 @@ static unsigned short hexin_crcx_compute_char( unsigned short crcx, unsigned cha
     return crc;
 }
 
-unsigned short hexin_crcx_compute( const unsigned char *pSrc, unsigned int len, struct _hexin_crcx *param )
+unsigned short hexin_crcx_compute( const unsigned char *pSrc, unsigned int len, struct _hexin_crcx *param, unsigned short init )
 {
     unsigned int i = 0, result = 0;
     unsigned int offset = ( HEXIN_CRCX_WIDTH - param->width );
-    unsigned short crc  = ( param->init << offset );
+    unsigned short crc  = ( init << offset );
 
     if ( param->is_initial == FALSE ) {
         if ( HEXIN_REFIN_REFOUT_IS_TRUE( param )  ) {
@@ -96,8 +97,11 @@ unsigned short hexin_crcx_compute( const unsigned char *pSrc, unsigned int len, 
         }
         param->is_initial = hexin_crcx_compute_init_table( param );
     }
-
-    if ( HEXIN_REFIN_REFOUT_IS_TRUE( param ) ) { 
+    /* Fixed Issues #4  */
+    /* TODO:
+       An error occurs when the initial value is the same as the crc value in the calculation.
+    */
+    if ( HEXIN_REFIN_REFOUT_IS_TRUE( param ) && ( crc == ( param->init << offset ) ) ) { 
         crc = hexin_crcx_reverse16( crc );
     }
 

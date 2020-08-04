@@ -1,7 +1,7 @@
 libscrc
 =======
 
-libscrc is a library for calculating CRC3 CRC4 CRC5 CRC6 CRC7 CRC8 CRC16 CRC24 CRC32 CRC64.
+libscrc is a library for calculating CRC3 CRC4 CRC5 CRC6 CRC7 CRC8 CRC16 CRC24 CRC32 CRC64 CRC82.
 
 +------------+------------+------------+-----------+-----------+-----------+ 
 | CRCx       | CRC8       | CRC16      | CRC24     | CRC32     | CRC64     |
@@ -87,6 +87,8 @@ Installation
 
     # python3 -m libscrc.test.modbus  
     # python3 -m libscrc.test.crc8  
+    # python3 -m libscrc.test.crcx  
+    # python3 -m libscrc.test.canx  
     # python3 -m libscrc.test.crc16  
     # python3 -m libscrc.test.crc24  
     # python3 -m libscrc.test.crc32  
@@ -101,6 +103,12 @@ Usage
     crc16 = libscrc.modbus(b'1234')       # Calculate ASCII of modbus
     crc16 = libscrc.modbus(b'\x01\x02')   # Calculate HEX of modbus
     crc16 = libscrc.modbus(bytearray( [ 0x01, 0x02 ] ))
+
+  You can also calculate CRC gradually( v1.4+ )::
+
+    import libscrc
+    crc16 = libscrc.xmodem(b'1234')
+    crc16 = libscrc.xmodem(b'5678', crc16)
 
 Example
 -------
@@ -283,9 +291,13 @@ Example
     crc64 = libscrc.xz64(b'1234')  
 
 NOTICE
-------
-* v0.1.6+ version will not support python2 series (2020-01-20)  
-* Removed two steps compute function v1.3+
+------ 
+* Revert gradualy calculating function v1.4+ (2020-08-04) 
+
+V1.4 (2020-08-04)
+++++++++++++++++++
+* Revert gradualy calculating function. ( Fixed Issues #4 )  
+* Optimized code  
 
 V1.0 (2020-03-23)
 ++++++++++++++++++

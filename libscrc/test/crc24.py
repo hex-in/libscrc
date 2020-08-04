@@ -20,6 +20,11 @@ class TestCRC24( unittest.TestCase ):
     def do_basics( self, module ):
         """ Test basic functionality.
         """
+        # the same in two steps ( v1.4+ )
+        crc = module.ble( b'12345' )
+        crc = module.ble( b'6789', crc )
+        self.assertEqual( crc, 0xC25A56 )
+
         self.assertEqual( module.ble(b'123456789'),         0xC25A56 )
         self.assertEqual( module.flexraya(b'123456789'),    0x7979BD )
         self.assertEqual( module.flexrayb(b'123456789'),    0x1F23B8 )

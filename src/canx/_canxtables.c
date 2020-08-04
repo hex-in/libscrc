@@ -4,12 +4,13 @@
 *                                           All Rights Reserved
 * File    : _canxtables.c
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V1.3
+* Version : V1.4
 *
 * LICENSING TERMS:
 * ---------------
 *		New Create at 	2020-04-21 [Heyn] Initialize.
 *                       2020-04-27 [Heyn] Optimized Code.
+*                       2020-08-04 [Heyn] Fixed Issues #4.
 *
 *********************************************************************************************************
 */
@@ -69,10 +70,10 @@ static unsigned int hexin_canx_compute_char( unsigned int crcx, unsigned char c,
     return crc;
 }
 
-unsigned int hexin_canx_compute( const unsigned char *pSrc, unsigned int len, struct _hexin_canx *param )
+unsigned int hexin_canx_compute( const unsigned char *pSrc, unsigned int len, struct _hexin_canx *param, unsigned int init )
 {
     unsigned int i = 0, result = 0;
-    unsigned int crc  = ( param->init << ( HEXIN_CANX_WIDTH - param->width ) );
+    unsigned int crc  = ( init << ( HEXIN_CANX_WIDTH - param->width ) );
 
     if ( param->is_initial == FALSE ) {
         if ( HEXIN_REFIN_REFOUT_IS_TRUE( param ) ) {

@@ -7,6 +7,7 @@
 # Program:  Test library CRCx Module.
 # Package:  pip install libscrc.
 # History:  2020-04-23 Wheel Ver:1.1 [Heyn] Initialize
+#           2020-08-04 Wheel Ver:1.4 [Heyn] New add gradualy calculating
 
 import unittest
 
@@ -20,6 +21,15 @@ class TestCRCx( unittest.TestCase ):
     def do_basics( self, module ):
         """ Test basic functionality.
         """
+        # the same in two steps ( v1.4+ )
+        crc = module.gsm3( b'12345' )
+        crc = module.gsm3( b'6789', crc )
+        self.assertEqual( crc, 0x04 )
+
+        crc = module.mpt1327( b'12345' )
+        crc = module.mpt1327( b'6789', crc )
+        self.assertEqual( crc, 0x2566 )
+
         self.assertEqual( module.gsm3(b'123456789'),     0x04 )
         self.assertEqual( module.rohc3(b'123456789'),    0x06 )
         self.assertEqual( module.itu4(b'123456789'),     0x07 )

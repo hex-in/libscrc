@@ -4,7 +4,7 @@
 *                                           All Rights Reserved
 * File    : _crc32tables.c
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V1.3
+* Version : V1.4
 *
 * LICENSING TERMS:
 * ---------------
@@ -12,6 +12,8 @@
 *                       2020-03-20 [Heyn] New add hexin_calc_crc32_adler
 *                       2020-03-23 [Heyn] New add hexin_calc_crc32_fletcher
 *                       2020-04-26 [Heyn] Optimized Code
+*                       2020-08-04 [Heyn] Fixed Issues #4.
+*
 *********************************************************************************************************
 */
 
@@ -166,10 +168,10 @@ unsigned int hexin_crc32_compute_char( unsigned int crc32, unsigned char c, stru
     return crc;
 }
 
-unsigned int hexin_crc32_compute( const unsigned char *pSrc, unsigned int len, struct _hexin_crc32 *param )
+unsigned int hexin_crc32_compute( const unsigned char *pSrc, unsigned int len, struct _hexin_crc32 *param, unsigned int init )
 {
     unsigned int i = 0, result = 0;
-    unsigned int crc  = ( param->init << ( HEXIN_CRC32_WIDTH - param->width ) );
+    unsigned int crc  = ( init << ( HEXIN_CRC32_WIDTH - param->width ) );       /* Fixed Issues #4  */
 
     if ( param->is_initial == FALSE ) {
         if ( HEXIN_REFIN_REFOUT_IS_TRUE( param ) ) {

@@ -8,6 +8,7 @@
 # Package:  pip install libscrc.
 # History:  2020-03-13 Wheel Ver:0.1.6 [Heyn] Initialize
 #           2020-04-26 Wheel Ver:1.3   [Heyn] Optimized Code
+#           2020-08-04 Wheel Ver:1.4   [Heyn] New add gradualy calculating
 
 import unittest
 
@@ -21,6 +22,14 @@ class TestCRC32( unittest.TestCase ):
     def do_basics( self, module ):
         """ Test basic functionality.
         """
+        crc = module.mpeg2( b'12345' )
+        crc = module.mpeg2( b'6789', crc )
+        self.assertEqual( crc, 0x0376E6E7 )
+
+        crc = module.crc32( b'12345' )
+        crc = module.crc32( b'6789', crc )
+        self.assertEqual( crc, 0xCBF43926 )
+
         self.assertEqual( module.fsc(b'123456789'),     0x0376E6E7 )
         self.assertEqual( module.crc32(b'123456789'),   0xCBF43926 )
         self.assertEqual( module.iso_hdlc32(b'123456789'),0xCBF43926 )

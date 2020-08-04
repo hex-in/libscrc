@@ -4,12 +4,13 @@
 *                                           All Rights Reserved
 * File    : _crc24tables.c
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V1.3
+* Version : V1.4
 *
 * LICENSING TERMS:
 * ---------------
 *		New Create at 	2020-04-17 [Heyn] Initialize.
 *                       2020-04-27 [Heyn] Optimized code.
+*                       2020-08-04 [Heyn] Fixed Issues #4.
 *
 *********************************************************************************************************
 */
@@ -69,10 +70,10 @@ unsigned int hexin_crc24_compute_char( unsigned int crc24, unsigned char c, stru
     return crc;
 }
 
-unsigned int hexin_crc24_compute( const unsigned char *pSrc, unsigned int len, struct _hexin_crc24 *param )
+unsigned int hexin_crc24_compute( const unsigned char *pSrc, unsigned int len, struct _hexin_crc24 *param, unsigned int init )
 {
     unsigned int i = 0;
-    unsigned int crc = param->init;
+    unsigned int crc = init;
 
     if ( param->is_initial == FALSE ) {
         if ( HEXIN_REFIN_REFOUT_IS_TRUE( param ) ) {
@@ -80,9 +81,12 @@ unsigned int hexin_crc24_compute( const unsigned char *pSrc, unsigned int len, s
         }
         param->is_initial = hexin_crc24_compute_init_table( param );
     }
-
-    if ( HEXIN_REFIN_REFOUT_IS_TRUE( param ) ) {
-        crc = hexin_reverse24( param->init );
+    /* Fixed Issues #4  */
+    /* TODO:
+       An error occurs when the initial value is the same as the crc value in the calculation.
+    */
+    if ( HEXIN_REFIN_REFOUT_IS_TRUE( param ) && ( crc == param->init ) ) {
+        crc = hexin_reverse24( init );
     }
 
 	for ( i=0; i<len; i++ ) {

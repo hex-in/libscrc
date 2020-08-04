@@ -8,6 +8,7 @@
 # Package:  pip install libscrc.
 # History:  2017-09-21 Wheel Ver:0.1.3 [Heyn] Initialize
 #           2020-03-13 Wheel Ver:0.1.6 [Heyn] optimized code
+#           2020-08-04 Wheel Ver:1.4   [Heyn] New add gradualy calculating
 
 import unittest
 
@@ -21,6 +22,15 @@ class TestCRC8( unittest.TestCase ):
     def do_basics( self, module ):
         """ Test basic functionality.
         """
+        # the same in two steps ( v1.4+ )
+        crc = module.maxim8( b'12345' )
+        crc = module.maxim8( b'6789', crc )
+        self.assertEqual( crc, 0xA1 )
+
+        crc = module.crc8( b'12345' )
+        crc = module.crc8( b'6789', crc )
+        self.assertEqual( crc, 0xF4 )
+
         self.assertEqual( module.maxim8(b'123456789'),      0xA1 )
         self.assertEqual( module.rohc(b'123456789'),        0xD0 )
         self.assertEqual( module.crc8(b'123456789'),        0xF4 )

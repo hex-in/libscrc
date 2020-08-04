@@ -4,12 +4,13 @@
 *                                           All Rights Reserved
 * File    : _crc64tables.c
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V1.3
+* Version : V1.4
 *
 * LICENSING TERMS:
 * ---------------
 *		New Create at 	2020-03-13 [Heyn] Initialize
 *                       2020-04-23 [Heyn] New add we() and xz() functions.
+*                       2020-08-04 [Heyn] Fixed Issues #4.
 *
 *   SEE : http://reveng.sourceforge.net/crc-catalogue/17plus.htm#crc.cat-bits.64
 *
@@ -140,11 +141,11 @@ static unsigned long long hexin_crc64_compute_char( unsigned long long crc64, un
     return crc;
 }
 
-unsigned long long hexin_crc64_compute( const unsigned char *pSrc, unsigned int len, struct _hexin_crc64 *param )
+unsigned long long hexin_crc64_compute( const unsigned char *pSrc, unsigned int len, struct _hexin_crc64 *param, unsigned long long init )
 {
     unsigned int i = 0;
     unsigned long long result = 0;
-    unsigned long long crc  = ( param->init << ( HEXIN_CRC64_WIDTH - param->width ) );
+    unsigned long long crc  = ( init << ( HEXIN_CRC64_WIDTH - param->width ) );
 
     if ( param->is_initial == FALSE ) {
         if ( HEXIN_REFIN_REFOUT_IS_TRUE( param ) ) {

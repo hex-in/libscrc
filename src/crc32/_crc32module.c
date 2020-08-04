@@ -4,7 +4,7 @@
  *                                           All Rights Reserved
  * File    : _crc32module.c
  * Author  : Heyn (heyunhuan@gmail.com)
- * Version : V1.3
+ * Version : V1.4
  *
  * LICENSING TERMS:
  * ---------------
@@ -14,8 +14,9 @@
  *                                        for ( unsigned int i=0; i<256; i++ ) -> for ( i=0; i<256; i++ )
  *                      2017-09-22 [Heyn] Optimized Code. New add table32() function.
  *                      2020-03-20 [Heyn] New add adler32 and fletcher32 functions.
- *                      2020-04-17 [Heyn] Issues #1
+ *                      2020-04-17 [Heyn] Fixed Issues #1
  *                      2020-04-26 [Heyn] Optimized Code
+ *                      2020-08-04 [Heyn] Fixed Issues #4.
  * 
  * Web : https://en.wikipedia.org/wiki/Polynomial_representations_of_cyclic_redundancy_checks
  *
@@ -61,16 +62,17 @@ static unsigned char hexin_PyArg_ParseTuple( PyObject *self, PyObject *args,
 static unsigned char hexin_PyArg_ParseTuple_Paramete( PyObject *self, PyObject *args, struct _hexin_crc32 *param )
 {
     Py_buffer data = { NULL, NULL };
+    unsigned int init = param->init;          /* Fixed Issues #4  */
 
 #if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTuple( args, "y*", &data ) ) {
+    if ( !PyArg_ParseTuple( args, "y*|I", &data, &init ) ) {
         if ( data.obj ) {
             PyBuffer_Release( &data );
         }
         return FALSE;
     }
 #else
-    if ( !PyArg_ParseTuple( args, "s*", &data ) ) {
+    if ( !PyArg_ParseTuple( args, "s*|I", &data, &init ) ) {
         if ( data.obj ) {
             PyBuffer_Release( &data );
         }
@@ -78,7 +80,12 @@ static unsigned char hexin_PyArg_ParseTuple_Paramete( PyObject *self, PyObject *
     }
 #endif /* PY_MAJOR_VERSION */
 
-    param->result = hexin_crc32_compute( (const unsigned char *)data.buf, (unsigned int)data.len, param  );
+    /* Fixed Issues #4  */
+    if ( PyTuple_Size( args ) == 2 ) {
+        init = init ^ param->xorout;
+    }
+    
+    param->result = hexin_crc32_compute( (const unsigned char *)data.buf, (unsigned int)data.len, param, init );
 
     if ( data.obj )
        PyBuffer_Release( &data );
@@ -196,7 +203,7 @@ static PyObject * _crc32_hacker( PyObject *self, PyObject *args, PyObject* kws )
     }
 #endif /* PY_MAJOR_VERSION */
 
-    crc32_param_hacker.result = hexin_crc32_compute( (const unsigned char *)data.buf, (unsigned int)data.len, &crc32_param_hacker );
+    crc32_param_hacker.result = hexin_crc32_compute( (const unsigned char *)data.buf, (unsigned int)data.len, &crc32_param_hacker, crc32_param_hacker.init );
 
     if ( data.obj )
        PyBuffer_Release( &data );
@@ -502,7 +509,7 @@ PyInit__crc32( void )
         return NULL;
     }
 
-    PyModule_AddStringConstant( m, "__version__", "1.3"  );
+    PyModule_AddStringConstant( m, "__version__", "1.4"  );
     PyModule_AddStringConstant( m, "__author__",  "Heyn" );
 
     return m;

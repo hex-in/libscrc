@@ -15,6 +15,7 @@
 *                       2020-04-17 [Heyn] Issues #1
 *                       2020-04-23 [Heyn] New add we() and xz() functions.
 *                       2020-05-12 [Heyn] (Python2.7) FIX : Windows compilation error.
+*                       2020-08-04 [Heyn] Fixed Issues #4.
 *
 *********************************************************************************************************
 */
@@ -25,16 +26,17 @@
 static unsigned char hexin_PyArg_ParseTuple_Paramete( PyObject *self, PyObject *args, struct _hexin_crc64 *param )
 {
     Py_buffer data = { NULL, NULL };
+    unsigned long long init = param->init;
 
 #if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTuple( args, "y*", &data ) ) {
+    if ( !PyArg_ParseTuple( args, "y*|K", &data, &init ) ) {
         if ( data.obj ) {
             PyBuffer_Release( &data );
         }
         return FALSE;
     }
 #else
-    if ( !PyArg_ParseTuple( args, "s*", &data ) ) {
+    if ( !PyArg_ParseTuple( args, "s*|K", &data, &init ) ) {
         if ( data.obj ) {
             PyBuffer_Release( &data );
         }
@@ -42,7 +44,12 @@ static unsigned char hexin_PyArg_ParseTuple_Paramete( PyObject *self, PyObject *
     }
 #endif /* PY_MAJOR_VERSION */
 
-    param->result = hexin_crc64_compute( (const unsigned char *)data.buf, (unsigned int)data.len, param  );
+    /* Fixed Issues #4  */
+    if ( PyTuple_Size( args ) == 2 ) {
+        init = init ^ param->xorout;
+    }
+
+    param->result = hexin_crc64_compute( (const unsigned char *)data.buf, (unsigned int)data.len, param, init );
 
     if ( data.obj )
        PyBuffer_Release( &data );
@@ -275,7 +282,7 @@ static PyObject * _crc64_hacker( PyObject *self, PyObject *args, PyObject* kws )
     }
 #endif /* PY_MAJOR_VERSION */
 
-    crc64_param_hacker.result = hexin_crc64_compute( (const unsigned char *)data.buf, (unsigned int)data.len, &crc64_param_hacker );
+    crc64_param_hacker.result = hexin_crc64_compute( (const unsigned char *)data.buf, (unsigned int)data.len, &crc64_param_hacker, crc64_param_hacker.init );
 
     if ( data.obj )
        PyBuffer_Release( &data );

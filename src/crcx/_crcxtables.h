@@ -4,13 +4,14 @@
 *                                           All Rights Reserved
 * File    : _crcxtables.h
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V1.3
+* Version : V1.4
 *
 * LICENSING TERMS:
 * ---------------
 *		New Create at 	2017-09-22 09:36AM
 *                       2020-03-17 [Heyn] Optimized code.
 *                       2020-04-27 [Heyn] Optimized code.
+*                       2020-08-04 [Heyn] Fixed Issues #4.
 *
 *********************************************************************************************************
 */
@@ -47,6 +48,6 @@ struct _hexin_crcx {
 };
 
 unsigned short hexin_crcx_reverse12( unsigned short data );
-unsigned short hexin_crcx_compute( const unsigned char *pSrc, unsigned int len, struct _hexin_crcx *param );
+unsigned short hexin_crcx_compute( const unsigned char *pSrc, unsigned int len, struct _hexin_crcx *param, unsigned short init );
 
 #endif //__CRCX_TABLES_H__

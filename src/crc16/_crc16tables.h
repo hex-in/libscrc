@@ -4,13 +4,14 @@
 *                                           All Rights Reserved
 * File    : _crc16tables.h
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V1.3
+* Version : V1.4
 *
 * LICENSING TERMS:
 * ---------------
 *		New Create at 	2017-09-19 21:01PM [Heyn] New CRC16-X25 Table.
 *                       2020-03-13 16:10PM [Heyn] New add hacker code.
 *                       2020-04-27 [Heyn] Optimized code.
+*                       2020-08-04 [Heyn] Fixed Issues #4.
 *
 *********************************************************************************************************
 */
@@ -64,7 +65,7 @@ unsigned short hexin_calc_crc16_sick(     const unsigned char *pSrc, unsigned in
 unsigned short hexin_calc_crc16_network(  const unsigned char *pSrc, unsigned int len, unsigned short crc16 /*reserved*/ );
 unsigned short hexin_calc_crc16_fletcher( const unsigned char *pSrc, unsigned int len, unsigned short crc16 /*reserved*/ );
 
-unsigned short hexin_crc16_compute( const unsigned char *pSrc, unsigned int len, struct _hexin_crc16 *param );
+unsigned short hexin_crc16_compute( const unsigned char *pSrc, unsigned int len, struct _hexin_crc16 *param, unsigned short init );
 
 
 #endif //__CRC16_TABLES_H__

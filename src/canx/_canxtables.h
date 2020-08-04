@@ -4,12 +4,13 @@
 *                                           All Rights Reserved
 * File    : _canxtables.h
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V1.3
+* Version : V1.4
 *
 * LICENSING TERMS:
 * ---------------
 *		New Create at 	2020-04-21 [Heyn] Initialize.
 *                       2020-04-27 [Heyn] Optimized Code.
+*                       2020-08-04 [Heyn] Fixed Issues #4.
 *
 *********************************************************************************************************
 */
@@ -48,6 +49,6 @@ struct _hexin_canx {
     unsigned int  table[MAX_TABLE_ARRAY];
 };
 
-unsigned int hexin_canx_compute( const unsigned char *pSrc, unsigned int len, struct _hexin_canx *param );
+unsigned int hexin_canx_compute( const unsigned char *pSrc, unsigned int len, struct _hexin_canx *param, unsigned int init );
 
 #endif //__CANX_TABLES_H__

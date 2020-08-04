@@ -9,6 +9,7 @@
 # History:  2017-08-19 Wheel Ver:0.0.5 [Heyn] Initialize
 #           2020-03-16 Wheel Ver:0.1.6 [Heyn] New add libscrc.hacker64()
 #           2020-04-23 Wheel Ver:1.1   [Heyn] Bug fixed.
+#           2020-08-04 Wheel Ver:1.4   [Heyn] New add gradualy calculating
 
 import unittest
 import libscrc
@@ -22,6 +23,14 @@ class TestCRC64( unittest.TestCase ):
     def do_basics( self, module ):
         """ Test basic functionality.
         """
+        crc = module.ecma182( b'12345' )
+        crc = module.ecma182( b'6789', crc )
+        self.assertEqual( crc, 0x6C40DF5F0B497347 )
+
+        crc = module.iso( b'12345' )
+        crc = module.iso( b'6789', crc )
+        self.assertEqual( crc, 0xB90956C775A41001 )
+
         self.assertEqual( module.gsm40(b'123456789'),   0xD4164FC646 )
 
         self.assertEqual( module.iso(b'123456789'),     0xB90956C775A41001 )

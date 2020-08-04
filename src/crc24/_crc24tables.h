@@ -4,12 +4,13 @@
 *                                           All Rights Reserved
 * File    : _crc24tables.h
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V1.3
+* Version : V1.4
 *
 * LICENSING TERMS:
 * ---------------
 *		New Create at 	2020-04-17 [Heyn] Initialize.
 *                       2020-04-27 [Heyn] Optimized code.
+*                       2020-08-04 [Heyn] Fixed Issues #4.
 *
 *********************************************************************************************************
 */
@@ -54,6 +55,6 @@ struct _hexin_crc24 {
     unsigned int  table[MAX_TABLE_ARRAY];
 };
 
-unsigned int hexin_crc24_compute( const unsigned char *pSrc, unsigned int len, struct _hexin_crc24 *param );
+unsigned int hexin_crc24_compute( const unsigned char *pSrc, unsigned int len, struct _hexin_crc24 *param, unsigned int init );
 
 #endif //__CRC24_TABLES_H__

@@ -4,12 +4,13 @@
 *                                           All Rights Reserved
 * File    : _crc8tables.c
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V1.3
+* Version : V1.4
 *
 * LICENSING TERMS:
 * ---------------
 *		New Create at 	2020-03-17 [Heyn] Initialize
 *                       2020-03-20 [Heyn] New add hexin_calc_crc8_fletcher
+*                       2020-08-04 [Heyn] Fixed Issues #4.
 *
 *   SEE : http://reveng.sourceforge.net/crc-catalogue/1-15.htm#crc.cat-bits.8
 *
@@ -153,10 +154,10 @@ static unsigned char hexin_crc8_compute_char( unsigned char crc8, unsigned char 
     return param->table[ crc8 ^ c ];
 }
 
-unsigned char hexin_crc8_compute( const unsigned char *pSrc, unsigned int len, struct _hexin_crc8 *param )
+unsigned char hexin_crc8_compute( const unsigned char *pSrc, unsigned int len, struct _hexin_crc8 *param, unsigned char init )
 {
     unsigned int i = 0;
-    unsigned char crc = param->init;
+    unsigned char crc = init;
 
     if ( param->is_initial == FALSE ) {
         if ( HEXIN_REFIN_REFOUT_IS_TRUE( param ) ) {
@@ -164,9 +165,12 @@ unsigned char hexin_crc8_compute( const unsigned char *pSrc, unsigned int len, s
         }
         param->is_initial = hexin_crc8_compute_init_table( param );
     }
-
-    if ( HEXIN_REFIN_REFOUT_IS_TRUE( param ) ) { 
-        crc = hexin_reverse8( param->init );
+    /* Fixed Issues #4  */
+    /* TODO:
+       An error occurs when the initial value is the same as the crc value in the calculation.
+    */
+    if ( HEXIN_REFIN_REFOUT_IS_TRUE( param ) && ( crc == param->init ) ) { 
+        crc = hexin_reverse8( init );
     }
 
 	for ( i=0; i<len; i++ ) {

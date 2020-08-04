@@ -4,12 +4,13 @@
 *                                           All Rights Reserved
 * File    : _crc64tables.h
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V1.3
+* Version : V1.4
 *
 * LICENSING TERMS:
 * ---------------
 *		New Create at 	2020-03-13 [Heyn] Initialize.
 *                       2020-04-23 [Heyn] New add we() and xz() functions.
+*                       2020-08-04 [Heyn] Fixed Issues #4.
 *
 *********************************************************************************************************
 */
@@ -56,6 +57,6 @@ unsigned long long hexin_reverse64( unsigned long long data );
 unsigned char hexin_crc64_init_table_poly_is_high( unsigned long long polynomial, unsigned long long *table );
 unsigned char hexin_crc64_init_table_poly_is_low(  unsigned long long polynomial, unsigned long long *table );
 
-unsigned long long hexin_crc64_compute( const unsigned char *pSrc, unsigned int len, struct _hexin_crc64 *param );
+unsigned long long hexin_crc64_compute( const unsigned char *pSrc, unsigned int len, struct _hexin_crc64 *param, unsigned long long init );
 
 #endif //__CRC64_TABLES_H__

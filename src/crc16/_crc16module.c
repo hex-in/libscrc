@@ -4,7 +4,7 @@
 *                                           All Rights Reserved
 * File    : _crc16module.c
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V1.3
+* Version : V1.4
 *
 * LICENSING TERMS:
 * ---------------
@@ -24,8 +24,9 @@
 *                       2020-03-20 [Heyn] New add UDP and TCP checksum.
 *                       2020-03-23 [Blazin64] Adds support for the CRC method used by MCRF4XX RFID hardware.
 *                       2020-04-08 [Heyn] New add libscrc.epc16() for RFID tag EPC
-*                       2020-04-17 [Heyn] Issues #1
+*                       2020-04-17 [Heyn] Fixed Issues #1
 *                       2020-04-27 [Heyn] Optimized code.
+*                       2020-08-04 [Heyn] Fixed Issues #4.
 *
 *********************************************************************************************************
 */
@@ -69,16 +70,17 @@ static unsigned char hexin_PyArg_ParseTuple( PyObject *self, PyObject *args,
 static unsigned char hexin_PyArg_ParseTuple_Paramete( PyObject *self, PyObject *args, struct _hexin_crc16 *param )
 {
     Py_buffer data = { NULL, NULL };
+    unsigned short init = param->init;          /* Fixed Issues #4  */
 
 #if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTuple( args, "y*", &data ) ) {
+    if ( !PyArg_ParseTuple( args, "y*|H", &data, &init ) ) {
         if ( data.obj ) {
             PyBuffer_Release( &data );
         }
         return FALSE;
     }
 #else
-    if ( !PyArg_ParseTuple( args, "s*", &data ) ) {
+    if ( !PyArg_ParseTuple( args, "s*|H", &data, &init ) ) {
         if ( data.obj ) {
             PyBuffer_Release( &data );
         }
@@ -86,7 +88,12 @@ static unsigned char hexin_PyArg_ParseTuple_Paramete( PyObject *self, PyObject *
     }
 #endif /* PY_MAJOR_VERSION */
 
-    param->result = hexin_crc16_compute( (const unsigned char *)data.buf, (unsigned int)data.len, param  );
+    /* Fixed Issues #4  */
+    if ( PyTuple_Size( args ) == 2 ) {
+        init = init ^ param->xorout;
+    }
+
+    param->result = hexin_crc16_compute( (const unsigned char *)data.buf, (unsigned int)data.len, param, init );
 
     if ( data.obj )
        PyBuffer_Release( &data );
@@ -410,7 +417,7 @@ static PyObject * _crc16_hacker( PyObject *self, PyObject *args, PyObject* kws )
     }
 #endif /* PY_MAJOR_VERSION */
 
-    crc16_param_hacker.result = hexin_crc16_compute( (const unsigned char *)data.buf, (unsigned int)data.len, &crc16_param_hacker );
+    crc16_param_hacker.result = hexin_crc16_compute( (const unsigned char *)data.buf, (unsigned int)data.len, &crc16_param_hacker, crc16_param_hacker.init );
 
     if ( data.obj )
        PyBuffer_Release( &data );
@@ -894,7 +901,7 @@ PyInit__crc16( void )
         return NULL;
     }
 
-    PyModule_AddStringConstant( m, "__version__", "1.3"   );
+    PyModule_AddStringConstant( m, "__version__", "1.4"   );
     PyModule_AddStringConstant( m, "__author__",  "Heyn"  );
 
     return m;
