@@ -308,6 +308,12 @@ crc64 = libscrc.xz64(b'1234')
 crc64 = libscrc.hacker64(b'123456789', poly=0x42F0E1EBA9EA3693, init=0, xorout=0, refin=False, refout=False )
 ```
 
+7.CRC82
+
+```python
+crc82 = libscrc.darc82(b'123456789')
+```
+
 
 
 NOTICE
@@ -321,7 +327,15 @@ NOTICE
 ------
 
 - Revert gradually calculating function. ( Fixed Issues #4 )
-- Optimized code
+
+- Optimized code.
+
+  #### Gradually calculate invalid functions(TODO):
+
+  1. CRCx   -> libscrc.umts12()  libscrc.crc12_3gpp()
+  2. CRC8   -> libscrc.intel()  libscrc.lrc()
+  3. CRC16 -> libscrc.sick()  libscrc.udp()  libscrc.tcp()  libscrc.fletcher16()
+  4. CRC32 -> libscrc.fletcher32()
 
 ### V1.1(2020-04-20)
 

@@ -290,6 +290,10 @@ Example
     crc64 = libscrc.we(b'1234')  
     crc64 = libscrc.xz64(b'1234')  
 
+* CRC82::
+    
+    crc82 = libscrc.darc82(b'123456789')  
+
 NOTICE
 ------ 
 * Revert gradually calculating function v1.4+ (2020-08-04) 
@@ -298,6 +302,11 @@ V1.4 (2020-08-04)
 ++++++++++++++++++
 * Revert gradually calculating function. ( Fixed Issues #4 )  
 * Optimized code  
+* Gradually calculate invalid functions( TODO )  
+* CRCx -> libscrc.umts12() libscrc.crc12_3gpp()  
+* CRC8 -> libscrc.intel() libscrc.lrc()  
+* CRC16 -> libscrc.sick() libscrc.udp() libscrc.tcp() libscrc.fletcher16()  
+* CRC32 -> libscrc.fletcher32()  
 
 V1.0 (2020-03-23)
 ++++++++++++++++++
