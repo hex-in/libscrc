@@ -89,7 +89,7 @@ static unsigned char hexin_PyArg_ParseTuple_Paramete( PyObject *self, PyObject *
 #endif /* PY_MAJOR_VERSION */
 
     /* Fixed Issues #4  */
-    param->is_gradual = PyTuple_Size( args );
+    param->is_gradual = ( unsigned int )PyTuple_Size( args );   // Fixed warning C4244
     if ( HEXIN_GRADUAL_CALCULATE_IS_TRUE( param ) ) {
         init = ( init ^ param->xorout );
     }
