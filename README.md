@@ -312,7 +312,7 @@ crc64 = libscrc.hacker64(b'123456789', poly=0x42F0E1EBA9EA3693, init=0, xorout=0
 
 NOTICE
 ------
-* Revert gradualy calculating function v1.4+ (2020-08-04) 
+* Revert gradually calculating function v1.4+ (2020-08-04) 
 
   
 
@@ -320,7 +320,7 @@ NOTICE
 
 ------
 
-- Revert gradualy calculating function. ( Fixed Issues #4 )
+- Revert gradually calculating function. ( Fixed Issues #4 )
 - Optimized code
 
 ### V1.1(2020-04-20)

@@ -212,10 +212,7 @@ unsigned short hexin_crc16_compute( const unsigned char *pSrc, unsigned int len,
     }
 
     /* Fixed Issues #4  */
-    /* TODO:
-       An error occurs when the initial value is the same as the crc value in the calculation.
-    */
-    if ( HEXIN_REFIN_REFOUT_IS_TRUE( param ) && ( crc == param->init ) ) { 
+    if ( HEXIN_REFIN_REFOUT_IS_TRUE( param ) && ( !HEXIN_GRADUAL_CALCULATE_IS_TRUE( param ) ) ) { 
         crc = hexin_reverse16( init );
     }
 

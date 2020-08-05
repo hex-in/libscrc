@@ -42,10 +42,11 @@
 
 #define                 HEXIN_POLYNOMIAL_IS_HIGH(x)             ( x & 0x8000 )
 #define                 HEXIN_REFIN_REFOUT_IS_TRUE(x)           ( ( x->refin == TRUE ) && ( x->refout == TRUE ) )
-
+#define                 HEXIN_GRADUAL_CALCULATE_IS_TRUE(x)      ( x->is_gradual == 2 )
 
 struct _hexin_crc16 {
     unsigned int    is_initial;
+    unsigned int    is_gradual;
     unsigned short  width;
     unsigned short  poly;
     unsigned short  init;

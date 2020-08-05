@@ -7,7 +7,7 @@
 # Program:  Test library CANx Module.
 # Package:  pip install libscrc.
 # History:  2020-04-21 Wheel Ver:1.1 [Heyn] Initialize
-#           2020-08-04 Wheel Ver:1.4 [Heyn] New add gradualy calculating
+#           2020-08-04 Wheel Ver:1.4 [Heyn] New add gradually calculating
 
 import unittest
 

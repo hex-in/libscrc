@@ -8,7 +8,7 @@
 # Package:  pip install libscrc.
 # History:  2020-03-13 Wheel Ver:0.1.6 [Heyn] Initialize
 #           2020-04-26 Wheel Ver:1.3   [Heyn] Optimized Code
-#           2020-08-04 Wheel Ver:1.4   [Heyn] New add gradualy calculating
+#           2020-08-04 Wheel Ver:1.4   [Heyn] New add gradually calculating
 
 import unittest
 

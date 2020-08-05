@@ -9,7 +9,7 @@
 # History:  2017-08-19 Wheel Ver:0.0.5 [Heyn] Initialize
 #           2020-03-16 Wheel Ver:0.1.6 [Heyn] New add libscrc.hacker64()
 #           2020-04-23 Wheel Ver:1.1   [Heyn] Bug fixed.
-#           2020-08-04 Wheel Ver:1.4   [Heyn] New add gradualy calculating
+#           2020-08-04 Wheel Ver:1.4   [Heyn] New add gradually calculating
 
 import unittest
 import libscrc

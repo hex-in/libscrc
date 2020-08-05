@@ -292,11 +292,11 @@ Example
 
 NOTICE
 ------ 
-* Revert gradualy calculating function v1.4+ (2020-08-04) 
+* Revert gradually calculating function v1.4+ (2020-08-04) 
 
 V1.4 (2020-08-04)
 ++++++++++++++++++
-* Revert gradualy calculating function. ( Fixed Issues #4 )  
+* Revert gradually calculating function. ( Fixed Issues #4 )  
 * Optimized code  
 
 V1.0 (2020-03-23)
