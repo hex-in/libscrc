@@ -33,7 +33,7 @@
 #define                 HEXIN_REFIN_REFOUT_IS_TRUE(x)           ( ( x->refin == TRUE ) && ( x->refout == TRUE ) )
 
 #define                 HEXIN_POLYNOMIAL_IS_HIGH(x)             ( x & 0x80 )
-
+#define                 HEXIN_GRADUAL_CALCULATE_IS_TRUE(x)      ( x->is_gradual == 2 )
 
 #define CRC8_POLYNOMIAL_07                                      0x07
 #define CRC8_POLYNOMIAL_31                                      0x31
@@ -47,6 +47,7 @@
 
 struct _hexin_crc8 {
     unsigned int   is_initial;
+    unsigned int   is_gradual;
     unsigned char  width;
     unsigned char  poly;
     unsigned char  init;

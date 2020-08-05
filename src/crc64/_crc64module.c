@@ -45,8 +45,9 @@ static unsigned char hexin_PyArg_ParseTuple_Paramete( PyObject *self, PyObject *
 #endif /* PY_MAJOR_VERSION */
 
     /* Fixed Issues #4  */
-    if ( PyTuple_Size( args ) == 2 ) {
-        init = init ^ param->xorout;
+    param->is_gradual = PyTuple_Size( args );
+    if ( HEXIN_GRADUAL_CALCULATE_IS_TRUE( param ) ) {
+        init = ( init ^ param->xorout );
     }
 
     param->result = hexin_crc64_compute( (const unsigned char *)data.buf, (unsigned int)data.len, param, init );

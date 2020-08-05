@@ -82,10 +82,7 @@ unsigned int hexin_crc24_compute( const unsigned char *pSrc, unsigned int len, s
         param->is_initial = hexin_crc24_compute_init_table( param );
     }
     /* Fixed Issues #4  */
-    /* TODO:
-       An error occurs when the initial value is the same as the crc value in the calculation.
-    */
-    if ( HEXIN_REFIN_REFOUT_IS_TRUE( param ) && ( crc == param->init ) ) {
+    if ( HEXIN_REFIN_REFOUT_IS_TRUE( param ) && ( !HEXIN_GRADUAL_CALCULATE_IS_TRUE( param ) ) ) { 
         crc = hexin_reverse24( init );
     }
 

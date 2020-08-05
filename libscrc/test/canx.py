@@ -15,13 +15,12 @@ import libscrc
 from libscrc import _canx
 
 class TestCANx( unittest.TestCase ):
-    """ TestCANx variant.
+    """ Test CANx variant.
     """
-
-    def do_basics( self, module ):
-        """ Test basic functionality.
+    def do_gradually( self , module ):
+        """ Test gradually calculating functionality.
+            (libscrc >= 1.4)
         """
-        # the same in two steps ( v1.4+ )
         crc = module.can15( b'12345' )
         crc = module.can15( b'6789', crc )
         self.assertEqual( crc, 0x059E )
@@ -34,6 +33,9 @@ class TestCANx( unittest.TestCase ):
         crc = module.can21( b'6789', crc )
         self.assertEqual( crc, 0xED841 )
 
+    def do_basics( self, module ):
+        """ Test basic functionality.
+        """
         self.assertEqual( module.can15(b'123456789'),   0x059E  )
         self.assertEqual( module.can17(b'123456789'),   0x04F03 )
         self.assertEqual( module.can21(b'123456789'),   0xED841 )
@@ -42,13 +44,13 @@ class TestCANx( unittest.TestCase ):
         """ Test basic functionality.
         """
         self.do_basics( libscrc )
-
+        self.do_gradually( libscrc )
 
     def test_basics_c( self ):
         """Test basic functionality of the extension module.
         """
+        self.do_gradually( _canx )
         self.do_basics( _canx )
-
 
 if __name__ == '__main__':
     unittest.main()

@@ -16,7 +16,7 @@
 *
 *********************************************************************************************************
 */
-
+#include "stdio.h"
 #include "_crcxtables.h"
 
 unsigned short hexin_crcx_reverse12( unsigned short data )
@@ -97,11 +97,13 @@ unsigned short hexin_crcx_compute( const unsigned char *pSrc, unsigned int len, 
         }
         param->is_initial = hexin_crcx_compute_init_table( param );
     }
+
     /* Fixed Issues #4  */
-    /* TODO:
-       An error occurs when the initial value is the same as the crc value in the calculation.
-    */
-    if ( HEXIN_REFIN_REFOUT_IS_TRUE( param ) && ( crc == ( param->init << offset ) ) ) { 
+    if ( HEXIN_REFIN_REFOUT_IS_TRUE( param ) && ( HEXIN_GRADUAL_CALCULATE_IS_TRUE( param ) ) ) {
+        crc = init;
+    }
+
+    if ( HEXIN_REFIN_REFOUT_IS_TRUE( param ) && ( !HEXIN_GRADUAL_CALCULATE_IS_TRUE( param ) ) ) { 
         crc = hexin_crcx_reverse16( crc );
     }
 

@@ -36,6 +36,7 @@
 
 #define                 HEXIN_POLYNOMIAL_IS_HIGH(x)             ( x & 0x80000000L )
 #define                 HEXIN_REFIN_REFOUT_IS_TRUE(x)           ( ( x->refin == TRUE ) && ( x->refout == TRUE ) )
+#define                 HEXIN_GRADUAL_CALCULATE_IS_TRUE(x)      ( x->is_gradual == 2 )
 
 #define                 CRC30_POLYNOMIAL_2030B9C7               0x2030B9C7L
 #define                 CRC31_POLYNOMIAL_04C11DB7               0x04C11DB7L
@@ -44,6 +45,7 @@
 
 struct _hexin_crc32 {
     unsigned int  is_initial;
+    unsigned int  is_gradual;
     unsigned int  width;
     unsigned int  poly;
     unsigned int  init;

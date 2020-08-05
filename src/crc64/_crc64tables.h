@@ -35,12 +35,14 @@
 #define                 HEXIN_POLYNOMIAL_IS_HIGH(x)             ( x & 0x8000000000000000L )
 #define                 HEXIN_REFIN_OR_REFOUT_IS_TRUE(x)        ( x == 0x0000000000000001L ? TRUE : FALSE )
 #define                 HEXIN_REFIN_REFOUT_IS_TRUE(x)           ( ( x->refin == TRUE ) && ( x->refout == TRUE ) )
+#define                 HEXIN_GRADUAL_CALCULATE_IS_TRUE(x)      ( x->is_gradual == 2 )
 
 #define		            CRC64_POLYNOMIAL_ECMA182                0x42F0E1EBA9EA3693L
 
 
 struct _hexin_crc64 {
     unsigned int  is_initial;
+    unsigned int  is_gradual;
     unsigned int  width;
     unsigned long long  poly;
     unsigned long long  init;

@@ -33,10 +33,11 @@
 
 #define                 HEXIN_CRCX_WIDTH                        16
 #define                 HEXIN_REFIN_REFOUT_IS_TRUE(x)           ( ( x->refin == TRUE ) && ( x->refout == TRUE ) )
-
+#define                 HEXIN_GRADUAL_CALCULATE_IS_TRUE(x)      ( x->is_gradual == 2 )
 
 struct _hexin_crcx {
     unsigned int    is_initial;
+    unsigned int    is_gradual;
     unsigned short  width;
     unsigned short  poly;
     unsigned short  init;

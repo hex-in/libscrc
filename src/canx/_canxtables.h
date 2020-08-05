@@ -32,6 +32,7 @@
 
 #define                 HEXIN_CANX_WIDTH                        32
 #define                 HEXIN_REFIN_REFOUT_IS_TRUE(x)           ( ( x->refin == TRUE ) && ( x->refout == TRUE ) )
+#define                 HEXIN_GRADUAL_CALCULATE_IS_TRUE(x)      ( x->is_gradual == 2 )
 
 #define                 CAN15_POLYNOMIAL_00004599               0x00004599L
 #define                 CAN17_POLYNOMIAL_0001685B               0x0001685BL
@@ -39,6 +40,7 @@
 
 struct _hexin_canx {
     unsigned int  is_initial;
+    unsigned int  is_gradual;
     unsigned int  width;
     unsigned int  poly;
     unsigned int  init;
