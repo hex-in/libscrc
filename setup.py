@@ -28,7 +28,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name='libscrc',
-    version='1.4',
+    version='1.5',
 
     description='Library for calculating CRC3/CRC4/CRC8/CRC16/CRC24/CRC32/CRC64/CRC82',
     long_description=long_description,
@@ -38,7 +38,7 @@ setup(
     author='Heyn',
     author_email='heyunhuan@gmail.com',
 
-    license='MIT',
+    # license='GNU General Public License v3 or later (GPLv3+)',
 
     platforms='any',
 
@@ -49,9 +49,9 @@ setup(
         'Development Status :: 4 - Beta',
 
         'Intended Audience :: Developers',
-        'Topic :: Software Development :: Build Tools',
+        'Topic :: Software Development :: Libraries :: Python Modules',
 
-        'License :: OSI Approved :: GPL3.0',
+        'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
 
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
