@@ -4,13 +4,14 @@
 *                                           All Rights Reserved
 * File    : _crc8tables.c
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V1.4
+* Version : V1.5
 *
 * LICENSING TERMS:
 * ---------------
 *		New Create at 	2020-03-17 [Heyn] Initialize
 *                       2020-03-20 [Heyn] New add hexin_calc_crc8_fletcher
 *                       2020-08-04 [Heyn] Fixed Issues #4.
+*                       2020-09-18 [Heyn] New add lin and lin2x checksum.
 *
 *   SEE : http://reveng.sourceforge.net/crc-catalogue/1-15.htm#crc.cat-bits.8
 *
@@ -175,4 +176,43 @@ unsigned char hexin_crc8_compute( const unsigned char *pSrc, unsigned int len, s
 	}
     
 	return ( crc ^ param->xorout );
+}
+
+/*
+ * See -> https://linchecksumcalculator.machsystems.cz/
+ */
+unsigned char hexin_calc_crc8_lin( const unsigned char *pSrc, unsigned int len, unsigned char crc8 ) 
+{
+    unsigned int  i   = 0;
+    unsigned int  sum = (unsigned int)crc8;
+
+	for ( i=1; i<len; i++ ) {
+		sum += pSrc[i];
+	}
+    // return 0xFF - ( ( sum / 256 ) + ( sum % 256 ) );
+	return (unsigned char)( 0xFF - ( ( ( sum >> 8 ) & 0xFF ) + ( sum & 0xFF ) ) );
+}
+
+unsigned char hexin_calc_crc8_lin2x( const unsigned char *pSrc, unsigned int len, unsigned char crc8 ) 
+{
+    unsigned int  i   = 0;
+    unsigned int  sum = 0;
+    unsigned char crc = crc8;
+    unsigned char p0 = 0, p1 = 0;
+    unsigned char lin_id = pSrc[0], lin_pid = 0x00;
+
+    /*
+     * Frames with identifiers 0x3C and 0x3D can only use classic check,
+     * these two groups of frames are LIN diagnostic frames.
+     */
+    if ( ( lin_id == 0x3C ) || ( lin_id == 0x3D ) ) {
+        return hexin_calc_crc8_lin( pSrc, len, 0 );
+    }
+
+    p0 =  ( ( ( lin_id & 0x01 ) >> 0 ) ^ ( ( lin_id & 0x02 ) >> 1 ) ^ ( ( lin_id & 0x04 ) >> 2 ) ^ ( ( lin_id & 0x10 ) >> 4 ) );
+    p1 = ~( ( ( lin_id & 0x02 ) >> 1 ) ^ ( ( lin_id & 0x08 ) >> 3 ) ^ ( ( lin_id & 0x10 ) >> 4 ) ^ ( ( lin_id & 0x20 ) >> 5 ) );
+	
+    lin_pid = ( ( p1 & 0x01 ) << 7 ) | ( ( p0 & 0x01 ) << 6 ) | lin_id;
+
+	return hexin_calc_crc8_lin( pSrc, len, lin_pid );
 }
