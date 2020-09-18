@@ -28,8 +28,8 @@ libscrc is a library for calculating CRC3 CRC4 CRC5 CRC6 CRC7 CRC8 CRC16 CRC24 C
 | CRC13-BBC | EBU |GSM16 | | V-42 | |
 | MPT1327 | DARC |RIELLO | |  | |
 | CDMA2000 | MIFARE |OPENSAFETY | | CRC30-CDMA | |
-| | |EN13757 | | CRC31-PHILIPS | |
-| | |CMS | | | DARC82 |
+| | LIN1.3 |EN13757 | | CRC31-PHILIPS | |
+| | LIN2.x |CMS | | | DARC82 |
 
 
 
@@ -174,6 +174,14 @@ crc8 = libscrc.i432_1(b'1234')
 crc8 = libscrc.mifare_mad(b'1234')
 crc8 = libscrc.tech_3250(b'1234')
 crc8 = libscrc.aes8(b'1234')
+
+# LIN Protocol 1.3 (CLASSIC)
+# Frame ID : 0x15	DATA : 0x5B, 0x67
+crc8 = libscrc.lin(bytes([0x15, 0x5B, 0x67]))
+# LIN Protocol 2.x (ENHANCED)
+# Frame ID : 0x15
+# DATA : 0x5B, 0x67, 0x72, 0xAF, 0x5B
+crc8 = libscrc.lin2x(bytes([0x15, 0x5B, 0x67, 0x72, 0xAF, 0x5B]))
 ```
 
 3. CRC16
