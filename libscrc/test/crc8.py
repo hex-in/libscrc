@@ -59,6 +59,9 @@ class TestCRC8( unittest.TestCase ):
 
         self.assertEqual( module.opensafety8(b'6789', module.opensafety8(b'12345') ), 0x3E )
 
+        self.assertEqual( module.lin2x( bytes( [0x15 ,0x2B ,0x67 ,0x72 ,0xB1 ,0x5B] )), 0x98 )
+        self.assertEqual( module.lin(   bytes( [0xD6, 0x5B, 0x67] )),                   0x3D )
+
     def do_basics( self, module ):
         """ Test basic functionality.
         """
