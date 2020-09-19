@@ -183,36 +183,37 @@ unsigned char hexin_crc8_compute( const unsigned char *pSrc, unsigned int len, s
  */
 unsigned char hexin_calc_crc8_lin( const unsigned char *pSrc, unsigned int len, unsigned char crc8 ) 
 {
-    unsigned int  i   = 0;
-    unsigned int  sum = (unsigned int)crc8;
+    unsigned int   i   = 0;
+    unsigned short sum = ( (unsigned short)crc8 ) & 0x00FF;
 
 	for ( i=1; i<len; i++ ) {
 		sum += pSrc[i];
+        sum = ( ( sum >> 8 ) & 0x00FF ) + ( sum & 0x00FF );
 	}
-    // return 0xFF - ( ( sum / 256 ) + ( sum % 256 ) );
-	return (unsigned char)( 0xFF - ( ( ( sum >> 8 ) & 0xFF ) + ( sum & 0xFF ) ) );
+    return ( 0xFF - sum );
+}
+
+unsigned char hexin_crc8_get_lin2x_pid( const unsigned char id )
+{
+    unsigned char p0  = 0, p1 = 0;
+
+    p0 =  ( ( ( id & 0x01 ) >> 0 ) ^ ( ( id & 0x02 ) >> 1 ) ^ ( ( id & 0x04 ) >> 2 ) ^ ( ( id & 0x10 ) >> 4 ) );
+    p1 = ~( ( ( id & 0x02 ) >> 1 ) ^ ( ( id & 0x08 ) >> 3 ) ^ ( ( id & 0x10 ) >> 4 ) ^ ( ( id & 0x20 ) >> 5 ) );
+	
+    return ( ( p1 & 0x01 ) << 7 ) | ( ( p0 & 0x01 ) << 6 ) | id;
 }
 
 unsigned char hexin_calc_crc8_lin2x( const unsigned char *pSrc, unsigned int len, unsigned char crc8 ) 
 {
-    unsigned int  i   = 0;
-    unsigned int  sum = 0;
     unsigned char crc = crc8;
-    unsigned char p0 = 0, p1 = 0;
-    unsigned char lin_id = pSrc[0], lin_pid = 0x00;
+    unsigned char id  = pSrc[0];
 
     /*
      * Frames with identifiers 0x3C and 0x3D can only use classic check,
      * these two groups of frames are LIN diagnostic frames.
      */
-    if ( ( lin_id == 0x3C ) || ( lin_id == 0x3D ) ) {
+    if ( ( id == 0x3C ) || ( id == 0x3D ) ) {
         return hexin_calc_crc8_lin( pSrc, len, 0 );
     }
-
-    p0 =  ( ( ( lin_id & 0x01 ) >> 0 ) ^ ( ( lin_id & 0x02 ) >> 1 ) ^ ( ( lin_id & 0x04 ) >> 2 ) ^ ( ( lin_id & 0x10 ) >> 4 ) );
-    p1 = ~( ( ( lin_id & 0x02 ) >> 1 ) ^ ( ( lin_id & 0x08 ) >> 3 ) ^ ( ( lin_id & 0x10 ) >> 4 ) ^ ( ( lin_id & 0x20 ) >> 5 ) );
-	
-    lin_pid = ( ( p1 & 0x01 ) << 7 ) | ( ( p0 & 0x01 ) << 6 ) | lin_id;
-
-	return hexin_calc_crc8_lin( pSrc, len, lin_pid );
+	return hexin_calc_crc8_lin( pSrc, len, hexin_crc8_get_lin2x_pid( id ) );
 }

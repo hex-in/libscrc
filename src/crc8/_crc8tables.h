@@ -70,6 +70,7 @@ unsigned char hexin_calc_crc8_sum(      const unsigned char *pSrc, unsigned int 
 unsigned char hexin_calc_crc8_fletcher( const unsigned char *pSrc, unsigned int len, unsigned char crc8 /*reserved*/ );
 unsigned char hexin_crc8_compute(       const unsigned char *pSrc, unsigned int len, struct _hexin_crc8 *param, unsigned char init );
 
+unsigned char hexin_crc8_get_lin2x_pid( const unsigned char id );
 unsigned char hexin_calc_crc8_lin(      const unsigned char *pSrc, unsigned int len, unsigned char crc8 );
 unsigned char hexin_calc_crc8_lin2x(    const unsigned char *pSrc, unsigned int len, unsigned char crc8 );
 
