@@ -301,7 +301,7 @@ static PyObject * _crc16_dnp( PyObject *self, PyObject *args )
 
     crc16_param_dnp.is_initial = FALSE;
     crc16_param_dnp.width      = HEXIN_CRC16_WIDTH;
-    crc16_param_dnp.poly       = CRC16_POLYNOMIAL_1021;
+    crc16_param_dnp.poly       = CRC16_POLYNOMIAL_3D65;
     crc16_param_dnp.init       = 0x0000;
     crc16_param_dnp.refin      = TRUE;
     crc16_param_dnp.refout     = TRUE;

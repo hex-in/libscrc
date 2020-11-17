@@ -548,7 +548,7 @@ static PyObject * _crc14_gsm( PyObject *self, PyObject *args )
     crc14_param_gsm.init       = 0x0000;
     crc14_param_gsm.refin      = FALSE;
     crc14_param_gsm.refout     = FALSE;
-    crc14_param_gsm.xorout     = 0x0000;
+    crc14_param_gsm.xorout     = 0x3FFF;
     crc14_param_gsm.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc14_param_gsm ) ) {
