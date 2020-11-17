@@ -256,8 +256,11 @@ static PyObject * _crc64_hacker( PyObject *self, PyObject *args, PyObject* kws )
                                                .refout = FALSE,
                                                .xorout = 0x0000000000000000L,
                                                .result = 0 };
+    static char* kwlist[]={ "data", "poly", "init", "xorout", "refin", "refout", NULL };
+
 #else
     struct _hexin_crc64 crc64_param_hacker;
+    static char* kwlist[]={ "data", "poly", "init", "xorout", "refin", "refout", NULL };
 
     crc64_param_hacker.is_initial = FALSE;
     crc64_param_hacker.width      = HEXIN_CRC64_WIDTH;
@@ -268,7 +271,6 @@ static PyObject * _crc64_hacker( PyObject *self, PyObject *args, PyObject* kws )
     crc64_param_hacker.xorout     = 0x0000000000000000L;
     crc64_param_hacker.result     = 0;
 #endif /* PY_MAJOR_VERSION */
-    static char* kwlist[]={ "data", "poly", "init", "xorout", "refin", "refout", NULL };
 
 #if PY_MAJOR_VERSION >= 3
     if ( !PyArg_ParseTupleAndKeywords( args, kws, "y*|KKKpp", kwlist, &data,

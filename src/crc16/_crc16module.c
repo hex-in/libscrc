@@ -408,6 +408,7 @@ static PyObject * _crc16_hacker( PyObject *self, PyObject *args, PyObject* kws )
 {
     Py_buffer data = { NULL, NULL };
     struct _hexin_crc16 crc16_param_hacker;
+    static char* kwlist[]={ "data", "poly", "init", "xorout", "refin", "refout", NULL };
 
     crc16_param_hacker.is_initial = FALSE;
     crc16_param_hacker.width      = HEXIN_CRC16_WIDTH;
@@ -418,7 +419,6 @@ static PyObject * _crc16_hacker( PyObject *self, PyObject *args, PyObject* kws )
     crc16_param_hacker.xorout     = 0x0000;
     crc16_param_hacker.result     = 0;
 
-    static char* kwlist[]={ "data", "poly", "init", "xorout", "refin", "refout", NULL };
 
 #if PY_MAJOR_VERSION >= 3
     if ( !PyArg_ParseTupleAndKeywords( args, kws, "y*|HHHpp", kwlist, &data,
