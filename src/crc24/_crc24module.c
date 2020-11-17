@@ -10,7 +10,8 @@
 * ---------------
 *		New Create at 	2020-04-17 [Heyn] Initialize.
 *                       2020-04-27 [Heyn] Optimized code.
- *                      2020-08-04 [Heyn] Fixed Issues #4.
+*                       2020-08-04 [Heyn] Fixed Issues #4.
+*                       2020-11-17 [Heyn] Fixed Issues #6 (Python2 vc9 error C2059 )
 *
 ********************************************************************************************************
 */
@@ -55,14 +56,16 @@ static unsigned char hexin_PyArg_ParseTuple_Paramete( PyObject *self, PyObject *
 
 static PyObject * _crc24_ble( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crc24 crc24_param_ble = { .is_initial=FALSE,
-                                                   .width  = HEXIN_CRC24_WIDTH,
-                                                   .poly   = CRC24_POLYNOMIAL_00065B,
-                                                   .init   = 0x00555555,
-                                                   .refin  = TRUE,
-                                                   .refout = TRUE,
-                                                   .xorout = 0x00000000,
-                                                   .result = 0 };
+    static struct _hexin_crc24 crc24_param_ble;
+
+    crc24_param_ble.is_initial = FALSE;
+    crc24_param_ble.width      = HEXIN_CRC24_WIDTH;
+    crc24_param_ble.poly       = CRC24_POLYNOMIAL_00065B;
+    crc24_param_ble.init       = 0x00555555;
+    crc24_param_ble.refin      = TRUE;
+    crc24_param_ble.refout     = TRUE;
+    crc24_param_ble.xorout     = 0x00000000;
+    crc24_param_ble.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc24_param_ble ) ) {
         return NULL;
@@ -73,14 +76,16 @@ static PyObject * _crc24_ble( PyObject *self, PyObject *args )
 
 static PyObject * _crc24_flexraya( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crc24 crc24_param_flexraya = { .is_initial=FALSE,
-                                                        .width  = HEXIN_CRC24_WIDTH,
-                                                        .poly   = CRC24_POLYNOMIAL_5D6DCB,
-                                                        .init   = 0x00FEDCBA,
-                                                        .refin  = FALSE,
-                                                        .refout = FALSE,
-                                                        .xorout = 0x00000000,
-                                                        .result = 0 };
+    static struct _hexin_crc24 crc24_param_flexraya;
+
+    crc24_param_flexraya.is_initial = FALSE;
+    crc24_param_flexraya.width      = HEXIN_CRC24_WIDTH;
+    crc24_param_flexraya.poly       = CRC24_POLYNOMIAL_5D6DCB;
+    crc24_param_flexraya.init       = 0x00FEDCBA;
+    crc24_param_flexraya.refin      = FALSE;
+    crc24_param_flexraya.refout     = FALSE;
+    crc24_param_flexraya.xorout     = 0x00000000;
+    crc24_param_flexraya.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc24_param_flexraya ) ) {
         return NULL;
@@ -91,14 +96,16 @@ static PyObject * _crc24_flexraya( PyObject *self, PyObject *args )
 
 static PyObject * _crc24_flexrayb( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crc24 crc24_param_flexrayb = { .is_initial=FALSE,
-                                                        .width  = HEXIN_CRC24_WIDTH,
-                                                        .poly   = CRC24_POLYNOMIAL_5D6DCB,
-                                                        .init   = 0x00ABCDEF,
-                                                        .refin  = FALSE,
-                                                        .refout = FALSE,
-                                                        .xorout = 0x00000000,
-                                                        .result = 0 };
+    static struct _hexin_crc24 crc24_param_flexrayb;
+
+    crc24_param_flexrayb.is_initial = FALSE;
+    crc24_param_flexrayb.width      = HEXIN_CRC24_WIDTH;
+    crc24_param_flexrayb.poly       = CRC24_POLYNOMIAL_5D6DCB;
+    crc24_param_flexrayb.init       = 0x00ABCDEF;
+    crc24_param_flexrayb.refin      = FALSE;
+    crc24_param_flexrayb.refout     = FALSE;
+    crc24_param_flexrayb.xorout     = 0x00000000;
+    crc24_param_flexrayb.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc24_param_flexrayb ) ) {
         return NULL;
@@ -109,14 +116,16 @@ static PyObject * _crc24_flexrayb( PyObject *self, PyObject *args )
 
 static PyObject * _crc24_openpgp( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crc24 crc24_param_openpgp = { .is_initial=FALSE,
-                                                       .width  = HEXIN_CRC24_WIDTH,
-                                                       .poly   = CRC24_POLYNOMIAL_864CFB,
-                                                       .init   = 0x00B704CE,
-                                                       .refin  = FALSE,
-                                                       .refout = FALSE,
-                                                       .xorout = 0x00000000,
-                                                       .result = 0 };
+    static struct _hexin_crc24 crc24_param_openpgp;
+
+    crc24_param_openpgp.is_initial = FALSE;
+    crc24_param_openpgp.width      = HEXIN_CRC24_WIDTH;
+    crc24_param_openpgp.poly       = CRC24_POLYNOMIAL_864CFB;
+    crc24_param_openpgp.init       = 0x00B704CE;
+    crc24_param_openpgp.refin      = FALSE;
+    crc24_param_openpgp.refout     = FALSE;
+    crc24_param_openpgp.xorout     = 0x00000000;
+    crc24_param_openpgp.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc24_param_openpgp ) ) {
         return NULL;
@@ -127,14 +136,16 @@ static PyObject * _crc24_openpgp( PyObject *self, PyObject *args )
 
 static PyObject * _crc24_lte_a( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crc24 crc24_param_lte_a = { .is_initial=FALSE,
-                                                     .width  = HEXIN_CRC24_WIDTH,
-                                                     .poly   = CRC24_POLYNOMIAL_864CFB,
-                                                     .init   = 0x00000000,
-                                                     .refin  = FALSE,
-                                                     .refout = FALSE,
-                                                     .xorout = 0x00000000,
-                                                     .result = 0 };
+    static struct _hexin_crc24 crc24_param_lte_a;
+
+    crc24_param_lte_a.is_initial = FALSE;
+    crc24_param_lte_a.width      = HEXIN_CRC24_WIDTH;
+    crc24_param_lte_a.poly       = CRC24_POLYNOMIAL_864CFB;
+    crc24_param_lte_a.init       = 0x00000000;
+    crc24_param_lte_a.refin      = FALSE;
+    crc24_param_lte_a.refout     = FALSE;
+    crc24_param_lte_a.xorout     = 0x00000000;
+    crc24_param_lte_a.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc24_param_lte_a ) ) {
         return NULL;
@@ -145,14 +156,16 @@ static PyObject * _crc24_lte_a( PyObject *self, PyObject *args )
 
 static PyObject * _crc24_lte_b( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crc24 crc24_param_lte_b = { .is_initial=FALSE,
-                                                     .width  = HEXIN_CRC24_WIDTH,
-                                                     .poly   = CRC24_POLYNOMIAL_800063,
-                                                     .init   = 0x00000000,
-                                                     .refin  = FALSE,
-                                                     .refout = FALSE,
-                                                     .xorout = 0x00000000,
-                                                     .result = 0 };
+    static struct _hexin_crc24 crc24_param_lte_b;
+
+    crc24_param_lte_b.is_initial = FALSE;
+    crc24_param_lte_b.width      = HEXIN_CRC24_WIDTH;
+    crc24_param_lte_b.poly       = CRC24_POLYNOMIAL_800063;
+    crc24_param_lte_b.init       = 0x00000000;
+    crc24_param_lte_b.refin      = FALSE;
+    crc24_param_lte_b.refout     = FALSE;
+    crc24_param_lte_b.xorout     = 0x00000000;
+    crc24_param_lte_b.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc24_param_lte_b ) ) {
         return NULL;
@@ -163,14 +176,16 @@ static PyObject * _crc24_lte_b( PyObject *self, PyObject *args )
 
 static PyObject * _crc24_os9( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crc24 crc24_param_os9 = { .is_initial=FALSE,
-                                                   .width  = HEXIN_CRC24_WIDTH,
-                                                   .poly   = CRC24_POLYNOMIAL_800063,
-                                                   .init   = 0x00FFFFFF,
-                                                   .refin  = FALSE,
-                                                   .refout = FALSE,
-                                                   .xorout = 0x00FFFFFF,
-                                                   .result = 0 };
+    static struct _hexin_crc24 crc24_param_os9;
+
+    crc24_param_os9.is_initial = FALSE;
+    crc24_param_os9.width      = HEXIN_CRC24_WIDTH;
+    crc24_param_os9.poly       = CRC24_POLYNOMIAL_800063;
+    crc24_param_os9.init       = 0x00FFFFFF;
+    crc24_param_os9.refin      = FALSE;
+    crc24_param_os9.refout     = FALSE;
+    crc24_param_os9.xorout     = 0x00FFFFFF;
+    crc24_param_os9.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc24_param_os9 ) ) {
         return NULL;
@@ -181,14 +196,16 @@ static PyObject * _crc24_os9( PyObject *self, PyObject *args )
 
 static PyObject * _crc24_interlaken( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crc24 crc24_param_interlaken = { .is_initial=FALSE,
-                                                          .width  = HEXIN_CRC24_WIDTH,
-                                                          .poly   = CRC24_POLYNOMIAL_328B63,
-                                                          .init   = 0x00FFFFFF,
-                                                          .refin  = FALSE,
-                                                          .refout = FALSE,
-                                                          .xorout = 0x00FFFFFF,
-                                                          .result = 0 };
+    static struct _hexin_crc24 crc24_param_interlaken;
+
+    crc24_param_interlaken.is_initial = FALSE;
+    crc24_param_interlaken.width      = HEXIN_CRC24_WIDTH;
+    crc24_param_interlaken.poly       = CRC24_POLYNOMIAL_328B63;
+    crc24_param_interlaken.init       = 0x00FFFFFF;
+    crc24_param_interlaken.refin      = FALSE;
+    crc24_param_interlaken.refout     = FALSE;
+    crc24_param_interlaken.xorout     = 0x00FFFFFF;
+    crc24_param_interlaken.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc24_param_interlaken ) ) {
         return NULL;
@@ -200,14 +217,16 @@ static PyObject * _crc24_interlaken( PyObject *self, PyObject *args )
 static PyObject * _crc24_hacker( PyObject *self, PyObject *args, PyObject* kws )
 {
     Py_buffer data = { NULL, NULL };
-    struct _hexin_crc24 crc24_param_hacker = { .is_initial=FALSE,
-                                               .width  = 24,
-                                               .poly   = CRC24_POLYNOMIAL_800063,
-                                               .init   = 0x00FFFFFF,
-                                               .refin  = FALSE,
-                                               .refout = FALSE,
-                                               .xorout = 0x00FFFFFF,
-                                               .result = 0 };
+    struct _hexin_crc24 crc24_param_hacker;
+
+    crc24_param_hacker.is_initial = FALSE;
+    crc24_param_hacker.width      = HEXIN_CRC24_WIDTH;
+    crc24_param_hacker.poly       = CRC24_POLYNOMIAL_800063;
+    crc24_param_hacker.init       = 0x00FFFFFF;
+    crc24_param_hacker.refin      = FALSE;
+    crc24_param_hacker.refout     = FALSE;
+    crc24_param_hacker.xorout     = 0x00FFFFFF;
+    crc24_param_hacker.result     = 0;
 
     static char* kwlist[]={ "data", "poly", "init", "xorout", "refin", "refout", NULL };
 

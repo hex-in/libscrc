@@ -17,6 +17,7 @@
  *                      2020-04-17 [Heyn] Fixed Issues #1
  *                      2020-04-26 [Heyn] Optimized Code
  *                      2020-08-04 [Heyn] Fixed Issues #4.
+ *                      2020-11-17 [Heyn] Fixed Issues #6 (Python2 vc9 error C2059 )
  * 
  * Web : https://en.wikipedia.org/wiki/Polynomial_representations_of_cyclic_redundancy_checks
  *
@@ -96,14 +97,16 @@ static unsigned char hexin_PyArg_ParseTuple_Paramete( PyObject *self, PyObject *
 
 static PyObject * _crc32_mpeg_2( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crc32 crc32_param_mpeg2 = { .is_initial=FALSE,
-                                                     .width  = HEXIN_CRC32_WIDTH,
-                                                     .poly   = CRC32_POLYNOMIAL_04C11DB7,
-                                                     .init   = 0xFFFFFFFFL,
-                                                     .refin  = FALSE,
-                                                     .refout = FALSE,
-                                                     .xorout = 0x00000000L,
-                                                     .result = 0 };
+    static struct _hexin_crc32 crc32_param_mpeg2;
+
+    crc32_param_mpeg2.is_initial = FALSE;
+    crc32_param_mpeg2.width      = HEXIN_CRC32_WIDTH;
+    crc32_param_mpeg2.poly       = CRC32_POLYNOMIAL_04C11DB7;
+    crc32_param_mpeg2.init       = 0xFFFFFFFFL;
+    crc32_param_mpeg2.refin      = FALSE;
+    crc32_param_mpeg2.refout     = FALSE;
+    crc32_param_mpeg2.xorout     = 0x00000000L;
+    crc32_param_mpeg2.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc32_param_mpeg2 ) ) {
         return NULL;
@@ -114,14 +117,16 @@ static PyObject * _crc32_mpeg_2( PyObject *self, PyObject *args )
 
 static PyObject * _crc32_crc32( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crc32 crc32_param_crc32 = { .is_initial=FALSE,
-                                                     .width  = HEXIN_CRC32_WIDTH,
-                                                     .poly   = CRC32_POLYNOMIAL_04C11DB7,
-                                                     .init   = 0xFFFFFFFFL,
-                                                     .refin  = TRUE,
-                                                     .refout = TRUE,
-                                                     .xorout = 0xFFFFFFFFL,
-                                                     .result = 0 };
+    static struct _hexin_crc32 crc32_param_crc32;
+
+    crc32_param_crc32.is_initial = FALSE;
+    crc32_param_crc32.width      = HEXIN_CRC32_WIDTH;
+    crc32_param_crc32.poly       = CRC32_POLYNOMIAL_04C11DB7;
+    crc32_param_crc32.init       = 0xFFFFFFFFL;
+    crc32_param_crc32.refin      = TRUE;
+    crc32_param_crc32.refout     = TRUE;
+    crc32_param_crc32.xorout     = 0xFFFFFFFFL;
+    crc32_param_crc32.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc32_param_crc32 ) ) {
         return NULL;
@@ -167,15 +172,17 @@ static PyObject * _crc32_table( PyObject *self, PyObject *args )
 static PyObject * _crc32_hacker( PyObject *self, PyObject *args, PyObject* kws )
 {
     Py_buffer data = { NULL, NULL };
-    struct _hexin_crc32 crc32_param_hacker = { .is_initial=FALSE,
-                                               .width  = HEXIN_CRC32_WIDTH,
-                                               .poly   = CRC32_POLYNOMIAL_04C11DB7,
-                                               .init   = 0xFFFFFFFFL,
-                                               .refin  = TRUE,
-                                               .refout = TRUE,
-                                               .xorout = 0xFFFFFFFFL,
-                                               .result = 0 };
+    struct _hexin_crc32 crc32_param_hacker;
 
+    crc32_param_hacker.is_initial = FALSE;
+    crc32_param_hacker.width      = HEXIN_CRC32_WIDTH;
+    crc32_param_hacker.poly       = CRC32_POLYNOMIAL_04C11DB7;
+    crc32_param_hacker.init       = 0xFFFFFFFFL;
+    crc32_param_hacker.refin      = TRUE;
+    crc32_param_hacker.refout     = TRUE;
+    crc32_param_hacker.xorout     = 0xFFFFFFFFL;
+    crc32_param_hacker.result     = 0;
+    
     static char* kwlist[]={ "data", "poly", "init", "xorout", "refin", "refout", NULL };
 
 #if PY_MAJOR_VERSION >= 3
@@ -238,14 +245,16 @@ static PyObject * _crc32_fletcher32( PyObject *self, PyObject *args )
 
 static PyObject * _crc32_posix( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crc32 crc32_param_posix = { .is_initial=FALSE,
-                                                     .width  = HEXIN_CRC32_WIDTH,
-                                                     .poly   = CRC32_POLYNOMIAL_04C11DB7,
-                                                     .init   = 0x00000000L,
-                                                     .refin  = FALSE,
-                                                     .refout = FALSE,
-                                                     .xorout = 0xFFFFFFFFL,
-                                                     .result = 0 };
+    static struct _hexin_crc32 crc32_param_posix;
+
+    crc32_param_posix.is_initial = FALSE;
+    crc32_param_posix.width      = HEXIN_CRC32_WIDTH;
+    crc32_param_posix.poly       = CRC32_POLYNOMIAL_04C11DB7;
+    crc32_param_posix.init       = 0x00000000L;
+    crc32_param_posix.refin      = FALSE;
+    crc32_param_posix.refout     = FALSE;
+    crc32_param_posix.xorout     = 0xFFFFFFFFL;
+    crc32_param_posix.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc32_param_posix ) ) {
         return NULL;
@@ -259,14 +268,16 @@ static PyObject * _crc32_posix( PyObject *self, PyObject *args )
 */
 static PyObject * _crc32_bzip2( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crc32 crc32_param_bzip2 = { .is_initial=FALSE,
-                                                     .width  = HEXIN_CRC32_WIDTH,
-                                                     .poly   = CRC32_POLYNOMIAL_04C11DB7,
-                                                     .init   = 0xFFFFFFFFL,
-                                                     .refin  = FALSE,
-                                                     .refout = FALSE,
-                                                     .xorout = 0xFFFFFFFFL,
-                                                     .result = 0 };
+    static struct _hexin_crc32 crc32_param_bzip2;
+
+    crc32_param_bzip2.is_initial = FALSE;
+    crc32_param_bzip2.width      = HEXIN_CRC32_WIDTH;
+    crc32_param_bzip2.poly       = CRC32_POLYNOMIAL_04C11DB7;
+    crc32_param_bzip2.init       = 0xFFFFFFFFL;
+    crc32_param_bzip2.refin      = FALSE;
+    crc32_param_bzip2.refout     = FALSE;
+    crc32_param_bzip2.xorout     = 0xFFFFFFFFL;
+    crc32_param_bzip2.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc32_param_bzip2 ) ) {
         return NULL;
@@ -277,14 +288,16 @@ static PyObject * _crc32_bzip2( PyObject *self, PyObject *args )
 
 static PyObject * _crc32_jamcrc( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crc32 crc32_param_jamcrc = { .is_initial=FALSE,
-                                                      .width  = HEXIN_CRC32_WIDTH,
-                                                      .poly   = 0x04C11DB7L,
-                                                      .init   = 0xFFFFFFFFL,
-                                                      .refin  = TRUE,
-                                                      .refout = TRUE,
-                                                      .xorout = 0x00000000L,
-                                                      .result = 0 };
+    static struct _hexin_crc32 crc32_param_jamcrc;
+
+    crc32_param_jamcrc.is_initial = FALSE;
+    crc32_param_jamcrc.width      = HEXIN_CRC32_WIDTH;
+    crc32_param_jamcrc.poly       = 0x04C11DB7L;
+    crc32_param_jamcrc.init       = 0xFFFFFFFFL;
+    crc32_param_jamcrc.refin      = TRUE;
+    crc32_param_jamcrc.refout     = TRUE;
+    crc32_param_jamcrc.xorout     = 0x00000000L;
+    crc32_param_jamcrc.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc32_param_jamcrc ) ) {
         return NULL;
@@ -295,14 +308,16 @@ static PyObject * _crc32_jamcrc( PyObject *self, PyObject *args )
 
 static PyObject * _crc32_autosar( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crc32 crc32_param_autosar = { .is_initial=FALSE,
-                                                       .width  = HEXIN_CRC32_WIDTH,
-                                                       .poly   = 0xF4ACFB13L,
-                                                       .init   = 0xFFFFFFFFL,
-                                                       .refin  = TRUE,
-                                                       .refout = TRUE,
-                                                       .xorout = 0xFFFFFFFFL,
-                                                       .result = 0 };
+    static struct _hexin_crc32 crc32_param_autosar;
+
+    crc32_param_autosar.is_initial = FALSE;
+    crc32_param_autosar.width      = HEXIN_CRC32_WIDTH;
+    crc32_param_autosar.poly       = 0xF4ACFB13L;
+    crc32_param_autosar.init       = 0xFFFFFFFFL;
+    crc32_param_autosar.refin      = TRUE;
+    crc32_param_autosar.refout     = TRUE;
+    crc32_param_autosar.xorout     = 0xFFFFFFFFL;
+    crc32_param_autosar.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc32_param_autosar ) ) {
         return NULL;
@@ -313,14 +328,16 @@ static PyObject * _crc32_autosar( PyObject *self, PyObject *args )
 
 static PyObject * _crc32_crc32_c( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crc32 crc32_iscsi = { .is_initial=FALSE,
-                                               .width  = HEXIN_CRC32_WIDTH,
-                                               .poly   = 0x1EDC6F41L,
-                                               .init   = 0xFFFFFFFFL,
-                                               .refin  = TRUE,
-                                               .refout = TRUE,
-                                               .xorout = 0xFFFFFFFFL,
-                                               .result = 0 };
+    static struct _hexin_crc32 crc32_iscsi;
+
+    crc32_iscsi.is_initial = FALSE;
+    crc32_iscsi.width      = HEXIN_CRC32_WIDTH;
+    crc32_iscsi.poly       = 0x1EDC6F41L;
+    crc32_iscsi.init       = 0xFFFFFFFFL;
+    crc32_iscsi.refin      = TRUE;
+    crc32_iscsi.refout     = TRUE;
+    crc32_iscsi.xorout     = 0xFFFFFFFFL;
+    crc32_iscsi.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc32_iscsi ) ) {
         return NULL;
@@ -331,14 +348,16 @@ static PyObject * _crc32_crc32_c( PyObject *self, PyObject *args )
 
 static PyObject * _crc32_crc32_d( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crc32 crc32_base91 = { .is_initial=FALSE,
-                                                .width  = HEXIN_CRC32_WIDTH,
-                                                .poly   = 0xA833982BL,
-                                                .init   = 0xFFFFFFFFL,
-                                                .refin  = TRUE,
-                                                .refout = TRUE,
-                                                .xorout = 0xFFFFFFFFL,
-                                                .result = 0 };
+    static struct _hexin_crc32 crc32_base91;
+
+    crc32_base91.is_initial = FALSE;
+    crc32_base91.width      = HEXIN_CRC32_WIDTH;
+    crc32_base91.poly       = 0xA833982BL;
+    crc32_base91.init       = 0xFFFFFFFFL;
+    crc32_base91.refin      = TRUE;
+    crc32_base91.refout     = TRUE;
+    crc32_base91.xorout     = 0xFFFFFFFFL;
+    crc32_base91.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc32_base91 ) ) {
         return NULL;
@@ -349,14 +368,16 @@ static PyObject * _crc32_crc32_d( PyObject *self, PyObject *args )
 
 static PyObject * _crc32_crc32_q( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crc32 crc32_aixm = { .is_initial=FALSE,
-                                              .width  = HEXIN_CRC32_WIDTH,
-                                              .poly   = 0x814141ABL,
-                                              .init   = 0,
-                                              .refin  = FALSE,
-                                              .refout = FALSE,
-                                              .xorout = 0,
-                                              .result = 0 };
+    static struct _hexin_crc32 crc32_aixm;
+
+    crc32_aixm.is_initial = FALSE;
+    crc32_aixm.width      = HEXIN_CRC32_WIDTH;
+    crc32_aixm.poly       = 0x814141ABL;
+    crc32_aixm.init       = 0;
+    crc32_aixm.refin      = FALSE;
+    crc32_aixm.refout     = FALSE;
+    crc32_aixm.xorout     = 0;
+    crc32_aixm.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc32_aixm ) ) {
         return NULL;
@@ -367,14 +388,16 @@ static PyObject * _crc32_crc32_q( PyObject *self, PyObject *args )
 
 static PyObject * _crc32_xfer( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crc32 crc32_param_xfer = { .is_initial=FALSE,
-                                                    .width  = HEXIN_CRC32_WIDTH,
-                                                    .poly   = 0x000000AFL,
-                                                    .init   = 0x00000000L,
-                                                    .refin  = FALSE,
-                                                    .refout = FALSE,
-                                                    .xorout = 0x00000000L,
-                                                    .result = 0 };
+    static struct _hexin_crc32 crc32_param_xfer;
+
+    crc32_param_xfer.is_initial = FALSE;
+    crc32_param_xfer.width      = HEXIN_CRC32_WIDTH;
+    crc32_param_xfer.poly       = 0x000000AFL;
+    crc32_param_xfer.init       = 0x00000000L;
+    crc32_param_xfer.refin      = FALSE;
+    crc32_param_xfer.refout     = FALSE;
+    crc32_param_xfer.xorout     = 0x00000000L;
+    crc32_param_xfer.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc32_param_xfer ) ) {
         return NULL;
@@ -385,14 +408,16 @@ static PyObject * _crc32_xfer( PyObject *self, PyObject *args )
 
 static PyObject * _crc30_cdma( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crc32 crc30_cdma_param = { .is_initial=FALSE,
-                                                    .width  = 30,
-                                                    .poly   = CRC30_POLYNOMIAL_2030B9C7,
-                                                    .init   = 0x3FFFFFFFL,
-                                                    .refin  = FALSE,
-                                                    .refout = FALSE,
-                                                    .xorout = 0x3FFFFFFFL,
-                                                    .result = 0 };
+    static struct _hexin_crc32 crc30_cdma_param;
+
+    crc30_cdma_param.is_initial = FALSE;
+    crc30_cdma_param.width      = 30;
+    crc30_cdma_param.poly       = CRC30_POLYNOMIAL_2030B9C7;
+    crc30_cdma_param.init       = 0x3FFFFFFFL;
+    crc30_cdma_param.refin      = FALSE;
+    crc30_cdma_param.refout     = FALSE;
+    crc30_cdma_param.xorout     = 0x3FFFFFFFL;
+    crc30_cdma_param.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc30_cdma_param ) ) {
         return NULL;
@@ -403,14 +428,16 @@ static PyObject * _crc30_cdma( PyObject *self, PyObject *args )
 
 static PyObject * _crc31_philips( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crc32 crc31_philips_param = { .is_initial=FALSE,
-                                                       .width  = 31,
-                                                       .poly   = CRC31_POLYNOMIAL_04C11DB7,
-                                                       .init   = 0x7FFFFFFFL,
-                                                       .refin  = FALSE,
-                                                       .refout = FALSE,
-                                                       .xorout = 0x7FFFFFFFL,
-                                                       .result = 0 };
+    static struct _hexin_crc32 crc31_philips_param;
+
+    crc31_philips_param.is_initial = FALSE;
+    crc31_philips_param.width      = 31;
+    crc31_philips_param.poly       = CRC31_POLYNOMIAL_04C11DB7;
+    crc31_philips_param.init       = 0x7FFFFFFFL;
+    crc31_philips_param.refin      = FALSE;
+    crc31_philips_param.refout     = FALSE;
+    crc31_philips_param.xorout     = 0x7FFFFFFFL;
+    crc31_philips_param.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc31_philips_param ) ) {
         return NULL;

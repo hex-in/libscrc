@@ -12,6 +12,7 @@
 *                       2020-03-17 [Heyn] Optimized code.
 *                       2020-04-27 [Heyn] Optimized code.
 *                       2020-08-04 [Heyn] Fixed Issues #4.
+*                       2020-11-17 [Heyn] Fixed Issues #6 (Python2 vc9 error C2059 )
 *
 *********************************************************************************************************
 */
@@ -56,14 +57,16 @@ static unsigned char hexin_PyArg_ParseTuple_Paramete( PyObject *self, PyObject *
 
 static PyObject * _crc3_gsm( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crcx crc3_param_gsm = { .is_initial=FALSE,
-                                                 .width  = 3,
-                                                 .poly   = 0x03,
-                                                 .init   = 0x00,
-                                                 .refin  = FALSE,
-                                                 .refout = FALSE,
-                                                 .xorout = 0x07,
-                                                 .result = 0 };
+    static struct _hexin_crcx crc3_param_gsm;
+
+    crc3_param_gsm.is_initial = FALSE;
+    crc3_param_gsm.width      = 3;
+    crc3_param_gsm.poly       = 0x03;
+    crc3_param_gsm.init       = 0x00;
+    crc3_param_gsm.refin      = FALSE;
+    crc3_param_gsm.refout     = FALSE;
+    crc3_param_gsm.xorout     = 0x07;
+    crc3_param_gsm.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc3_param_gsm ) ) {
         return NULL;
@@ -74,14 +77,16 @@ static PyObject * _crc3_gsm( PyObject *self, PyObject *args )
 
 static PyObject * _crc3_rohc( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crcx crc3_param_rohc = { .is_initial=FALSE,
-                                                  .width  = 3,
-                                                  .poly   = 0x03,
-                                                  .init   = 0x07,
-                                                  .refin  = TRUE,
-                                                  .refout = TRUE,
-                                                  .xorout = 0x00,
-                                                  .result = 0 };
+    static struct _hexin_crcx crc3_param_rohc;
+
+    crc3_param_rohc.is_initial = FALSE;
+    crc3_param_rohc.width      = 3;
+    crc3_param_rohc.poly       = 0x03;
+    crc3_param_rohc.init       = 0x07;
+    crc3_param_rohc.refin      = TRUE;
+    crc3_param_rohc.refout     = TRUE;
+    crc3_param_rohc.xorout     = 0x00;
+    crc3_param_rohc.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc3_param_rohc ) ) {
         return NULL;
@@ -92,14 +97,16 @@ static PyObject * _crc3_rohc( PyObject *self, PyObject *args )
 
 static PyObject * _crc4_itu( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crcx crc4_param_itu4 = { .is_initial=FALSE,
-                                                  .width  = 4,
-                                                  .poly   = 0x03,
-                                                  .init   = 0x00,
-                                                  .refin  = TRUE,
-                                                  .refout = TRUE,
-                                                  .xorout = 0x00,
-                                                  .result = 0 };
+    static struct _hexin_crcx crc4_param_itu4;
+
+    crc4_param_itu4.is_initial = FALSE;
+    crc4_param_itu4.width      = 4;
+    crc4_param_itu4.poly       = 0x03;
+    crc4_param_itu4.init       = 0x00;
+    crc4_param_itu4.refin      = TRUE;
+    crc4_param_itu4.refout     = TRUE;
+    crc4_param_itu4.xorout     = 0x00;
+    crc4_param_itu4.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc4_param_itu4 ) ) {
         return NULL;
@@ -110,14 +117,16 @@ static PyObject * _crc4_itu( PyObject *self, PyObject *args )
 
 static PyObject * _crc4_interlaken4( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crcx crc4_param_interlaken = { .is_initial=FALSE,
-                                                        .width  = 4,
-                                                        .poly   = 0x03,
-                                                        .init   = 0x0F,
-                                                        .refin  = FALSE,
-                                                        .refout = FALSE,
-                                                        .xorout = 0x0F,
-                                                        .result = 0 };
+    static struct _hexin_crcx crc4_param_interlaken;
+
+    crc4_param_interlaken.is_initial = FALSE;
+    crc4_param_interlaken.width      = 4;
+    crc4_param_interlaken.poly       = 0x03;
+    crc4_param_interlaken.init       = 0x0F;
+    crc4_param_interlaken.refin      = FALSE;
+    crc4_param_interlaken.refout     = FALSE;
+    crc4_param_interlaken.xorout     = 0x0F;
+    crc4_param_interlaken.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc4_param_interlaken ) ) {
         return NULL;
@@ -128,14 +137,16 @@ static PyObject * _crc4_interlaken4( PyObject *self, PyObject *args )
 
 static PyObject * _crc5_itu( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crcx crc5_param_itu5 = { .is_initial=FALSE,
-                                                  .width  = 5,
-                                                  .poly   = 0x15,
-                                                  .init   = 0x00,
-                                                  .refin  = TRUE,
-                                                  .refout = TRUE,
-                                                  .xorout = 0x00,
-                                                  .result = 0 };
+    static struct _hexin_crcx crc5_param_itu5;
+
+    crc5_param_itu5.is_initial = FALSE;
+    crc5_param_itu5.width      = 5;
+    crc5_param_itu5.poly       = 0x15;
+    crc5_param_itu5.init       = 0x00;
+    crc5_param_itu5.refin      = TRUE;
+    crc5_param_itu5.refout     = TRUE;
+    crc5_param_itu5.xorout     = 0x00;
+    crc5_param_itu5.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc5_param_itu5 ) ) {
         return NULL;
@@ -146,14 +157,16 @@ static PyObject * _crc5_itu( PyObject *self, PyObject *args )
 
 static PyObject * _crc5_epc( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crcx crc5_param_epc5 = { .is_initial=FALSE,
-                                                  .width  = 5,
-                                                  .poly   = 0x09,
-                                                  .init   = 0x09,
-                                                  .refin  = FALSE,
-                                                  .refout = FALSE,
-                                                  .xorout = 0x00,
-                                                  .result = 0 };
+    static struct _hexin_crcx crc5_param_epc5;
+
+    crc5_param_epc5.is_initial = FALSE;
+    crc5_param_epc5.width      = 5;
+    crc5_param_epc5.poly       = 0x09;
+    crc5_param_epc5.init       = 0x09;
+    crc5_param_epc5.refin      = FALSE;
+    crc5_param_epc5.refout     = FALSE;
+    crc5_param_epc5.xorout     = 0x00;
+    crc5_param_epc5.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc5_param_epc5 ) ) {
         return NULL;
@@ -164,14 +177,16 @@ static PyObject * _crc5_epc( PyObject *self, PyObject *args )
 
 static PyObject * _crc5_usb( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crcx crc5_param_usb5 = { .is_initial=FALSE,
-                                                  .width  = 5,
-                                                  .poly   = 0x05,
-                                                  .init   = 0x1F,
-                                                  .refin  = TRUE,
-                                                  .refout = TRUE,
-                                                  .xorout = 0x1F,
-                                                  .result = 0 };
+    static struct _hexin_crcx crc5_param_usb5;
+
+    crc5_param_usb5.is_initial = FALSE;
+    crc5_param_usb5.width      = 5;
+    crc5_param_usb5.poly       = 0x05;
+    crc5_param_usb5.init       = 0x1F;
+    crc5_param_usb5.refin      = TRUE;
+    crc5_param_usb5.refout     = TRUE;
+    crc5_param_usb5.xorout     = 0x1F;
+    crc5_param_usb5.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc5_param_usb5 ) ) {
         return NULL;
@@ -182,14 +197,16 @@ static PyObject * _crc5_usb( PyObject *self, PyObject *args )
 
 static PyObject * _crc6_itu( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crcx crc6_param_itu6 = { .is_initial=FALSE,
-                                                  .width  = 6,
-                                                  .poly   = 0x03,
-                                                  .init   = 0x00,
-                                                  .refin  = TRUE,
-                                                  .refout = TRUE,
-                                                  .xorout = 0x00,
-                                                  .result = 0 };
+    static struct _hexin_crcx crc6_param_itu6;
+
+    crc6_param_itu6.is_initial = FALSE;
+    crc6_param_itu6.width      = 6;
+    crc6_param_itu6.poly       = 0x03;
+    crc6_param_itu6.init       = 0x00;
+    crc6_param_itu6.refin      = TRUE;
+    crc6_param_itu6.refout     = TRUE;
+    crc6_param_itu6.xorout     = 0x00;
+    crc6_param_itu6.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc6_param_itu6 ) ) {
         return NULL;
@@ -200,14 +217,16 @@ static PyObject * _crc6_itu( PyObject *self, PyObject *args )
 
 static PyObject * _crc6_gsm( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crcx crc6_param_gsm6 = { .is_initial=FALSE,
-                                                  .width  = 6,
-                                                  .poly   = 0x2F,
-                                                  .init   = 0x00,
-                                                  .refin  = FALSE,
-                                                  .refout = FALSE,
-                                                  .xorout = 0x3F,
-                                                  .result = 0 };
+    static struct _hexin_crcx crc6_param_gsm6;
+
+    crc6_param_gsm6.is_initial = FALSE;
+    crc6_param_gsm6.width      = 6;
+    crc6_param_gsm6.poly       = 0x2F;
+    crc6_param_gsm6.init       = 0x00;
+    crc6_param_gsm6.refin      = FALSE;
+    crc6_param_gsm6.refout     = FALSE;
+    crc6_param_gsm6.xorout     = 0x3F;
+    crc6_param_gsm6.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc6_param_gsm6 ) ) {
         return NULL;
@@ -218,14 +237,16 @@ static PyObject * _crc6_gsm( PyObject *self, PyObject *args )
 
 static PyObject * _crc6_darc6( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crcx crc6_param_darc = { .is_initial=FALSE,
-                                                  .width  = 6,
-                                                  .poly   = 0x19,
-                                                  .init   = 0x00,
-                                                  .refin  = TRUE,
-                                                  .refout = TRUE,
-                                                  .xorout = 0x00,
-                                                  .result = 0 };
+    static struct _hexin_crcx crc6_param_darc;
+
+    crc6_param_darc.is_initial = FALSE;
+    crc6_param_darc.width      = 6;
+    crc6_param_darc.poly       = 0x19;
+    crc6_param_darc.init       = 0x00;
+    crc6_param_darc.refin      = TRUE;
+    crc6_param_darc.refout     = TRUE;
+    crc6_param_darc.xorout     = 0x00;
+    crc6_param_darc.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc6_param_darc ) ) {
         return NULL;
@@ -236,14 +257,16 @@ static PyObject * _crc6_darc6( PyObject *self, PyObject *args )
 
 static PyObject * _crc7_mmc( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crcx crc7_param_mmc7 = { .is_initial=FALSE,
-                                                  .width  = 7,
-                                                  .poly   = 0x09,
-                                                  .init   = 0x00,
-                                                  .refin  = FALSE,
-                                                  .refout = FALSE,
-                                                  .xorout = 0x00,
-                                                  .result = 0 };
+    static struct _hexin_crcx crc7_param_mmc7;
+
+    crc7_param_mmc7.is_initial = FALSE;
+    crc7_param_mmc7.width      = 7;
+    crc7_param_mmc7.poly       = 0x09;
+    crc7_param_mmc7.init       = 0x00;
+    crc7_param_mmc7.refin      = FALSE;
+    crc7_param_mmc7.refout     = FALSE;
+    crc7_param_mmc7.xorout     = 0x00;
+    crc7_param_mmc7.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc7_param_mmc7 ) ) {
         return NULL;
@@ -254,14 +277,16 @@ static PyObject * _crc7_mmc( PyObject *self, PyObject *args )
 
 static PyObject * _crc7_umts7( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crcx crc7_param_umts = { .is_initial=FALSE,
-                                                  .width  = 7,
-                                                  .poly   = 0x45,
-                                                  .init   = 0x00,
-                                                  .refin  = FALSE,
-                                                  .refout = FALSE,
-                                                  .xorout = 0x00,
-                                                  .result = 0 };
+    static struct _hexin_crcx crc7_param_umts;
+
+    crc7_param_umts.is_initial = FALSE;
+    crc7_param_umts.width      = 7;
+    crc7_param_umts.poly       = 0x45;
+    crc7_param_umts.init       = 0x00;
+    crc7_param_umts.refin      = FALSE;
+    crc7_param_umts.refout     = FALSE;
+    crc7_param_umts.xorout     = 0x00;
+    crc7_param_umts.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc7_param_umts ) ) {
         return NULL;
@@ -272,14 +297,16 @@ static PyObject * _crc7_umts7( PyObject *self, PyObject *args )
 
 static PyObject * _crc7_rohc7( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crcx crc7_param_rohc = { .is_initial=FALSE,
-                                                  .width  = 7,
-                                                  .poly   = 0x4F,
-                                                  .init   = 0x7F,
-                                                  .refin  = TRUE,
-                                                  .refout = TRUE,
-                                                  .xorout = 0x00,
-                                                  .result = 0 };
+    static struct _hexin_crcx crc7_param_rohc;
+
+    crc7_param_rohc.is_initial = FALSE;
+    crc7_param_rohc.width      = 7;
+    crc7_param_rohc.poly       = 0x4F;
+    crc7_param_rohc.init       = 0x7F;
+    crc7_param_rohc.refin      = TRUE;
+    crc7_param_rohc.refout     = TRUE;
+    crc7_param_rohc.xorout     = 0x00;
+    crc7_param_rohc.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc7_param_rohc ) ) {
         return NULL;
@@ -290,14 +317,16 @@ static PyObject * _crc7_rohc7( PyObject *self, PyObject *args )
 
 static PyObject * _crc10_atm10( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crcx crc10_param_atm = { .is_initial=FALSE,
-                                                  .width  = 10,
-                                                  .poly   = 0x233,
-                                                  .init   = 0x000,
-                                                  .refin  = FALSE,
-                                                  .refout = FALSE,
-                                                  .xorout = 0x000,
-                                                  .result = 0 };
+    static struct _hexin_crcx crc10_param_atm;
+
+    crc10_param_atm.is_initial = FALSE;
+    crc10_param_atm.width      = 10;
+    crc10_param_atm.poly       = 0x233;
+    crc10_param_atm.init       = 0x000;
+    crc10_param_atm.refin      = FALSE;
+    crc10_param_atm.refout     = FALSE;
+    crc10_param_atm.xorout     = 0x000;
+    crc10_param_atm.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc10_param_atm ) ) {
         return NULL;
@@ -308,14 +337,16 @@ static PyObject * _crc10_atm10( PyObject *self, PyObject *args )
 
 static PyObject * _crc10_cdma2000( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crcx crc10_param_cdma2000 = { .is_initial=FALSE,
-                                                       .width  = 10,
-                                                       .poly   = 0x3D9,
-                                                       .init   = 0x3FF,
-                                                       .refin  = FALSE,
-                                                       .refout = FALSE,
-                                                       .xorout = 0x000,
-                                                       .result = 0 };
+    static struct _hexin_crcx crc10_param_cdma2000;
+
+    crc10_param_cdma2000.is_initial = FALSE;
+    crc10_param_cdma2000.width      = 10;
+    crc10_param_cdma2000.poly       = 0x3D9;
+    crc10_param_cdma2000.init       = 0x3FF;
+    crc10_param_cdma2000.refin      = FALSE;
+    crc10_param_cdma2000.refout     = FALSE;
+    crc10_param_cdma2000.xorout     = 0x000;
+    crc10_param_cdma2000.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc10_param_cdma2000 ) ) {
         return NULL;
@@ -326,14 +357,16 @@ static PyObject * _crc10_cdma2000( PyObject *self, PyObject *args )
 
 static PyObject * _crc10_gsm10( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crcx crc10_param_gsm10 = { .is_initial=FALSE,
-                                                    .width  = 10,
-                                                    .poly   = 0x175,
-                                                    .init   = 0x000,
-                                                    .refin  = FALSE,
-                                                    .refout = FALSE,
-                                                    .xorout = 0x3FF,
-                                                    .result = 0 };
+    static struct _hexin_crcx crc10_param_gsm10;
+
+    crc10_param_gsm10.is_initial = FALSE;
+    crc10_param_gsm10.width      = 10;
+    crc10_param_gsm10.poly       = 0x175;
+    crc10_param_gsm10.init       = 0x000;
+    crc10_param_gsm10.refin      = FALSE;
+    crc10_param_gsm10.refout     = FALSE;
+    crc10_param_gsm10.xorout     = 0x3FF;
+    crc10_param_gsm10.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc10_param_gsm10 ) ) {
         return NULL;
@@ -344,14 +377,16 @@ static PyObject * _crc10_gsm10( PyObject *self, PyObject *args )
 
 static PyObject * _crc11_flexray11( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crcx crc11_param_flexray = { .is_initial=FALSE,
-                                                      .width  = 11,
-                                                      .poly   = 0x385,
-                                                      .init   = 0x01A,
-                                                      .refin  = FALSE,
-                                                      .refout = FALSE,
-                                                      .xorout = 0x000,
-                                                      .result = 0 };
+    static struct _hexin_crcx crc11_param_flexray;
+
+    crc11_param_flexray.is_initial = FALSE;
+    crc11_param_flexray.width      = 11;
+    crc11_param_flexray.poly       = 0x385;
+    crc11_param_flexray.init       = 0x01A;
+    crc11_param_flexray.refin      = FALSE;
+    crc11_param_flexray.refout     = FALSE;
+    crc11_param_flexray.xorout     = 0x000;
+    crc11_param_flexray.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc11_param_flexray ) ) {
         return NULL;
@@ -362,14 +397,16 @@ static PyObject * _crc11_flexray11( PyObject *self, PyObject *args )
 
 static PyObject * _crc11_umts11( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crcx crc11_param_umts11 = { .is_initial=FALSE,
-                                                     .width  = 11,
-                                                     .poly   = 0x307,
-                                                     .init   = 0x000,
-                                                     .refin  = FALSE,
-                                                     .refout = FALSE,
-                                                     .xorout = 0x000,
-                                                     .result = 0 };
+    static struct _hexin_crcx crc11_param_umts11;
+
+    crc11_param_umts11.is_initial = FALSE;
+    crc11_param_umts11.width      = 11;
+    crc11_param_umts11.poly       = 0x307;
+    crc11_param_umts11.init       = 0x000;
+    crc11_param_umts11.refin      = FALSE;
+    crc11_param_umts11.refout     = FALSE;
+    crc11_param_umts11.xorout     = 0x000;
+    crc11_param_umts11.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc11_param_umts11 ) ) {
         return NULL;
@@ -380,14 +417,16 @@ static PyObject * _crc11_umts11( PyObject *self, PyObject *args )
 
 static PyObject * _crc12_cdma2000( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crcx crc12_param_cdma2000 = { .is_initial=FALSE,
-                                                       .width  = 12,
-                                                       .poly   = 0xF13,
-                                                       .init   = 0xFFF,
-                                                       .refin  = FALSE,
-                                                       .refout = FALSE,
-                                                       .xorout = 0x000,
-                                                       .result = 0 };
+    static struct _hexin_crcx crc12_param_cdma2000;
+
+    crc12_param_cdma2000.is_initial = FALSE;
+    crc12_param_cdma2000.width      = 12;
+    crc12_param_cdma2000.poly       = 0xF13;
+    crc12_param_cdma2000.init       = 0xFFF;
+    crc12_param_cdma2000.refin      = FALSE;
+    crc12_param_cdma2000.refout     = FALSE;
+    crc12_param_cdma2000.xorout     = 0x000;
+    crc12_param_cdma2000.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc12_param_cdma2000 ) ) {
         return NULL;
@@ -398,14 +437,16 @@ static PyObject * _crc12_cdma2000( PyObject *self, PyObject *args )
 
 static PyObject * _crc12_dect12( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crcx crc12_param_dect = { .is_initial=FALSE,
-                                                   .width  = 12,
-                                                   .poly   = 0x80F,
-                                                   .init   = 0x000,
-                                                   .refin  = FALSE,
-                                                   .refout = FALSE,
-                                                   .xorout = 0x000,
-                                                   .result = 0 };
+    static struct _hexin_crcx crc12_param_dect;
+
+    crc12_param_dect.is_initial = FALSE;
+    crc12_param_dect.width      = 12;
+    crc12_param_dect.poly       = 0x80F;
+    crc12_param_dect.init       = 0x000;
+    crc12_param_dect.refin      = FALSE;
+    crc12_param_dect.refout     = FALSE;
+    crc12_param_dect.xorout     = 0x000;
+    crc12_param_dect.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc12_param_dect ) ) {
         return NULL;
@@ -416,14 +457,16 @@ static PyObject * _crc12_dect12( PyObject *self, PyObject *args )
 
 static PyObject * _crc12_gsm12( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crcx crc12_param_gsm = { .is_initial=FALSE,
-                                                  .width  = 12,
-                                                  .poly   = 0xD31,
-                                                  .init   = 0x000,
-                                                  .refin  = FALSE,
-                                                  .refout = FALSE,
-                                                  .xorout = 0xFFF,
-                                                  .result = 0 };
+    static struct _hexin_crcx crc12_param_gsm;
+
+    crc12_param_gsm.is_initial = FALSE;
+    crc12_param_gsm.width      = 12;
+    crc12_param_gsm.poly       = 0xD31;
+    crc12_param_gsm.init       = 0x000;
+    crc12_param_gsm.refin      = FALSE;
+    crc12_param_gsm.refout     = FALSE;
+    crc12_param_gsm.xorout     = 0xFFF;
+    crc12_param_gsm.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc12_param_gsm ) ) {
         return NULL;
@@ -434,14 +477,16 @@ static PyObject * _crc12_gsm12( PyObject *self, PyObject *args )
 
 static PyObject * _crc12_umts12( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crcx crc12_param_umts12 = { .is_initial=FALSE,
-                                                     .width  = 12,
-                                                     .poly   = 0x80F,
-                                                     .init   = 0x000,
-                                                     .refin  = FALSE,
-                                                     .refout = TRUE,
-                                                     .xorout = 0x000,
-                                                     .result = 0 };
+    static struct _hexin_crcx crc12_param_umts12;
+
+    crc12_param_umts12.is_initial = FALSE;
+    crc12_param_umts12.width      = 12;
+    crc12_param_umts12.poly       = 0x80F;
+    crc12_param_umts12.init       = 0x000;
+    crc12_param_umts12.refin      = FALSE;
+    crc12_param_umts12.refout     = TRUE;
+    crc12_param_umts12.xorout     = 0x000;
+    crc12_param_umts12.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc12_param_umts12 ) ) {
         return NULL;
@@ -455,14 +500,16 @@ static PyObject * _crc12_umts12( PyObject *self, PyObject *args )
 
 static PyObject * _crc13_bbc( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crcx crc13_param_bbc = { .is_initial=FALSE,
-                                                  .width  = 13,
-                                                  .poly   = 0x1CF5,
-                                                  .init   = 0x0000,
-                                                  .refin  = FALSE,
-                                                  .refout = FALSE,
-                                                  .xorout = 0x0000,
-                                                  .result = 0 };
+    static struct _hexin_crcx crc13_param_bbc;
+
+    crc13_param_bbc.is_initial = FALSE;
+    crc13_param_bbc.width      = 13;
+    crc13_param_bbc.poly       = 0x1CF5;
+    crc13_param_bbc.init       = 0x0000;
+    crc13_param_bbc.refin      = FALSE;
+    crc13_param_bbc.refout     = FALSE;
+    crc13_param_bbc.xorout     = 0x0000;
+    crc13_param_bbc.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc13_param_bbc ) ) {
         return NULL;
@@ -473,14 +520,16 @@ static PyObject * _crc13_bbc( PyObject *self, PyObject *args )
 
 static PyObject * _crc14_darc( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crcx crc14_param_darc = { .is_initial=FALSE,
-                                                   .width  = 14,
-                                                   .poly   = 0x0805,
-                                                   .init   = 0x0000,
-                                                   .refin  = TRUE,
-                                                   .refout = TRUE,
-                                                   .xorout = 0x0000,
-                                                   .result = 0 };
+    static struct _hexin_crcx crc14_param_darc;
+
+    crc14_param_darc.is_initial = FALSE;
+    crc14_param_darc.width      = 14;
+    crc14_param_darc.poly       = 0x0805;
+    crc14_param_darc.init       = 0x0000;
+    crc14_param_darc.refin      = TRUE;
+    crc14_param_darc.refout     = TRUE;
+    crc14_param_darc.xorout     = 0x0000;
+    crc14_param_darc.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc14_param_darc ) ) {
         return NULL;
@@ -491,14 +540,16 @@ static PyObject * _crc14_darc( PyObject *self, PyObject *args )
 
 static PyObject * _crc14_gsm( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crcx crc14_param_gsm = { .is_initial=FALSE,
-                                                  .width  = 14,
-                                                  .poly   = 0x202D,
-                                                  .init   = 0x0000,
-                                                  .refin  = FALSE,
-                                                  .refout = FALSE,
-                                                  .xorout = 0x3FFF,
-                                                  .result = 0 };
+    static struct _hexin_crcx crc14_param_gsm;
+
+    crc14_param_gsm.is_initial = FALSE;
+    crc14_param_gsm.width      = 14;
+    crc14_param_gsm.poly       = 0x202D;
+    crc14_param_gsm.init       = 0x0000;
+    crc14_param_gsm.refin      = FALSE;
+    crc14_param_gsm.refout     = FALSE;
+    crc14_param_gsm.xorout     = 0x0000;
+    crc14_param_gsm.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc14_param_gsm ) ) {
         return NULL;
@@ -509,14 +560,16 @@ static PyObject * _crc14_gsm( PyObject *self, PyObject *args )
 
 static PyObject * _crc15_mpt1327( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crcx crc15_param_mpt1327 = { .is_initial=FALSE,
-                                                      .width  = 15,
-                                                      .poly   = 0x6815,
-                                                      .init   = 0x0000,
-                                                      .refin  = FALSE,
-                                                      .refout = FALSE,
-                                                      .xorout = 0x0001,
-                                                      .result = 0 };
+    static struct _hexin_crcx crc15_param_mpt1327;
+
+    crc15_param_mpt1327.is_initial = FALSE;
+    crc15_param_mpt1327.width      = 15;
+    crc15_param_mpt1327.poly       = 0x6815;
+    crc15_param_mpt1327.init       = 0x0000;
+    crc15_param_mpt1327.refin      = FALSE;
+    crc15_param_mpt1327.refout     = FALSE;
+    crc15_param_mpt1327.xorout     = 0x0001;
+    crc15_param_mpt1327.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc15_param_mpt1327 ) ) {
         return NULL;

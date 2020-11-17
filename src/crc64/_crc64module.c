@@ -16,6 +16,7 @@
 *                       2020-04-23 [Heyn] New add we() and xz() functions.
 *                       2020-05-12 [Heyn] (Python2.7) FIX : Windows compilation error.
 *                       2020-08-04 [Heyn] Fixed Issues #4.
+*                       2020-11-17 [Heyn] Fixed Issues #6 (Python2 vc9 error C2059 )
 *
 *********************************************************************************************************
 */
@@ -70,14 +71,16 @@ static PyObject * _crc64_iso( PyObject *self, PyObject *args )
                                                      .xorout = 0xFFFFFFFFFFFFFFFFL,
                                                      .result = 0 };
 #else
-    static struct _hexin_crc64 crc64_param_goiso = { FALSE,
-                                                     HEXIN_CRC64_WIDTH,
-                                                     0x000000000000001BL,
-                                                     0xFFFFFFFFFFFFFFFFL,
-                                                     TRUE,
-                                                     TRUE,
-                                                     0xFFFFFFFFFFFFFFFFL,
-                                                     0 };
+    static struct _hexin_crc64 crc64_param_goiso;
+
+    crc64_param_goiso.is_initial = FALSE;
+    crc64_param_goiso.width      = HEXIN_CRC64_WIDTH;
+    crc64_param_goiso.poly       = 0x000000000000001BL;
+    crc64_param_goiso.init       = 0xFFFFFFFFFFFFFFFFL;
+    crc64_param_goiso.refin      = TRUE;
+    crc64_param_goiso.refout     = TRUE;
+    crc64_param_goiso.xorout     = 0xFFFFFFFFFFFFFFFFL;
+    crc64_param_goiso.result     = 0;
 #endif /* PY_MAJOR_VERSION */
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc64_param_goiso ) ) {
@@ -99,14 +102,16 @@ static PyObject * _crc64_ecma182( PyObject *self, PyObject *args )
                                                     .xorout = 0x0000000000000000L,
                                                     .result = 0 };
 #else
-    static struct _hexin_crc64 crc64_param_ecma = { FALSE,
-                                                    HEXIN_CRC64_WIDTH,
-                                                    CRC64_POLYNOMIAL_ECMA182,
-                                                    0,
-                                                    FALSE,
-                                                    FALSE,
-                                                    0,
-                                                    0 };
+    static struct _hexin_crc64 crc64_param_ecma;
+
+    crc64_param_ecma.is_initial = FALSE;
+    crc64_param_ecma.width      = HEXIN_CRC64_WIDTH;
+    crc64_param_ecma.poly       = CRC64_POLYNOMIAL_ECMA182;
+    crc64_param_ecma.init       = 0x0000000000000000L;
+    crc64_param_ecma.refin      = FALSE;
+    crc64_param_ecma.refout     = FALSE;
+    crc64_param_ecma.xorout     = 0x0000000000000000L;
+    crc64_param_ecma.result     = 0;
 #endif /* PY_MAJOR_VERSION */
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc64_param_ecma ) ) {
@@ -128,14 +133,16 @@ static PyObject * _crc64_we( PyObject *self, PyObject *args )
                                                   .xorout = 0xFFFFFFFFFFFFFFFFL,
                                                   .result = 0 };
 #else
-    static struct _hexin_crc64 crc64_param_we = { FALSE,
-                                                  HEXIN_CRC64_WIDTH,
-                                                  CRC64_POLYNOMIAL_ECMA182,
-                                                  0xFFFFFFFFFFFFFFFFL,
-                                                  FALSE,
-                                                  FALSE,
-                                                  0xFFFFFFFFFFFFFFFFL,
-                                                  0 };
+    static struct _hexin_crc64 crc64_param_we;
+
+    crc64_param_we.is_initial = FALSE;
+    crc64_param_we.width      = HEXIN_CRC64_WIDTH;
+    crc64_param_we.poly       = CRC64_POLYNOMIAL_ECMA182;
+    crc64_param_we.init       = 0xFFFFFFFFFFFFFFFFL;
+    crc64_param_we.refin      = FALSE;
+    crc64_param_we.refout     = FALSE;
+    crc64_param_we.xorout     = 0xFFFFFFFFFFFFFFFFL;
+    crc64_param_we.result     = 0;
 #endif /* PY_MAJOR_VERSION */
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc64_param_we ) ) {
@@ -157,14 +164,16 @@ static PyObject * _crc64_xz( PyObject *self, PyObject *args )
                                                   .xorout = 0xFFFFFFFFFFFFFFFFL,
                                                   .result = 0 };
 #else
-    static struct _hexin_crc64 crc64_param_xz = { FALSE,
-                                                  HEXIN_CRC64_WIDTH,
-                                                  CRC64_POLYNOMIAL_ECMA182,
-                                                  0xFFFFFFFFFFFFFFFFL,
-                                                  TRUE,
-                                                  TRUE,
-                                                  0xFFFFFFFFFFFFFFFFL,
-                                                  0 };
+    static struct _hexin_crc64 crc64_param_xz;
+
+    crc64_param_xz.is_initial = FALSE;
+    crc64_param_xz.width      = HEXIN_CRC64_WIDTH;
+    crc64_param_xz.poly       = CRC64_POLYNOMIAL_ECMA182;
+    crc64_param_xz.init       = 0xFFFFFFFFFFFFFFFFL;
+    crc64_param_xz.refin      = TRUE;
+    crc64_param_xz.refout     = TRUE;
+    crc64_param_xz.xorout     = 0xFFFFFFFFFFFFFFFFL;
+    crc64_param_xz.result     = 0;
 #endif /* PY_MAJOR_VERSION */
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc64_param_xz ) ) {
@@ -186,14 +195,16 @@ static PyObject * _crc64_gsm40( PyObject *self, PyObject *args )
                                                    .xorout = 0xFFFFFFFFFFL,
                                                    .result = 0 };
 #else
-    static struct _hexin_crc64 crc64_param_gsm = { FALSE,
-                                                   40,
-                                                   0x0004820009,
-                                                   0x0000000000,
-                                                   FALSE,
-                                                   FALSE,
-                                                   0xFFFFFFFFFFL,
-                                                   0 };
+    static struct _hexin_crc64 crc64_param_gsm;
+
+    crc64_param_gsm.is_initial = FALSE;
+    crc64_param_gsm.width      = 40;
+    crc64_param_gsm.poly       = 0x0004820009;
+    crc64_param_gsm.init       = 0x0000000000;
+    crc64_param_gsm.refin      = FALSE;
+    crc64_param_gsm.refout     = FALSE;
+    crc64_param_gsm.xorout     = 0xFFFFFFFFFFL;
+    crc64_param_gsm.result     = 0;
 #endif /* PY_MAJOR_VERSION */
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc64_param_gsm ) ) {
@@ -246,14 +257,16 @@ static PyObject * _crc64_hacker( PyObject *self, PyObject *args, PyObject* kws )
                                                .xorout = 0x0000000000000000L,
                                                .result = 0 };
 #else
-    struct _hexin_crc64 crc64_param_hacker = { FALSE,
-                                               HEXIN_CRC64_WIDTH,
-                                               CRC64_POLYNOMIAL_ECMA182,
-                                               0x0000000000000000L,
-                                               FALSE,
-                                               FALSE,
-                                               0x0000000000000000L,
-                                               0 };
+    struct _hexin_crc64 crc64_param_hacker;
+
+    crc64_param_hacker.is_initial = FALSE;
+    crc64_param_hacker.width      = HEXIN_CRC64_WIDTH;
+    crc64_param_hacker.poly       = CRC64_POLYNOMIAL_ECMA182;
+    crc64_param_hacker.init       = 0x0000000000000000L;
+    crc64_param_hacker.refin      = FALSE;
+    crc64_param_hacker.refout     = FALSE;
+    crc64_param_hacker.xorout     = 0x0000000000000000L;
+    crc64_param_hacker.result     = 0;
 #endif /* PY_MAJOR_VERSION */
     static char* kwlist[]={ "data", "poly", "init", "xorout", "refin", "refout", NULL };
 

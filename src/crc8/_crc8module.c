@@ -24,6 +24,7 @@
 *                       2020-03-20 [Heyn] New CRC8-FLETCHER8.
 *                       2020-04-17 [Heyn] Issues #1
 *                       2020-08-04 [Heyn] Fixed Issues #4.
+*                       2020-11-17 [Heyn] Fixed Issues #6 (Python2 vc9 error C2059 )
 *
 *********************************************************************************************************
 */
@@ -137,14 +138,16 @@ static PyObject * _crc8_lrc( PyObject *self, PyObject *args )
 
 static PyObject * _crc8_maxim( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crc8 crc8_param_maxim = { .is_initial=FALSE,
-                                                   .width  = HEXIN_CRC8_WIDTH,
-                                                   .poly   = CRC8_POLYNOMIAL_31,
-                                                   .init   = 0x00,
-                                                   .refin  = TRUE,
-                                                   .refout = TRUE,
-                                                   .xorout = 0x00,
-                                                   .result = 0 };
+    static struct _hexin_crc8 crc8_param_maxim;
+
+    crc8_param_maxim.is_initial = FALSE;
+    crc8_param_maxim.width      = HEXIN_CRC8_WIDTH;
+    crc8_param_maxim.poly       = CRC8_POLYNOMIAL_31;
+    crc8_param_maxim.init       = 0x00;
+    crc8_param_maxim.refin      = TRUE;
+    crc8_param_maxim.refout     = TRUE;
+    crc8_param_maxim.xorout     = 0x00;
+    crc8_param_maxim.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc8_param_maxim ) ) {
         return NULL;
@@ -155,14 +158,16 @@ static PyObject * _crc8_maxim( PyObject *self, PyObject *args )
 
 static PyObject * _crc8_rohc( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crc8 crc8_param_rohc = { .is_initial=FALSE,
-                                                  .width  = HEXIN_CRC8_WIDTH,
-                                                  .poly   = CRC8_POLYNOMIAL_07,
-                                                  .init   = 0xFF,
-                                                  .refin  = TRUE,
-                                                  .refout = TRUE,
-                                                  .xorout = 0x00,
-                                                  .result = 0 };
+    static struct _hexin_crc8 crc8_param_rohc;
+
+    crc8_param_rohc.is_initial = FALSE;
+    crc8_param_rohc.width      = HEXIN_CRC8_WIDTH;
+    crc8_param_rohc.poly       = CRC8_POLYNOMIAL_07;
+    crc8_param_rohc.init       = 0xFF;
+    crc8_param_rohc.refin      = TRUE;
+    crc8_param_rohc.refout     = TRUE;
+    crc8_param_rohc.xorout     = 0x00;
+    crc8_param_rohc.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc8_param_rohc ) ) {
         return NULL;
@@ -173,14 +178,16 @@ static PyObject * _crc8_rohc( PyObject *self, PyObject *args )
 
 static PyObject * _crc8_itu( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crc8 crc8_param_itu8 = { .is_initial=FALSE,
-                                                  .width  = HEXIN_CRC8_WIDTH,
-                                                  .poly   = CRC8_POLYNOMIAL_07,
-                                                  .init   = 0x00,
-                                                  .refin  = FALSE,
-                                                  .refout = FALSE,
-                                                  .xorout = 0x55,
-                                                  .result = 0 };
+    static struct _hexin_crc8 crc8_param_itu8;
+
+    crc8_param_itu8.is_initial = FALSE;
+    crc8_param_itu8.width      = HEXIN_CRC8_WIDTH;
+    crc8_param_itu8.poly       = CRC8_POLYNOMIAL_07;
+    crc8_param_itu8.init       = 0x00;
+    crc8_param_itu8.refin      = FALSE;
+    crc8_param_itu8.refout     = FALSE;
+    crc8_param_itu8.xorout     = 0x55;
+    crc8_param_itu8.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc8_param_itu8 ) ) {
         return NULL;
@@ -191,14 +198,16 @@ static PyObject * _crc8_itu( PyObject *self, PyObject *args )
 
 static PyObject * _crc8_crc8( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crc8 crc8_param_crc8 = { .is_initial=FALSE,
-                                                  .width  = HEXIN_CRC8_WIDTH,
-                                                  .poly   = CRC8_POLYNOMIAL_07,
-                                                  .init   = 0x00,
-                                                  .refin  = FALSE,
-                                                  .refout = FALSE,
-                                                  .xorout = 0x00,
-                                                  .result = 0 };
+    static struct _hexin_crc8 crc8_param_crc8;
+
+    crc8_param_crc8.is_initial = FALSE;
+    crc8_param_crc8.width      = HEXIN_CRC8_WIDTH;
+    crc8_param_crc8.poly       = CRC8_POLYNOMIAL_07;
+    crc8_param_crc8.init       = 0x00;
+    crc8_param_crc8.refin      = FALSE;
+    crc8_param_crc8.refout     = FALSE;
+    crc8_param_crc8.xorout     = 0x00;
+    crc8_param_crc8.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc8_param_crc8 ) ) {
         return NULL;
@@ -251,14 +260,16 @@ static PyObject * _crc8_table( PyObject *self, PyObject *args )
 static PyObject * _crc8_hacker( PyObject *self, PyObject *args, PyObject* kws )
 {
     Py_buffer data = { NULL, NULL };
-    struct _hexin_crc8 crc8_param_hacker = { .is_initial=FALSE,
-                                             .width  = HEXIN_CRC8_WIDTH,
-                                             .poly   = CRC8_POLYNOMIAL_31,
-                                             .init   = 0xFF,
-                                             .refin  = FALSE,
-                                             .refout = FALSE,
-                                             .xorout = 0x00,
-                                             .result = 0 };
+    struct _hexin_crc8 crc8_param_hacker;
+
+    crc8_param_hacker.is_initial = FALSE;
+    crc8_param_hacker.width      = HEXIN_CRC8_WIDTH;
+    crc8_param_hacker.poly       = CRC8_POLYNOMIAL_31;
+    crc8_param_hacker.init       = 0xFF;
+    crc8_param_hacker.refin      = FALSE;
+    crc8_param_hacker.refout     = FALSE;
+    crc8_param_hacker.xorout     = 0x00;
+    crc8_param_hacker.result     = 0;
 
     static char* kwlist[]={ "data", "poly", "init", "xorout", "refin", "refout", NULL };
 
@@ -310,14 +321,16 @@ static PyObject * _crc8_fletcher( PyObject *self, PyObject *args )
 
 static PyObject * _crc8_autosar8( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crc8 crc8_param_autosar8 = { .is_initial=FALSE,
-                                                      .width  = HEXIN_CRC8_WIDTH,
-                                                      .poly   = CRC8_POLYNOMIAL_2F,
-                                                      .init   = 0xFF,
-                                                      .refin  = FALSE,
-                                                      .refout = FALSE,
-                                                      .xorout = 0xFF,
-                                                      .result = 0 };
+    static struct _hexin_crc8 crc8_param_autosar8;
+
+    crc8_param_autosar8.is_initial = FALSE;
+    crc8_param_autosar8.width      = HEXIN_CRC8_WIDTH;
+    crc8_param_autosar8.poly       = CRC8_POLYNOMIAL_2F;
+    crc8_param_autosar8.init       = 0xFF;
+    crc8_param_autosar8.refin      = FALSE;
+    crc8_param_autosar8.refout     = FALSE;
+    crc8_param_autosar8.xorout     = 0xFF;
+    crc8_param_autosar8.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc8_param_autosar8 ) ) {
         return NULL;
@@ -328,14 +341,16 @@ static PyObject * _crc8_autosar8( PyObject *self, PyObject *args )
 
 static PyObject * _crc8_lte8( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crc8 crc8_param_lte8 = { .is_initial=FALSE,
-                                                  .width  = HEXIN_CRC8_WIDTH,
-                                                  .poly   = CRC8_POLYNOMIAL_9B,
-                                                  .init   = 0x00,
-                                                  .refin  = FALSE,
-                                                  .refout = FALSE,
-                                                  .xorout = 0x00,
-                                                  .result = 0 };
+    static struct _hexin_crc8 crc8_param_lte8;
+
+    crc8_param_lte8.is_initial = FALSE;
+    crc8_param_lte8.width      = HEXIN_CRC8_WIDTH;
+    crc8_param_lte8.poly       = CRC8_POLYNOMIAL_9B;
+    crc8_param_lte8.init       = 0x00;
+    crc8_param_lte8.refin      = FALSE;
+    crc8_param_lte8.refout     = FALSE;
+    crc8_param_lte8.xorout     = 0x00;
+    crc8_param_lte8.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc8_param_lte8 ) ) {
         return NULL;
@@ -346,14 +361,16 @@ static PyObject * _crc8_lte8( PyObject *self, PyObject *args )
 
 static PyObject * _crc8_wcdma( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crc8 crc8_param_wcdma = { .is_initial=FALSE,
-                                                   .width  = HEXIN_CRC8_WIDTH,
-                                                   .poly   = CRC8_POLYNOMIAL_9B,
-                                                   .init   = 0x00,
-                                                   .refin  = TRUE,
-                                                   .refout = TRUE,
-                                                   .xorout = 0x00,
-                                                   .result = 0 };
+    static struct _hexin_crc8 crc8_param_wcdma;
+
+    crc8_param_wcdma.is_initial = FALSE;
+    crc8_param_wcdma.width      = HEXIN_CRC8_WIDTH;
+    crc8_param_wcdma.poly       = CRC8_POLYNOMIAL_9B;
+    crc8_param_wcdma.init       = 0x00;
+    crc8_param_wcdma.refin      = TRUE;
+    crc8_param_wcdma.refout     = TRUE;
+    crc8_param_wcdma.xorout     = 0x00;
+    crc8_param_wcdma.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc8_param_wcdma ) ) {
         return NULL;
@@ -364,14 +381,16 @@ static PyObject * _crc8_wcdma( PyObject *self, PyObject *args )
 
 static PyObject * _crc8_sae_j1850( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crc8 crc8_param_j1850 = { .is_initial=FALSE,
-                                                   .width  = HEXIN_CRC8_WIDTH,
-                                                   .poly   = CRC8_POLYNOMIAL_1D,
-                                                   .init   = 0xFF,
-                                                   .refin  = FALSE,
-                                                   .refout = FALSE,
-                                                   .xorout = 0xFF,
-                                                   .result = 0 };
+    static struct _hexin_crc8 crc8_param_j1850;
+
+    crc8_param_j1850.is_initial = FALSE;
+    crc8_param_j1850.width      = HEXIN_CRC8_WIDTH;
+    crc8_param_j1850.poly       = CRC8_POLYNOMIAL_1D;
+    crc8_param_j1850.init       = 0xFF;
+    crc8_param_j1850.refin      = FALSE;
+    crc8_param_j1850.refout     = FALSE;
+    crc8_param_j1850.xorout     = 0xFF;
+    crc8_param_j1850.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc8_param_j1850 ) ) {
         return NULL;
@@ -382,14 +401,16 @@ static PyObject * _crc8_sae_j1850( PyObject *self, PyObject *args )
 
 static PyObject * _crc8_icode( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crc8 crc8_param_icode = { .is_initial=FALSE,
-                                                   .width  = HEXIN_CRC8_WIDTH,
-                                                   .poly   = CRC8_POLYNOMIAL_1D,
-                                                   .init   = 0xFD,
-                                                   .refin  = FALSE,
-                                                   .refout = FALSE,
-                                                   .xorout = 0x00,
-                                                   .result = 0 };
+    static struct _hexin_crc8 crc8_param_icode;
+
+    crc8_param_icode.is_initial = FALSE;
+    crc8_param_icode.width      = HEXIN_CRC8_WIDTH;
+    crc8_param_icode.poly       = CRC8_POLYNOMIAL_1D;
+    crc8_param_icode.init       = 0xFD;
+    crc8_param_icode.refin      = FALSE;
+    crc8_param_icode.refout     = FALSE;
+    crc8_param_icode.xorout     = 0x00;
+    crc8_param_icode.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc8_param_icode ) ) {
         return NULL;
@@ -400,14 +421,16 @@ static PyObject * _crc8_icode( PyObject *self, PyObject *args )
 
 static PyObject * _crc8_gsm8_a( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crc8 crc8_param_gsm8a = { .is_initial=FALSE,
-                                                   .width  = HEXIN_CRC8_WIDTH,
-                                                   .poly   = CRC8_POLYNOMIAL_1D,
-                                                   .init   = 0x00,
-                                                   .refin  = FALSE,
-                                                   .refout = FALSE,
-                                                   .xorout = 0x00,
-                                                   .result = 0 };
+    static struct _hexin_crc8 crc8_param_gsm8a;
+
+    crc8_param_gsm8a.is_initial = FALSE;
+    crc8_param_gsm8a.width      = HEXIN_CRC8_WIDTH;
+    crc8_param_gsm8a.poly       = CRC8_POLYNOMIAL_1D;
+    crc8_param_gsm8a.init       = 0x00;
+    crc8_param_gsm8a.refin      = FALSE;
+    crc8_param_gsm8a.refout     = FALSE;
+    crc8_param_gsm8a.xorout     = 0x00;
+    crc8_param_gsm8a.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc8_param_gsm8a ) ) {
         return NULL;
@@ -418,14 +441,16 @@ static PyObject * _crc8_gsm8_a( PyObject *self, PyObject *args )
 
 static PyObject * _crc8_gsm8_b( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crc8 crc8_param_gsm8b = { .is_initial=FALSE,
-                                                   .width  = HEXIN_CRC8_WIDTH,
-                                                   .poly   = CRC8_POLYNOMIAL_49,
-                                                   .init   = 0x00,
-                                                   .refin  = FALSE,
-                                                   .refout = FALSE,
-                                                   .xorout = 0xFF,
-                                                   .result = 0 };
+    static struct _hexin_crc8 crc8_param_gsm8b;
+
+    crc8_param_gsm8b.is_initial = FALSE;
+    crc8_param_gsm8b.width      = HEXIN_CRC8_WIDTH;
+    crc8_param_gsm8b.poly       = CRC8_POLYNOMIAL_49;
+    crc8_param_gsm8b.init       = 0x00;
+    crc8_param_gsm8b.refin      = FALSE;
+    crc8_param_gsm8b.refout     = FALSE;
+    crc8_param_gsm8b.xorout     = 0xFF;
+    crc8_param_gsm8b.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc8_param_gsm8b ) ) {
         return NULL;
@@ -436,14 +461,16 @@ static PyObject * _crc8_gsm8_b( PyObject *self, PyObject *args )
 
 static PyObject * _crc8_nrsc_5( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crc8 crc8_param_nrsc5 = { .is_initial=FALSE,
-                                                   .width  = HEXIN_CRC8_WIDTH,
-                                                   .poly   = CRC8_POLYNOMIAL_31,
-                                                   .init   = 0xFF,
-                                                   .refin  = FALSE,
-                                                   .refout = FALSE,
-                                                   .xorout = 0x00,
-                                                   .result = 0 };
+    static struct _hexin_crc8 crc8_param_nrsc5;
+
+    crc8_param_nrsc5.is_initial = FALSE;
+    crc8_param_nrsc5.width      = HEXIN_CRC8_WIDTH;
+    crc8_param_nrsc5.poly       = CRC8_POLYNOMIAL_31;
+    crc8_param_nrsc5.init       = 0xFF;
+    crc8_param_nrsc5.refin      = FALSE;
+    crc8_param_nrsc5.refout     = FALSE;
+    crc8_param_nrsc5.xorout     = 0x00;
+    crc8_param_nrsc5.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc8_param_nrsc5 ) ) {
         return NULL;
@@ -454,14 +481,16 @@ static PyObject * _crc8_nrsc_5( PyObject *self, PyObject *args )
 
 static PyObject * _crc8_bluetooth( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crc8 crc8_param_bluetooth = { .is_initial=FALSE,
-                                                       .width  = HEXIN_CRC8_WIDTH,
-                                                       .poly   = CRC8_POLYNOMIAL_A7,
-                                                       .init   = 0x00,
-                                                       .refin  = TRUE,
-                                                       .refout = TRUE,
-                                                       .xorout = 0x00,
-                                                       .result = 0 };
+    static struct _hexin_crc8 crc8_param_bluetooth;
+
+    crc8_param_bluetooth.is_initial = FALSE;
+    crc8_param_bluetooth.width      = HEXIN_CRC8_WIDTH;
+    crc8_param_bluetooth.poly       = CRC8_POLYNOMIAL_A7;
+    crc8_param_bluetooth.init       = 0x00;
+    crc8_param_bluetooth.refin      = TRUE;
+    crc8_param_bluetooth.refout     = TRUE;
+    crc8_param_bluetooth.xorout     = 0x00;
+    crc8_param_bluetooth.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc8_param_bluetooth ) ) {
         return NULL;
@@ -472,14 +501,16 @@ static PyObject * _crc8_bluetooth( PyObject *self, PyObject *args )
 
 static PyObject * _crc8_dvb_s2( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crc8 crc8_param_dvbs2 = { .is_initial=FALSE,
-                                                   .width  = HEXIN_CRC8_WIDTH,
-                                                   .poly   = CRC8_POLYNOMIAL_D5,
-                                                   .init   = 0x00,
-                                                   .refin  = FALSE,
-                                                   .refout = FALSE,
-                                                   .xorout = 0x00,
-                                                   .result = 0 };
+    static struct _hexin_crc8 crc8_param_dvbs2;
+
+    crc8_param_dvbs2.is_initial = FALSE;
+    crc8_param_dvbs2.width      = HEXIN_CRC8_WIDTH;
+    crc8_param_dvbs2.poly       = CRC8_POLYNOMIAL_D5;
+    crc8_param_dvbs2.init       = 0x00;
+    crc8_param_dvbs2.refin      = FALSE;
+    crc8_param_dvbs2.refout     = FALSE;
+    crc8_param_dvbs2.xorout     = 0x00;
+    crc8_param_dvbs2.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc8_param_dvbs2 ) ) {
         return NULL;
@@ -490,14 +521,16 @@ static PyObject * _crc8_dvb_s2( PyObject *self, PyObject *args )
 
 static PyObject * _crc8_ebu8( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crc8 crc8_param_ebu8 = { .is_initial=FALSE,
-                                                  .width  = HEXIN_CRC8_WIDTH,
-                                                  .poly   = CRC8_POLYNOMIAL_1D,
-                                                  .init   = 0xFF,
-                                                  .refin  = TRUE,
-                                                  .refout = TRUE,
-                                                  .xorout = 0x00,
-                                                  .result = 0 };
+    static struct _hexin_crc8 crc8_param_ebu8;
+
+    crc8_param_ebu8.is_initial = FALSE;
+    crc8_param_ebu8.width      = HEXIN_CRC8_WIDTH;
+    crc8_param_ebu8.poly       = CRC8_POLYNOMIAL_1D;
+    crc8_param_ebu8.init       = 0xFF;
+    crc8_param_ebu8.refin      = TRUE;
+    crc8_param_ebu8.refout     = TRUE;
+    crc8_param_ebu8.xorout     = 0x00;
+    crc8_param_ebu8.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc8_param_ebu8 ) ) {
         return NULL;
@@ -508,14 +541,16 @@ static PyObject * _crc8_ebu8( PyObject *self, PyObject *args )
 
 static PyObject * _crc8_darc( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crc8 crc8_param_darc = { .is_initial=FALSE,
-                                                  .width  = HEXIN_CRC8_WIDTH,
-                                                  .poly   = CRC8_POLYNOMIAL_39,
-                                                  .init   = 0x00,
-                                                  .refin  = TRUE,
-                                                  .refout = TRUE,
-                                                  .xorout = 0x00,
-                                                  .result = 0 };
+    static struct _hexin_crc8 crc8_param_darc;
+
+    crc8_param_darc.is_initial = FALSE;
+    crc8_param_darc.width      = HEXIN_CRC8_WIDTH;
+    crc8_param_darc.poly       = CRC8_POLYNOMIAL_39;
+    crc8_param_darc.init       = 0x00;
+    crc8_param_darc.refin      = TRUE;
+    crc8_param_darc.refout     = TRUE;
+    crc8_param_darc.xorout     = 0x00;
+    crc8_param_darc.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc8_param_darc ) ) {
         return NULL;
@@ -526,14 +561,16 @@ static PyObject * _crc8_darc( PyObject *self, PyObject *args )
 
 static PyObject * _crc8_opensafety8( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crc8 crc8_param_opensafety8 = { .is_initial=FALSE,
-                                                         .width  = HEXIN_CRC8_WIDTH,
-                                                         .poly   = CRC8_POLYNOMIAL_2F,
-                                                         .init   = 0x00,
-                                                         .refin  = FALSE,
-                                                         .refout = FALSE,
-                                                         .xorout = 0x00,
-                                                         .result = 0 };
+    static struct _hexin_crc8 crc8_param_opensafety8;
+
+    crc8_param_opensafety8.is_initial = FALSE;
+    crc8_param_opensafety8.width      = HEXIN_CRC8_WIDTH;
+    crc8_param_opensafety8.poly       = CRC8_POLYNOMIAL_2F;
+    crc8_param_opensafety8.init       = 0x00;
+    crc8_param_opensafety8.refin      = FALSE;
+    crc8_param_opensafety8.refout     = FALSE;
+    crc8_param_opensafety8.xorout     = 0x00;
+    crc8_param_opensafety8.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc8_param_opensafety8 ) ) {
         return NULL;
@@ -544,14 +581,16 @@ static PyObject * _crc8_opensafety8( PyObject *self, PyObject *args )
 
 static PyObject * _crc8_mifare_mad( PyObject *self, PyObject *args )
 {
-    static struct _hexin_crc8 crc8_param_mifare_mad = { .is_initial=FALSE,
-                                                        .width  = HEXIN_CRC8_WIDTH,
-                                                        .poly   = CRC8_POLYNOMIAL_1D,
-                                                        .init   = 0xC7,
-                                                        .refin  = FALSE,
-                                                        .refout = FALSE,
-                                                        .xorout = 0x00,
-                                                        .result = 0 };
+    static struct _hexin_crc8 crc8_param_mifare_mad;
+
+    crc8_param_mifare_mad.is_initial = FALSE;
+    crc8_param_mifare_mad.width      = HEXIN_CRC8_WIDTH;
+    crc8_param_mifare_mad.poly       = CRC8_POLYNOMIAL_1D;
+    crc8_param_mifare_mad.init       = 0xC7;
+    crc8_param_mifare_mad.refin      = FALSE;
+    crc8_param_mifare_mad.refout     = FALSE;
+    crc8_param_mifare_mad.xorout     = 0x00;
+    crc8_param_mifare_mad.result     = 0;
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc8_param_mifare_mad ) ) {
         return NULL;
