@@ -66,14 +66,16 @@ static PyObject * _canx_can15( PyObject *self, PyObject *args )
                                                    .xorout = 0x00000000L,
                                                    .result = 0 };
 #else
-    static struct _hexin_canx canx_param_can15 = { FALSE,
-                                                   15,
-                                                   CAN15_POLYNOMIAL_00004599,
-                                                   0x00000000L,
-                                                   FALSE,
-                                                   FALSE,
-                                                   0x00000000L,
-                                                   0 };
+    static struct _hexin_canx canx_param_can15;
+
+    canx_param_can15.is_initial = FALSE;
+    canx_param_can15.width      = 15;
+    canx_param_can15.poly       = CAN15_POLYNOMIAL_00004599;
+    canx_param_can15.init       = 0x00000000L;
+    canx_param_can15.refin      = FALSE;
+    canx_param_can15.refout     = FALSE;
+    canx_param_can15.xorout     = 0x00000000L;
+    canx_param_can15.result     = 0;
 #endif  /* PY_MAJOR_VERSION */
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &canx_param_can15 ) ) {
@@ -95,14 +97,16 @@ static PyObject * _canx_can17( PyObject *self, PyObject *args )
                                                    .xorout = 0x00000000L,
                                                    .result = 0 };
 #else
-    static struct _hexin_canx canx_param_can17 = { FALSE,
-                                                   17,
-                                                   CAN17_POLYNOMIAL_0001685B,
-                                                   0x00000000L,
-                                                   FALSE,
-                                                   FALSE,
-                                                   0x00000000L,
-                                                   0 };
+    static struct _hexin_canx canx_param_can17;
+
+    canx_param_can17.is_initial = FALSE;
+    canx_param_can17.width      = 17;
+    canx_param_can17.poly       = CAN17_POLYNOMIAL_0001685B;
+    canx_param_can17.init       = 0x00000000L;
+    canx_param_can17.refin      = FALSE;
+    canx_param_can17.refout     = FALSE;
+    canx_param_can17.xorout     = 0x00000000L;
+    canx_param_can17.result     = 0;
 #endif /* PY_MAJOR_VERSION */
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &canx_param_can17 ) ) {
@@ -124,14 +128,17 @@ static PyObject * _canx_can21( PyObject *self, PyObject *args )
                                                    .xorout = 0x00000000L,
                                                    .result = 0 };
 #else
-    static struct _hexin_canx canx_param_can21 = { FALSE,
-                                                   21,
-                                                   CAN21_POLYNOMIAL_00102899,
-                                                   0x00000000L,
-                                                   FALSE,
-                                                   FALSE,
-                                                   0x00000000L,
-                                                   0 };
+    static struct _hexin_canx canx_param_can21;
+
+    canx_param_can21.is_initial = FALSE;
+    canx_param_can21.width      = 21;
+    canx_param_can21.poly       = CAN21_POLYNOMIAL_00102899;
+    canx_param_can21.init       = 0x00000000L;
+    canx_param_can21.refin      = FALSE;
+    canx_param_can21.refout     = FALSE;
+    canx_param_can21.xorout     = 0x00000000L;
+    canx_param_can21.result     = 0;
+
 #endif  /* PY_MAJOR_VERSION */
 
     if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &canx_param_can21 ) ) {
