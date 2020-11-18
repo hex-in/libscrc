@@ -25,6 +25,7 @@
 *                       2020-04-17 [Heyn] Issues #1
 *                       2020-08-04 [Heyn] Fixed Issues #4.
 *                       2020-09-18 [Heyn] New add lin and lin2x checksum.
+*                       2020-11-18 [Heyn] Fixed (Python2) Parsing arguments has no 'p' type
 *
 *********************************************************************************************************
 */
@@ -276,7 +277,7 @@ static PyObject * _crc8_hacker( PyObject *self, PyObject *args, PyObject* kws )
         return NULL;
     }
 #else
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s*|BBBpp", kwlist, &data,
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s*|BBBII", kwlist, &data,
                                                                       &crc8_param_hacker.poly,
                                                                       &crc8_param_hacker.init,
                                                                       &crc8_param_hacker.xorout,

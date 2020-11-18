@@ -1,5 +1,5 @@
 /*
- ********************************************************************************************************
+********************************************************************************************************
 *                              		(c) Copyright 2020-2020, Hexin
 *                                           All Rights Reserved
 * File    : _crc24module.c
@@ -10,7 +10,8 @@
 * ---------------
 *		New Create at 	2020-04-17 [Heyn] Initialize.
 *                       2020-04-27 [Heyn] Optimized code.
- *                      2020-08-04 [Heyn] Fixed Issues #4.
+*                       2020-08-04 [Heyn] Fixed Issues #4.
+*                       2020-11-18 [Heyn] Fixed (Python2) Parsing arguments has no 'p' type
 *
 ********************************************************************************************************
 */
@@ -201,7 +202,7 @@ static PyObject * _crc24_hacker( PyObject *self, PyObject *args, PyObject* kws )
 {
     Py_buffer data = { NULL, NULL };
     struct _hexin_crc24 crc24_param_hacker = { .is_initial=FALSE,
-                                               .width  = 24,
+                                               .width  = HEXIN_CRC24_WIDTH,
                                                .poly   = CRC24_POLYNOMIAL_800063,
                                                .init   = 0x00FFFFFF,
                                                .refin  = FALSE,
@@ -224,7 +225,7 @@ static PyObject * _crc24_hacker( PyObject *self, PyObject *args, PyObject* kws )
         return NULL;        
     }
 #else
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s*|IIIpp", kwlist, &data,
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s*|IIIII", kwlist, &data,
                                                                       &crc24_param_hacker.poly,
                                                                       &crc24_param_hacker.init,
                                                                       &crc24_param_hacker.xorout,

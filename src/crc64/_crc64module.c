@@ -16,6 +16,7 @@
 *                       2020-04-23 [Heyn] New add we() and xz() functions.
 *                       2020-05-12 [Heyn] (Python2.7) FIX : Windows compilation error.
 *                       2020-08-04 [Heyn] Fixed Issues #4.
+*                       2020-11-18 [Heyn] Fixed (Python2) Parsing arguments has no 'p' type
 *
 *********************************************************************************************************
 */
@@ -270,7 +271,7 @@ static PyObject * _crc64_hacker( PyObject *self, PyObject *args, PyObject* kws )
         return NULL; 
     }
 #else
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s*|KKKpp", kwlist, &data,
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s*|KKKII", kwlist, &data,
                                                                       &crc64_param_hacker.poly,
                                                                       &crc64_param_hacker.init,
                                                                       &crc64_param_hacker.xorout,

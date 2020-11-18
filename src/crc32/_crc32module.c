@@ -1,27 +1,28 @@
 /*
- ********************************************************************************************************
+********************************************************************************************************
 *                              		(c) Copyright 2017-2020, Hexin
- *                                           All Rights Reserved
- * File    : _crc32module.c
- * Author  : Heyn (heyunhuan@gmail.com)
- * Version : V1.4
- *
- * LICENSING TERMS:
- * ---------------
- *		New Create at 	2017-08-09 16:39PM
- *                      2017-08-17 [Heyn] Optimized Code.
- *                      2017-08-21 [Heyn] Optimization code for the C99 standard.
- *                                        for ( unsigned int i=0; i<256; i++ ) -> for ( i=0; i<256; i++ )
- *                      2017-09-22 [Heyn] Optimized Code. New add table32() function.
- *                      2020-03-20 [Heyn] New add adler32 and fletcher32 functions.
- *                      2020-04-17 [Heyn] Fixed Issues #1
- *                      2020-04-26 [Heyn] Optimized Code
- *                      2020-08-04 [Heyn] Fixed Issues #4.
- * 
- * Web : https://en.wikipedia.org/wiki/Polynomial_representations_of_cyclic_redundancy_checks
- *
- ********************************************************************************************************
- */
+*                                            All Rights Reserved
+* File    : _crc32module.c
+* Author  : Heyn (heyunhuan@gmail.com)
+* Version : V1.4
+*
+* LICENSING TERMS:
+* ---------------
+*		New Create at  2017-08-09 16:39PM
+*                      2017-08-17 [Heyn] Optimized Code.
+*                      2017-08-21 [Heyn] Optimization code for the C99 standard.
+*                                        for ( unsigned int i=0; i<256; i++ ) -> for ( i=0; i<256; i++ )
+*                      2017-09-22 [Heyn] Optimized Code. New add table32() function.
+*                      2020-03-20 [Heyn] New add adler32 and fletcher32 functions.
+*                      2020-04-17 [Heyn] Fixed Issues #1
+*                      2020-04-26 [Heyn] Optimized Code
+*                      2020-08-04 [Heyn] Fixed Issues #4.
+*                      2020-11-18 [Heyn] Fixed (Python2) Parsing arguments has no 'p' type
+* 
+* Web : https://en.wikipedia.org/wiki/Polynomial_representations_of_cyclic_redundancy_checks
+*
+********************************************************************************************************
+*/
 
 #include <Python.h>
 #include "_crc32tables.h"
@@ -191,7 +192,7 @@ static PyObject * _crc32_hacker( PyObject *self, PyObject *args, PyObject* kws )
         return NULL;        
     }
 #else
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s*|IIIpp", kwlist, &data,
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s*|IIIII", kwlist, &data,
                                                                       &crc32_param_hacker.poly,
                                                                       &crc32_param_hacker.init,
                                                                       &crc32_param_hacker.xorout,
