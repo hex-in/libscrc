@@ -285,7 +285,7 @@ static PyObject * _crc64_hacker( PyObject *self, PyObject *args, PyObject* kws )
         return NULL; 
     }
 #else
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s*|KKKpp", kwlist, &data,
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s*|KKKII", kwlist, &data,
                                                                       &crc64_param_hacker.poly,
                                                                       &crc64_param_hacker.init,
                                                                       &crc64_param_hacker.xorout,

@@ -433,7 +433,7 @@ static PyObject * _crc16_hacker( PyObject *self, PyObject *args, PyObject* kws )
         return NULL;
     }
 #else
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s*|HHHpp", kwlist, &data,
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s*|HHHII", kwlist, &data,
                                                                       &crc16_param_hacker.poly,
                                                                       &crc16_param_hacker.init,
                                                                       &crc16_param_hacker.xorout,

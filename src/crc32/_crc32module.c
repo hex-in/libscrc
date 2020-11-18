@@ -198,7 +198,7 @@ static PyObject * _crc32_hacker( PyObject *self, PyObject *args, PyObject* kws )
         return NULL;        
     }
 #else
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s*|IIIpp", kwlist, &data,
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s*|IIIII", kwlist, &data,
                                                                       &crc32_param_hacker.poly,
                                                                       &crc32_param_hacker.init,
                                                                       &crc32_param_hacker.xorout,
