@@ -28,4 +28,4 @@ jobs:
     - name: Test with py2.py
       run: |
         cd ..
-        python py2.py
+        # python py2.py
