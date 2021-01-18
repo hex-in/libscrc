@@ -333,6 +333,8 @@ NOTICE
 
 ### V1.6(2021-01-18)
 
+------
+
 1. New add CRC32  -> libscrc.stm32()
 2. New add CRC8    -> libscrc.lin()  and libscrc.lin2x()
 
