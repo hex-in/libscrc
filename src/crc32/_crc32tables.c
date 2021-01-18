@@ -190,3 +190,29 @@ unsigned int hexin_crc32_compute( const unsigned char *pSrc, unsigned int len, s
     
 	return ( result ^ param->xorout ); 
 }
+
+unsigned int hexin_crc32_compute_stm32( const unsigned char *pSrc, unsigned int len, struct _hexin_crc32 *param, unsigned int init )
+{
+    unsigned int i = 0, j = 0, result = 0;
+    unsigned int crc  = init;
+
+    if ( param->is_initial == FALSE ) {
+        if ( HEXIN_REFIN_REFOUT_IS_TRUE( param ) ) {
+            param->poly = ( hexin_reverse32( param->poly ) >> ( HEXIN_CRC32_WIDTH - param->width ) );
+        } else {
+            param->poly = ( param->poly << ( HEXIN_CRC32_WIDTH - param->width ) );
+        }
+        param->is_initial = hexin_crc32_compute_init_table( param );
+    }
+
+	for ( i=0; i<len; i++ ) {
+        crc ^= ( unsigned int )pSrc[i];
+        for ( j = 0; j < 4; j++ ) {
+            result = param->table[ ( crc >> 24 ) & 0xFF ];
+            crc  <<= 8;
+            crc   ^= result;   
+        }
+	}
+
+    return crc;
+}

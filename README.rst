@@ -46,13 +46,13 @@ libscrc is a library for calculating CRC3 CRC4 CRC5 CRC6 CRC7 CRC8 CRC16 CRC24 C
 +------------+------------+------------+-----------+-----------+-----------+
 | CRC13-BBC  | EBU        | GSM16      |           |    V-42   |           |
 +------------+------------+------------+-----------+-----------+-----------+
-| MPT1327    | DARC       | RIELLO     |           |           |           |
+| MPT1327    | DARC       | RIELLO     |           |   STM32   |           |
 +------------+------------+------------+-----------+-----------+-----------+
-| CDMA2000   | MIFARE     | OPENSAFETY |           | CRC30-CDMA|           |
+| CDMA2000   | MIFARE     | OPENSAFETY |           |           |           |
 +------------+------------+------------+-----------+-----------+-----------+
-|            | LIN1.3     | EN13757    |           |  PHILIPS  |           |
+|            | LIN1.3     | EN13757    |           | CRC30-CDMA|           |
 +------------+------------+------------+-----------+-----------+-----------+
-|            | LIN2.x     |   CMS      |           |           |   DARC82  |
+|            | LIN2.x     |   CMS      |           |  PHILIPS  |   DARC82  |
 +------------+------------+------------+-----------+-----------+-----------+
 
 Installation
@@ -284,6 +284,7 @@ Example
     crc32 = libscrc.adccp(b'1234')  
     crc32 = libscrc.v_42(b'1234')  
     crc32 = libscrc.aal5(b'1234')  
+    crc32 = libscrc.stm32(b'1234')  
 
 * CRC64::
     
@@ -299,6 +300,11 @@ Example
 NOTICE
 ------ 
 * Revert gradually calculating function v1.4+ (2020-08-04) 
+
+V1.6(2021-01-18)
+++++++++++++++++++
+* New add CRC32  -> libscrc.stm32()
+* New add CRC8   -> libscrc.lin()  and libscrc.lin2x()
 
 V1.4 (2020-08-04)
 ++++++++++++++++++
