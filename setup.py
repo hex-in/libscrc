@@ -19,6 +19,7 @@ from codecs import open
 #           2020-03-17 Wheel Ver:1.0   [Heyn] New hacker16 / hacker32 / hacker64
 #           2020-04-17 Wheel Ver:1.1   [Heyn] Issues #1
 #           2020-08-04 Wheel Ver:1.4   [Heyn] Issues #4
+#           2021-03-16 Wheel Ver:1.6   [Heyn] New add lin, lin2x, stm32
 
 here = path.abspath(path.dirname(__file__))
 
@@ -28,7 +29,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name='libscrc',
-    version='1.5',
+    version='1.6',
 
     description='Library for calculating CRC3/CRC4/CRC8/CRC16/CRC24/CRC32/CRC64/CRC82',
     long_description=long_description,

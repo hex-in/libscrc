@@ -9,6 +9,7 @@
 # History:  2020-03-13 Wheel Ver:0.1.6 [Heyn] Initialize
 #           2020-04-26 Wheel Ver:1.3   [Heyn] Optimized Code
 #           2020-08-05 Wheel Ver:1.4   [Heyn] New add gradually calculating
+#           2021-03-16 Wheel Ver:1.6   [Heyn] New add stm32()
 
 import unittest
 
@@ -71,6 +72,7 @@ class TestCRC32( unittest.TestCase ):
 
         self.assertEqual( module.cdma(b'123456789'),    0x04C34ABF )
         self.assertEqual( module.philips(b'123456789'), 0x0CE9E46C )
+        self.assertEqual( module.stm32(b'123456789'),   0x1556F485 )
 
         self.assertEqual( module.crc32( b'A' * 4096),           0xFEA63440 )
         self.assertEqual( module.crc32( b'A' * 4096 * 10),      0x1521C066 )

@@ -446,6 +446,54 @@ static PyObject * _crc31_philips( PyObject *self, PyObject *args )
     return Py_BuildValue( "I", crc31_philips_param.result );
 }
 
+static PyObject * _crc32_stm32( PyObject *self, PyObject *args )
+{
+    static struct _hexin_crc32 crc32_stm32_param;
+
+    crc32_stm32_param.is_initial    = FALSE;
+    crc32_stm32_param.width         = 32;
+    crc32_stm32_param.poly          = CRC32_POLYNOMIAL_04C11DB7;
+    crc32_stm32_param.init          = 0xFFFFFFFFL;
+    crc32_stm32_param.refin         = FALSE;
+    crc32_stm32_param.refout        = FALSE;
+    crc32_stm32_param.xorout        = 0x00000000L;
+    crc32_stm32_param.result        = 0;
+
+
+    Py_buffer data = { NULL, NULL };
+    unsigned int init = crc32_stm32_param.init;          /* Fixed Issues #4  */
+
+#if PY_MAJOR_VERSION >= 3
+    if ( !PyArg_ParseTuple( args, "y*|I", &data, &init ) ) {
+        if ( data.obj ) {
+            PyBuffer_Release( &data );
+        }
+        return FALSE;
+    }
+#else
+    if ( !PyArg_ParseTuple( args, "s*|I", &data, &init ) ) {
+        if ( data.obj ) {
+            PyBuffer_Release( &data );
+        }
+        return FALSE;
+    }
+#endif /* PY_MAJOR_VERSION */
+
+    /* Fixed Issues #4  */
+    crc32_stm32_param.is_gradual = ( unsigned int )PyTuple_Size( args );   // Fixed warning C4244
+    if ( crc32_stm32_param.is_gradual == 2 ) {
+        init = ( init ^ crc32_stm32_param.xorout );
+    }
+
+    crc32_stm32_param.result = hexin_crc32_compute_stm32( (const unsigned char *)data.buf, (unsigned int)data.len, &crc32_stm32_param, init );
+
+    if ( data.obj )
+       PyBuffer_Release( &data );
+
+
+    return Py_BuildValue( "I", crc32_stm32_param.result );
+}
+
 /* method table */
 static PyMethodDef _crc32Methods[] = {
     { "mpeg2",       (PyCFunction)_crc32_mpeg_2,     METH_VARARGS,   "Calculate CRC (MPEG2) of CRC32 [Poly=0x04C11DB7, Init=0xFFFFFFFF, Xorout=0x00000000 Refin=False Refout=False]"},
@@ -481,6 +529,7 @@ static PyMethodDef _crc32Methods[] = {
     { "xfer",       (PyCFunction)_crc32_xfer,        METH_VARARGS,   "Calculate CRC (XFER) of CRC32 [Poly=0x000000AF, Init=0x00000000, Xorout=0x00000000 Refin=True Refout=True]"},
     { "cdma",       (PyCFunction)_crc30_cdma,        METH_VARARGS,   "Calculate CDMA of CRC30 [Poly=0x2030B9C7, Init=0x3FFFFFFF, Xorout=0x3FFFFFFF Refin=False Refout=False]"},
     { "philips",    (PyCFunction)_crc31_philips,     METH_VARARGS,   "Calculate PHILIPS of CRC31 [Poly=0x04C11DB7, Init=0x7FFFFFFF, Xorout=0x7FFFFFFF Refin=False Refout=False]"},
+    { "stm32",      (PyCFunction)_crc32_stm32,       METH_VARARGS,   "Calculate STM32 of CRC32 (Hardware calculate CRC32) ]"},
     { NULL, NULL, 0, NULL }        /* Sentinel */
 };
 
@@ -512,6 +561,7 @@ PyDoc_STRVAR( _crc32_doc,
 "libscrc.xfer       -> Calculate CRC (XFER) [Poly=0x000000AF, Init=0x00000000, Xorout=0x00000000 Refin=True  Refout=True]\n"
 "libscrc.cdma       -> Calculate CDMA of CRC30 [Poly=0x2030B9C7, Init=0x3FFFFFFF, Xorout=0x3FFFFFFF Refin=False Refout=False]\n"
 "libscrc.philips    -> Calculate PHILIPS of CRC31 Calculate PHILIPS of CRC31 [Poly=0x04C11DB7, Init=0x7FFFFFFF, Xorout=0x7FFFFFFF Refin=False Refout=False]\n"
+"libscrc.stm32      -> Calculate STM32 of CRC32 (Hardware calculate CRC32) ]\n"
 "\n" );
 
 
@@ -537,7 +587,7 @@ PyInit__crc32( void )
         return NULL;
     }
 
-    PyModule_AddStringConstant( m, "__version__", "1.4"  );
+    PyModule_AddStringConstant( m, "__version__", "1.6"  );
     PyModule_AddStringConstant( m, "__author__",  "Heyn" );
 
     return m;

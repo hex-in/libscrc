@@ -26,10 +26,10 @@ libscrc is a library for calculating CRC3 CRC4 CRC5 CRC6 CRC7 CRC8 CRC16 CRC24 C
 | | BLUETOOTH |BUYPASS | | PKZIP | |
 | CRC10-ATM | DVB-S2 |GENIBUS | | ADCCP | |
 | CRC13-BBC | EBU |GSM16 | | V-42 | |
-| MPT1327 | DARC |RIELLO | |  | |
-| CDMA2000 | MIFARE |OPENSAFETY | | CRC30-CDMA | |
-| | |EN13757 | | CRC31-PHILIPS | |
-| | |CMS | | | DARC82 |
+| MPT1327 | DARC |RIELLO | | STM32 | |
+| CDMA2000 | MIFARE |OPENSAFETY | |               | |
+| | LIN1.3 |EN13757 | |  CRC30-CDMA   | |
+| | LIN2.x |CMS | | CRC31-PHILIPS | DARC82 |
 
 
 
@@ -174,6 +174,14 @@ crc8 = libscrc.i432_1(b'1234')
 crc8 = libscrc.mifare_mad(b'1234')
 crc8 = libscrc.tech_3250(b'1234')
 crc8 = libscrc.aes8(b'1234')
+
+# LIN Protocol 1.3 (CLASSIC)
+# Frame ID : 0x15	DATA : 0x5B, 0x67
+crc8 = libscrc.lin(bytes([0x15, 0x5B, 0x67]))
+# LIN Protocol 2.x (ENHANCED)
+# Frame ID : 0x15
+# DATA : 0x5B, 0x67, 0x72, 0xAF, 0x5B
+crc8 = libscrc.lin2x(bytes([0x15, 0x5B, 0x67, 0x72, 0xAF, 0x5B]))
 ```
 
 3. CRC16
@@ -293,6 +301,7 @@ crc32 = libscrc.pkzip(b'1234')
 crc32 = libscrc.adccp(b'1234')
 crc32 = libscrc.v_42(b'1234')
 crc32 = libscrc.aal5(b'1234')
+crc32 = libscrc.stm32(b'1234')				# STM32 hardware calculate CRC32 
 ```
 
 6. CRC64
@@ -321,6 +330,16 @@ NOTICE
 * Revert gradually calculating function v1.4+ (2020-08-04) 
 
   
+
+### V1.6 (2021-03-16)
+
+------
+
+1. New add CRC32 -> libscrc.stm32()
+
+2. New add CRC8  -> libscrc.lin() and libscrc.lin2x()
+
+   
 
 ### V1.4(2020-08-04)
 

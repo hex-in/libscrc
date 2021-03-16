@@ -598,6 +598,54 @@ static PyObject * _crc8_mifare_mad( PyObject *self, PyObject *args )
     return Py_BuildValue( "B", crc8_param_mifare_mad.result );
 }
 
+static PyObject * _crc8_lin( PyObject *self, PyObject *args )
+{
+    unsigned char result = 0x00;
+    unsigned char init   = 0x00;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc8_lin, ( unsigned char * )&result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "B", result );
+}
+
+static PyObject * _crc8_lin2x( PyObject *self, PyObject *args )
+{
+    unsigned char crc = 0x00;
+    unsigned char pid = 0x00;
+    Py_buffer data  = { NULL, NULL };
+    PyObject *pDict = Py_None;
+
+#if PY_MAJOR_VERSION >= 3
+    if ( !PyArg_ParseTuple( args, "y*", &data ) ) {
+        if ( data.obj ) {
+            PyBuffer_Release( &data );
+        }
+        return FALSE;
+    }
+#else
+    if ( !PyArg_ParseTuple( args, "s*", &data ) ) {
+        if ( data.obj ) {
+            PyBuffer_Release( &data );
+        }
+        return FALSE;
+    }
+#endif /* PY_MAJOR_VERSION */
+
+    crc = hexin_calc_crc8_lin2x( ( const unsigned char * )data.buf, (unsigned int)data.len, 0 );
+    pid = hexin_crc8_get_lin2x_pid( (( const unsigned char * )data.buf)[0] );
+
+    pDict = PyDict_New();
+    PyDict_SetItem( pDict, Py_BuildValue( "s", "crc" ),  Py_BuildValue( "B", crc ) );
+    PyDict_SetItem( pDict, Py_BuildValue( "s", "pid" ),  Py_BuildValue( "B", pid ) );
+    
+    if ( data.obj )
+       PyBuffer_Release( &data );
+
+    return Py_INCREF( pDict ), pDict;
+}
+
 /* method table */
 static PyMethodDef _crc8Methods[] = {
     { "intel",      (PyCFunction)_crc8_intel,        METH_VARARGS, "Calculate Intel hexadecimal of CRC8 [Initial=0x00]" },
@@ -634,7 +682,8 @@ static PyMethodDef _crc8Methods[] = {
     { "darc8",      (PyCFunction)_crc8_darc,         METH_VARARGS, "Calculate DARC of CRC8 [Poly=0x39 Initial=0x00 Xorout=0x00 Refin=True Refout=True]" },
     { "opensafety8",(PyCFunction)_crc8_opensafety8,  METH_VARARGS, "Calculate OPENSAFETY of CRC8 [Poly=0x2F Initial=0x00 Xorout=0x00 Refin=False Refout=False]" },
     { "mifare_mad", (PyCFunction)_crc8_mifare_mad,   METH_VARARGS, "Calculate MIFARE-MAD of CRC8 [Poly=0x1D Initial=0xC7 Xorout=0x00 Refin=False Refout=False]" },
-    
+    { "lin",        (PyCFunction)_crc8_lin,          METH_VARARGS, "Calculate LIN Protocol 1.3 (CLASSIC)"   },
+    { "lin2x",      (PyCFunction)_crc8_lin2x,        METH_VARARGS, "Calculate LIN Protocol 2.x (ENHANCED)"  },
     { NULL, NULL, 0, NULL }        /* Sentinel */
 };
 
@@ -669,6 +718,8 @@ PyDoc_STRVAR( _crc8_doc,
 "libscrc.darc8      -> Calculate DARC of CRC8 [Poly=0x39 Initial=0x00 Xorout=0x00 Refin=True Refout=True]\n"
 "libscrc.opensafety8-> Calculate OPENSAFETY of CRC8 [Poly=0x2F Initial=0x00 Xorout=0x00 Refin=False Refout=False]\n"
 "libscrc.mifare_mad -> Calculate MIFARE-MAD of CRC8 [Poly=0x1D Initial=0xC7 Xorout=0x00 Refin=False Refout=False]\n"
+"libscrc.lin        -> Calculate LIN Protocol 1.3 (CLASSIC)\n"
+"libscrc.lin2x      -> Calculate LIN Protocol 2.x (ENHANCED)\n"
 "\n" );
 
 
@@ -694,7 +745,7 @@ PyInit__crc8( void )
         return NULL;
     }
 
-    PyModule_AddStringConstant( m, "__version__", "1.4"   );
+    PyModule_AddStringConstant( m, "__version__", "1.6"   );
     PyModule_AddStringConstant( m, "__author__",  "Heyn"  );
 
     return m;

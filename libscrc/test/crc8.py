@@ -9,6 +9,7 @@
 # History:  2017-09-21 Wheel Ver:0.1.3 [Heyn] Initialize
 #           2020-03-13 Wheel Ver:0.1.6 [Heyn] optimized code
 #           2020-08-05 Wheel Ver:1.4   [Heyn] New add gradually calculating
+#           2021-03-16 Wheel Ver:1.6   [Heyn] New add lin and lin2x
 
 import unittest
 
@@ -58,6 +59,9 @@ class TestCRC8( unittest.TestCase ):
         self.assertEqual( module.tech_3250( b'6789', module.tech_3250(  b'12345') ), 0x97 )
 
         self.assertEqual( module.opensafety8(b'6789', module.opensafety8(b'12345') ), 0x3E )
+
+        self.assertEqual( module.lin2x( bytes( [0x15 ,0x2B ,0x67 ,0x72 ,0xB1 ,0x5B] )), 0x98 )
+        self.assertEqual( module.lin(   bytes( [0xD6, 0x5B, 0x67] )),                   0x3D )
 
     def do_basics( self, module ):
         """ Test basic functionality.
