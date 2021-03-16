@@ -1,10 +1,10 @@
 /*
 *********************************************************************************************************
-*                              		(c) Copyright 2017-2020, Hexin
+*                              		(c) Copyright 2017-2021, Hexin
 *                                           All Rights Reserved
 * File    : _crc8module.c
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V1.5
+* Version : V1.7
 *
 * LICENSING TERMS:
 * ---------------
@@ -610,6 +610,22 @@ static PyObject * _crc8_lin2x( PyObject *self, PyObject *args )
     return Py_INCREF( pDict ), pDict;
 }
 
+static PyObject * _crc8_id8( PyObject *self, PyObject *args )
+{
+    unsigned char result = 0x00;
+    unsigned char init   = 0x00;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc8_id8, ( unsigned char * )&result ) ) {
+        return NULL;
+    }
+
+    if ( result == 'N' ) {
+        Py_RETURN_NONE;
+    }
+
+    return Py_BuildValue( "z#", &result, 1 );
+}
+
 /* method table */
 static PyMethodDef _crc8Methods[] = {
     { "intel",      (PyCFunction)_crc8_intel,        METH_VARARGS, "Calculate Intel hexadecimal of CRC8 [Initial=0x00]" },
@@ -648,6 +664,7 @@ static PyMethodDef _crc8Methods[] = {
     { "mifare_mad", (PyCFunction)_crc8_mifare_mad,   METH_VARARGS, "Calculate MIFARE-MAD of CRC8 [Poly=0x1D Initial=0xC7 Xorout=0x00 Refin=False Refout=False]" },
     { "lin",        (PyCFunction)_crc8_lin,          METH_VARARGS, "Calculate LIN Protocol 1.3 (CLASSIC)"   },
     { "lin2x",      (PyCFunction)_crc8_lin2x,        METH_VARARGS, "Calculate LIN Protocol 2.x (ENHANCED)"  },
+    { "id8",        (PyCFunction)_crc8_id8,          METH_VARARGS, "Calculate identity card of CHINA."      },
     { NULL, NULL, 0, NULL }        /* Sentinel */
 };
 
@@ -684,6 +701,7 @@ PyDoc_STRVAR( _crc8_doc,
 "libscrc.mifare_mad -> Calculate MIFARE-MAD of CRC8 [Poly=0x1D Initial=0xC7 Xorout=0x00 Refin=False Refout=False]\n"
 "libscrc.lin        -> Calculate LIN Protocol 1.3 (CLASSIC)\n"
 "libscrc.lin2x      -> Calculate LIN Protocol 2.x (ENHANCED)\n"
+"libscrc.id8        -> Calculate identity card of CHINA.\n"
 "\n" );
 
 
@@ -709,7 +727,7 @@ PyInit__crc8( void )
         return NULL;
     }
 
-    PyModule_AddStringConstant( m, "__version__", "1.5"   );
+    PyModule_AddStringConstant( m, "__version__", "1.7"   );
     PyModule_AddStringConstant( m, "__author__",  "Heyn"  );
 
     return m;

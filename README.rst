@@ -50,9 +50,11 @@ libscrc is a library for calculating CRC3 CRC4 CRC5 CRC6 CRC7 CRC8 CRC16 CRC24 C
 +------------+------------+------------+-----------+-----------+-----------+
 | CDMA2000   | MIFARE     | OPENSAFETY |           |           |           |
 +------------+------------+------------+-----------+-----------+-----------+
-|            | LIN1.3     | EN13757    |           | CRC30-CDMA|           |
+|            | LIN1.3     | EN13757    |           |           |           |
 +------------+------------+------------+-----------+-----------+-----------+
-|            | LIN2.x     |   CMS      |           |  PHILIPS  |   DARC82  |
+|            | LIN2.x     | CMS        |           | CRC30-CDMA|           |
++------------+------------+------------+-----------+-----------+-----------+
+|            |    ID8     |            |           |  PHILIPS  |   DARC82  |
 +------------+------------+------------+-----------+-----------+-----------+
 
 Installation
@@ -183,7 +185,9 @@ Example
     crc8 = libscrc.aes8(b'1234')
     crc8 = libscrc.lin(bytes([0x15, 0x5B, 0x67]))
     crc8 = libscrc.lin2x(bytes([0x15, 0x5B, 0x67, 0x72, 0xAF, 0x5B]))
-
+  
+    crc8 = libscrc.id8(b'21020020210229117')  
+  
 * CRC16::
 
     crc16 = libscrc.ibm(b'1234')            # poly=0xA001 (default Reversed)  

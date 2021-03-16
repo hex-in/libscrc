@@ -1,10 +1,10 @@
 /*
 *********************************************************************************************************
-*                              		(c) Copyright 2017-2020, Hexin
+*                              		(c) Copyright 2017-2021, Hexin
 *                                           All Rights Reserved
 * File    : _crc8tables.c
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V1.5
+* Version : V1.7
 *
 * LICENSING TERMS:
 * ---------------
@@ -12,6 +12,7 @@
 *                       2020-03-20 [Heyn] New add hexin_calc_crc8_fletcher
 *                       2020-08-04 [Heyn] Fixed Issues #4.
 *                       2020-09-18 [Heyn] New add lin and lin2x checksum.
+*                       2021-03-16 [Heyn] New add ID checksum.
 *
 *   SEE : http://reveng.sourceforge.net/crc-catalogue/1-15.htm#crc.cat-bits.8
 *
@@ -223,4 +224,31 @@ unsigned char hexin_calc_crc8_lin2x( const unsigned char *pSrc, unsigned int len
         return hexin_calc_crc8_lin( pSrc, len, 0 );
     }
 	return hexin_calc_crc8_lin( pSrc, len, hexin_crc8_get_lin2x_pid( id ) );
+}
+
+unsigned char hexin_calc_crc8_id8( const unsigned char *pSrc, unsigned int len, unsigned char crc8 ) 
+{
+    const unsigned char coefficient[17] = { 7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2   };
+    const unsigned char _last_array[11] = { '1', '0', 'X', '9', '8', '7', '6', '5', '4', '3', '2' };
+    
+    unsigned int  i   = 0;
+    unsigned int  sum = crc8;
+
+    if ( ( len != 17 ) || ( crc8 != 0 ) ) {
+        return 'N';
+    }
+
+	for ( i=0; i<len; i++ ) {
+        if ( ( pSrc[i] >= 0 ) && ( pSrc[i] <= 9 ) ) {
+            sum += pSrc[i] * coefficient[i];
+        } 
+        else if ( ( pSrc[i] >= 0x30 ) && ( pSrc[i] <= 0x39 ) ) {
+            sum += ( pSrc[i] % 0x30 )*coefficient[i]; 
+        }
+        else {
+            return 'N';
+        }
+	}
+
+    return _last_array[ sum % 11 ];
 }
