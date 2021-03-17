@@ -626,10 +626,22 @@ static PyObject * _crc8_id8( PyObject *self, PyObject *args )
     return Py_BuildValue( "z#", &result, 1 );
 }
 
+static PyObject * _crc8_nmea( PyObject *self, PyObject *args )
+{
+    unsigned char result = 0x00;
+    unsigned char init   = 0x00;
+ 
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_crc8_nmea, ( unsigned char * )&result ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "B", result );
+}
+
 /* method table */
 static PyMethodDef _crc8Methods[] = {
     { "intel",      (PyCFunction)_crc8_intel,        METH_VARARGS, "Calculate Intel hexadecimal of CRC8 [Initial=0x00]" },
-    { "bcc",        (PyCFunction)_crc8_bcc,          METH_VARARGS, "Calculate BCC of CRC8 [Initial=0x00]" },
+    { "bcc",        (PyCFunction)_crc8_bcc,          METH_VARARGS, "Calculate BCC(XOR) of CRC8 [Initial=0x00]" },
     { "lrc",        (PyCFunction)_crc8_lrc,          METH_VARARGS, "Calculate LRC of CRC8 [Initial=0x00]" },
     { "maxim8",     (PyCFunction)_crc8_maxim,        METH_VARARGS, "Calculate MAXIM(MAXIM-DOM) of CRC8 [Poly=0x31 Initial=0x00 Xorout=0x00 Refin=True Refout=True] e.g. DS18B20" },
     { "rohc",       (PyCFunction)_crc8_rohc,         METH_VARARGS, "Calculate ROHC of CRC8 [Poly=0x07 Initial=0xFF Xorout=0x00 Refin=True Refout=True]" },
@@ -665,6 +677,7 @@ static PyMethodDef _crc8Methods[] = {
     { "lin",        (PyCFunction)_crc8_lin,          METH_VARARGS, "Calculate LIN Protocol 1.3 (CLASSIC)"   },
     { "lin2x",      (PyCFunction)_crc8_lin2x,        METH_VARARGS, "Calculate LIN Protocol 2.x (ENHANCED)"  },
     { "id8",        (PyCFunction)_crc8_id8,          METH_VARARGS, "Calculate identity card of CHINA."      },
+    { "nmea",       (PyCFunction)_crc8_nmea,         METH_VARARGS, "Calculate NMEA Checksum. XOR of all the bytes between the $ and the * (not including the delimiters themselves)" },
     { NULL, NULL, 0, NULL }        /* Sentinel */
 };
 
@@ -702,6 +715,7 @@ PyDoc_STRVAR( _crc8_doc,
 "libscrc.lin        -> Calculate LIN Protocol 1.3 (CLASSIC)\n"
 "libscrc.lin2x      -> Calculate LIN Protocol 2.x (ENHANCED)\n"
 "libscrc.id8        -> Calculate identity card of CHINA.\n"
+"libscrc.nmea       -> Calculate NMEA Checksum. XOR of all the bytes between the $ and the * (not including the delimiters themselves).\n"
 "\n" );
 
 

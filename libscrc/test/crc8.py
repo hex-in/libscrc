@@ -63,7 +63,8 @@ class TestCRC8( unittest.TestCase ):
         # self.assertEqual( module.lin2x( bytes( [0x15 ,0x2B ,0x67 ,0x72 ,0xB1 ,0x5B] ) )['crc'], 0x98 )
         # self.assertEqual( module.lin(   bytes( [0xD6, 0x5B, 0x67] ) )['crc'], 0x3D )
 
-        self.assertEqual( module.id8( b'21020020210229117' ),   '5' )
+        self.assertEqual( module.id8( b'21020020210229117' ),       '5'  )
+        self.assertEqual( module.nmea(b'$PFEC,GPint,RMC06*'),       0x2E )
 
     def do_basics( self, module ):
         """ Test basic functionality.
@@ -95,6 +96,8 @@ class TestCRC8( unittest.TestCase ):
 
         self.assertEqual( module.tech_3250(b'123456789'),   0x97 )
         self.assertEqual( module.aes8(b'123456789'),        0x97 )
+
+        self.assertEqual( module.nmea(b'$PFEC,GPint,RMC06*'),   0x2E )
 
     def test_basics( self ):
         """ Test basic functionality.

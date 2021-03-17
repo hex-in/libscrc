@@ -252,3 +252,20 @@ unsigned char hexin_calc_crc8_id8( const unsigned char *pSrc, unsigned int len, 
 
     return _last_array[ sum % 11 ];
 }
+
+unsigned char hexin_calc_crc8_nmea( const unsigned char *pSrc, unsigned int len, unsigned char crc8 ) 
+{
+    const unsigned char *ptr = ( const unsigned char * )pSrc;
+    unsigned int  i   = 0;
+    unsigned int  crc = crc8;
+
+    if ( *ptr == '$' ) {
+        ptr++;
+    }
+
+    while ( *ptr && ( *ptr != '\r' ) && ( *ptr != '\n' ) && ( *ptr != '*' ) ) {
+        crc ^= *ptr++;
+    }
+
+    return crc;
+}

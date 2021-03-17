@@ -75,5 +75,6 @@ unsigned char hexin_crc8_get_lin2x_pid( const unsigned char id );
 unsigned char hexin_calc_crc8_lin(      const unsigned char *pSrc, unsigned int len, unsigned char crc8 );
 unsigned char hexin_calc_crc8_lin2x(    const unsigned char *pSrc, unsigned int len, unsigned char crc8 );
 unsigned char hexin_calc_crc8_id8(      const unsigned char *pSrc, unsigned int len, unsigned char crc8 );
+unsigned char hexin_calc_crc8_nmea(     const unsigned char *pSrc, unsigned int len, unsigned char crc8 );
 
 #endif //__CRC8_TABLES_H__
