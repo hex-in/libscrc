@@ -448,6 +448,8 @@ static PyObject * _crc31_philips( PyObject *self, PyObject *args )
 
 static PyObject * _crc32_stm32( PyObject *self, PyObject *args )
 {
+    Py_buffer data = { NULL, NULL };                    // error C2275: 'Py_buffer' : illegal use of this type as an expression
+    unsigned int init = 0xFFFFFFFFL;
     static struct _hexin_crc32 crc32_stm32_param;
 
     crc32_stm32_param.is_initial    = FALSE;
@@ -459,9 +461,7 @@ static PyObject * _crc32_stm32( PyObject *self, PyObject *args )
     crc32_stm32_param.xorout        = 0x00000000L;
     crc32_stm32_param.result        = 0;
 
-
-    Py_buffer data = { NULL, NULL };
-    unsigned int init = crc32_stm32_param.init;          /* Fixed Issues #4  */
+    init = crc32_stm32_param.init;                      /* Fixed Issues #4  */
 
 #if PY_MAJOR_VERSION >= 3
     if ( !PyArg_ParseTuple( args, "y*|I", &data, &init ) ) {
