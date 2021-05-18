@@ -1,10 +1,10 @@
 /*
 *********************************************************************************************************
-*                              		(c) Copyright 2017-2020, Hexin
+*                              		(c) Copyright 2017-2021, Hexin
 *                                           All Rights Reserved
 * File    : _crcxmodule.c
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V1.4
+* Version : V1.7
 *
 * LICENSING TERMS:
 * ---------------
@@ -604,7 +604,7 @@ PyInit__crcx( void )
         return NULL;
     }
 
-    PyModule_AddStringConstant( m, "__version__", "1.4" );
+    PyModule_AddStringConstant( m, "__version__", "1.7" );
     PyModule_AddStringConstant( m, "__author__",  "Heyn"  );
 
     return m;

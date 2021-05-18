@@ -1,10 +1,10 @@
 /*
 *********************************************************************************************************
-*                              		(c) Copyright 2017-2020, Hexin
+*                              		(c) Copyright 2017-2021, Hexin
 *                                           All Rights Reserved
 * File    : _crc16tables.c
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V1.4
+* Version : V1.7
 *
 * LICENSING TERMS:
 * ---------------
