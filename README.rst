@@ -54,6 +54,10 @@ libscrc is a library for calculating CRC3 CRC4 CRC5 CRC6 CRC7 CRC8 CRC16 CRC24 C
 +------------+------------+------------+-----------+-----------+-----------+
 |            | LIN2.x     |   CMS      |           |  PHILIPS  |   DARC82  |
 +------------+------------+------------+-----------+-----------+-----------+
+|            | ID8        |            |           |           |           |
++------------+------------+------------+-----------+-----------+-----------+
+|            | NMEA       |            |           |           |           |
++------------+------------+------------+-----------+-----------+-----------+
 
 Installation
 ------------
@@ -189,7 +193,10 @@ Example
     # Frame ID : 0x15  
     # DATA : 0x5B, 0x67, 0x72, 0xAF, 0x5B  
     crc8 = libscrc.lin2x(bytes([0x15, 0x5B, 0x67, 0x72, 0xAF, 0x5B]))  
-  
+    
+    crc8 = libscrc.id8(b'21020020210229117')      # ID check code of China
+    crc8 = libscrc.nmea(b'$PFEC,GPint,RMC06*')    # National Marine Electronics Association
+
 * CRC16::
 
     crc16 = libscrc.ibm(b'1234')            # poly=0xA001 (default Reversed)  
@@ -306,6 +313,9 @@ Example
 NOTICE
 ------ 
 * Revert gradually calculating function v1.4+ (2020-08-04) 
+
+V1.7( DEVELOPING )
+* New add CRC8   -> libscrc.id8() and libscrc.nmea()
 
 V1.6 (2021-03-16)
 ++++++++++++++++++

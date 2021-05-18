@@ -4,13 +4,14 @@
 *                                           All Rights Reserved
 * File    : _crc8tables.h
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V1.4
+* Version : V1.7
 *
 * LICENSING TERMS:
 * ---------------
 *		New Create at 	2020-03-17 [Heyn] Initialize.
 *                       2020-08-04 [Heyn] Fixed Issues #4.
 *                       2020-09-18 [Heyn] New add lin and lin2x checksum.
+*                       2021-03-16 [Heyn] New add ID checksum.
 *
 *********************************************************************************************************
 */
@@ -73,5 +74,8 @@ unsigned char hexin_crc8_compute(       const unsigned char *pSrc, unsigned int 
 unsigned char hexin_crc8_get_lin2x_pid( const unsigned char id );
 unsigned char hexin_calc_crc8_lin(      const unsigned char *pSrc, unsigned int len, unsigned char crc8 );
 unsigned char hexin_calc_crc8_lin2x(    const unsigned char *pSrc, unsigned int len, unsigned char crc8 );
+
+unsigned char hexin_calc_crc8_id8(      const unsigned char *pSrc, unsigned int len, unsigned char crc8 );
+unsigned char hexin_calc_crc8_nmea(     const unsigned char *pSrc, unsigned int len, unsigned char crc8 );
 
 #endif //__CRC8_TABLES_H__
