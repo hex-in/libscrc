@@ -310,9 +310,10 @@ NOTICE
 
 
 V1.7(2021-06-07)
-* New add CRC8   -> libscrc.id8() and libscrc.nmea()
-* Update gradually calculate functions ( CRCx   -> libscrc.umts12()  libscrc.crc12_3gpp() )
-* Fixed Issues #8
+++++++++++++++++++
+* New add CRC8   -> libscrc.id8() and libscrc.nmea()  
+* Update gradually calculate functions ( CRCx   -> libscrc.umts12()  libscrc.crc12_3gpp() )  
+* Fixed Issues #8  
 
 V1.6(2021-01-18)
 ++++++++++++++++++
