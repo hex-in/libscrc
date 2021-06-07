@@ -13,11 +13,23 @@
 *                       2020-03-23 [Heyn] New add hexin_calc_crc32_fletcher
 *                       2020-04-26 [Heyn] Optimized Code
 *                       2020-08-04 [Heyn] Fixed Issues #4.
+*                       2021-06-07 [Heyn] Fixed Issues #8.
 *
 *********************************************************************************************************
 */
 
 #include "_crc32tables.h"
+
+/* Fixed Issues #8 */
+static unsigned char __hexin_reverse8( unsigned char data )
+{
+    unsigned int  i = 0;
+    unsigned char t = 0;
+    for ( i=0; i<8; i++ ) {
+        t |= ( ( data >> i ) & 0x01 ) << ( 7-i );
+    }
+    return t;
+}
 
 unsigned int hexin_reverse32( unsigned int data )
 {
@@ -131,40 +143,24 @@ unsigned int hexin_crc32_compute_init_table( struct _hexin_crc32 *param )
     unsigned int crc = 0x00000000L;
     unsigned int c   = 0x00000000L;
 
-    if ( HEXIN_REFIN_REFOUT_IS_TRUE( param ) ) {
-        for ( i=0; i<MAX_TABLE_ARRAY; i++ ) {
-            crc = i;
-            for ( j=0; j<8; j++ ) {
-                if ( crc & 0x00000001L ) crc = ( crc >> 1 ) ^ param->poly;
-                else                     crc = ( crc >> 1 );
-            }
-            param->table[i] = crc;
+    for ( i=0; i<MAX_TABLE_ARRAY; i++ ) {
+        crc = 0;
+        c	= ( ( unsigned int )i ) << 24;
+        for ( j=0; j<8; j++ ) {
+            if ( ( crc ^ c ) & 0x80000000L )  crc = ( crc << 1 ) ^ param->poly;
+            else                              crc = ( crc << 1 );
+            c = c << 1;
         }
-    } else {
-        for ( i=0; i<MAX_TABLE_ARRAY; i++ ) {
-            crc = 0;
-            c	= ( ( unsigned int )i ) << 24;
-            for ( j=0; j<8; j++ ) {
-                if ( ( crc ^ c ) & 0x80000000L )  crc = ( crc << 1 ) ^ param->poly;
-                else                              crc = ( crc << 1 );
-                c = c << 1;
-            }
-            param->table[i] = crc;
-        }
+        param->table[i] = crc;
     }
+
     return TRUE;
 }
 
 unsigned int hexin_crc32_compute_char( unsigned int crc32, unsigned char c, struct _hexin_crc32 *param )
 {
     unsigned int crc = crc32;
-
-    if ( HEXIN_REFIN_REFOUT_IS_TRUE( param ) ) {
-        crc = (crc >> 8) ^ param->table[ ((crc >> 0 ) ^ (0x000000FFL & (unsigned int)c)) & 0xFF ];
-    } else {
-        crc = (crc << 8) ^ param->table[ ((crc >> 24) ^ (0x000000FFL & (unsigned int)c)) & 0xFF ];
-    }
-
+    crc = (crc << 8) ^ param->table[ ((crc >> 24) ^ (0x000000FFL & (unsigned int)c)) & 0xFF ];
     return crc;
 }
 
@@ -174,20 +170,32 @@ unsigned int hexin_crc32_compute( const unsigned char *pSrc, unsigned int len, s
     unsigned int crc  = ( init << ( HEXIN_CRC32_WIDTH - param->width ) );       /* Fixed Issues #4  */
 
     if ( param->is_initial == FALSE ) {
-        if ( HEXIN_REFIN_REFOUT_IS_TRUE( param ) ) {
-            param->poly = ( hexin_reverse32( param->poly ) >> ( HEXIN_CRC32_WIDTH - param->width ) );
-        } else {
-            param->poly = ( param->poly << ( HEXIN_CRC32_WIDTH - param->width ) );
-        }
+        param->poly = ( param->poly << ( HEXIN_CRC32_WIDTH - param->width ) );
         param->is_initial = hexin_crc32_compute_init_table( param );
     }
 
-	for ( i=0; i<len; i++ ) {
-		crc = hexin_crc32_compute_char( crc, pSrc[i], param );
-	}
+    /* Fixed Issues #4 #8 */
+    if ( HEXIN_REFOUT_IS_TRUE( param ) && ( HEXIN_GRADUAL_CALCULATE_IS_TRUE( param ) ) ) { 
+        crc = hexin_reverse32( init );
+    }
 
-    result = ( HEXIN_REFIN_REFOUT_IS_TRUE( param ) ) ? crc : ( crc >> ( HEXIN_CRC32_WIDTH - param->width ) );
-    
+    /* Fixed Issues #8 */
+    if ( HEXIN_REFIN_IS_TRUE( param ) ) {
+        for ( i=0; i<len; i++ ) {
+            crc = hexin_crc32_compute_char( crc, __hexin_reverse8(pSrc[i]), param );
+        }
+    } else {
+        for ( i=0; i<len; i++ ) {
+            crc = hexin_crc32_compute_char( crc, pSrc[i], param );
+        }
+    }
+
+    /* Fixed Issues #8 */
+    if ( HEXIN_REFOUT_IS_TRUE( param ) ) {
+        crc = hexin_reverse32( crc );
+    }
+
+    result = ( crc >> ( HEXIN_CRC32_WIDTH - param->width ) );
 	return ( result ^ param->xorout ); 
 }
 
@@ -197,11 +205,7 @@ unsigned int hexin_crc32_compute_stm32( const unsigned char *pSrc, unsigned int 
     unsigned int crc  = init;
 
     if ( param->is_initial == FALSE ) {
-        if ( HEXIN_REFIN_REFOUT_IS_TRUE( param ) ) {
-            param->poly = ( hexin_reverse32( param->poly ) >> ( HEXIN_CRC32_WIDTH - param->width ) );
-        } else {
-            param->poly = ( param->poly << ( HEXIN_CRC32_WIDTH - param->width ) );
-        }
+        param->poly = ( param->poly << ( HEXIN_CRC32_WIDTH - param->width ) );
         param->is_initial = hexin_crc32_compute_init_table( param );
     }
 

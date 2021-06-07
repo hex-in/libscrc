@@ -343,6 +343,8 @@ NOTICE
 - Optimized code.
 
 1. New add CRC8   -> libscrc.id8() and libscrc.nmea()
+2. Update gradually calculate functions ( CRCx   -> libscrc.umts12()  libscrc.crc12_3gpp() )
+3. Fixed Issues #8
 
 
 

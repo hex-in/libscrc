@@ -4,7 +4,7 @@
 *                                           All Rights Reserved
 * File    : _crc16module.c
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V1.4
+* Version : V1.7
 *
 * LICENSING TERMS:
 * ---------------
@@ -28,6 +28,7 @@
 *                       2020-04-27 [Heyn] Optimized code.
 *                       2020-08-04 [Heyn] Fixed Issues #4.
 *                       2020-11-18 [Heyn] Fixed (Python2) Parsing arguments has no 'p' type
+*                       2021-06-07 [Heyn] Add hacker16() reinit parameter. reinit=True -> Reinitialize the table
 *
 *********************************************************************************************************
 */
@@ -381,8 +382,10 @@ static PyObject * _crc16_table( PyObject *self, PyObject *args )
 
 static PyObject * _crc16_hacker( PyObject *self, PyObject *args, PyObject* kws )
 {
+    unsigned int reinit = FALSE;
     Py_buffer data = { NULL, NULL };
-    struct _hexin_crc16 crc16_param_hacker = { .is_initial=FALSE,
+    struct _hexin_crc16 crc16_param_hacker = { .is_initial = FALSE,
+                                               .is_gradual = 0,
                                                .width  = HEXIN_CRC16_WIDTH,
                                                .poly   = CRC16_POLYNOMIAL_8005,
                                                .init   = 0xFFFF,
@@ -391,27 +394,29 @@ static PyObject * _crc16_hacker( PyObject *self, PyObject *args, PyObject* kws )
                                                .xorout = 0x0000,
                                                .result = 0 };
 
-    static char* kwlist[]={ "data", "poly", "init", "xorout", "refin", "refout", NULL };
+    static char* kwlist[]={ "data", "poly", "init", "xorout", "refin", "refout", "reinit", NULL };
 
 #if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y*|HHHpp", kwlist, &data,
-                                                                      &crc16_param_hacker.poly,
-                                                                      &crc16_param_hacker.init,
-                                                                      &crc16_param_hacker.xorout,
-                                                                      &crc16_param_hacker.refin,
-                                                                      &crc16_param_hacker.refout ) ) {
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y*|HHHppp", kwlist, &data,
+                                                                       &crc16_param_hacker.poly,
+                                                                       &crc16_param_hacker.init,
+                                                                       &crc16_param_hacker.xorout,
+                                                                       &crc16_param_hacker.refin,
+                                                                       &crc16_param_hacker.refout,
+                                                                       &reinit ) ) {
         if ( data.obj ) {
             PyBuffer_Release( &data );
         }
         return NULL;
     }
 #else
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s*|HHHII", kwlist, &data,
-                                                                      &crc16_param_hacker.poly,
-                                                                      &crc16_param_hacker.init,
-                                                                      &crc16_param_hacker.xorout,
-                                                                      &crc16_param_hacker.refin,
-                                                                      &crc16_param_hacker.refout ) ) {
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s*|HHHIII", kwlist, &data,
+                                                                       &crc16_param_hacker.poly,
+                                                                       &crc16_param_hacker.init,
+                                                                       &crc16_param_hacker.xorout,
+                                                                       &crc16_param_hacker.refin,
+                                                                       &crc16_param_hacker.refout,
+                                                                       &reinit ) ) {
         if ( data.obj ) {
             PyBuffer_Release( &data );
         }
@@ -419,6 +424,7 @@ static PyObject * _crc16_hacker( PyObject *self, PyObject *args, PyObject* kws )
     }
 #endif /* PY_MAJOR_VERSION */
 
+    crc16_param_hacker.is_initial = ( reinit == FALSE ) ? crc16_param_hacker.is_initial : FALSE;
     crc16_param_hacker.result = hexin_crc16_compute( (const unsigned char *)data.buf, (unsigned int)data.len, &crc16_param_hacker, crc16_param_hacker.init );
 
     if ( data.obj )

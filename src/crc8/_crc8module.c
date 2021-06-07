@@ -26,6 +26,7 @@
 *                       2020-08-04 [Heyn] Fixed Issues #4.
 *                       2020-09-18 [Heyn] New add lin and lin2x checksum.
 *                       2020-11-18 [Heyn] Fixed (Python2) Parsing arguments has no 'p' type
+*                       2021-06-07 [Heyn] Add hacker8() reinit parameter. reinit=True -> Reinitialize the table
 *
 *********************************************************************************************************
 */
@@ -252,8 +253,10 @@ static PyObject * _crc8_table( PyObject *self, PyObject *args )
 
 static PyObject * _crc8_hacker( PyObject *self, PyObject *args, PyObject* kws )
 {
+    unsigned int reinit = FALSE;
     Py_buffer data = { NULL, NULL };
-    struct _hexin_crc8 crc8_param_hacker = { .is_initial=FALSE,
+    struct _hexin_crc8 crc8_param_hacker = { .is_initial = FALSE,
+                                             .is_gradual = 0,
                                              .width  = HEXIN_CRC8_WIDTH,
                                              .poly   = CRC8_POLYNOMIAL_31,
                                              .init   = 0xFF,
@@ -262,33 +265,37 @@ static PyObject * _crc8_hacker( PyObject *self, PyObject *args, PyObject* kws )
                                              .xorout = 0x00,
                                              .result = 0 };
 
-    static char* kwlist[]={ "data", "poly", "init", "xorout", "refin", "refout", NULL };
+    static char* kwlist[]={ "data", "poly", "init", "xorout", "refin", "refout", "reinit", NULL };
 
 #if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y*|BBBpp", kwlist, &data,
-                                                                      &crc8_param_hacker.poly,
-                                                                      &crc8_param_hacker.init,
-                                                                      &crc8_param_hacker.xorout,
-                                                                      &crc8_param_hacker.refin,
-                                                                      &crc8_param_hacker.refout ) ) {
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y*|BBBppp", kwlist, &data,
+                                                                       &crc8_param_hacker.poly,
+                                                                       &crc8_param_hacker.init,
+                                                                       &crc8_param_hacker.xorout,
+                                                                       &crc8_param_hacker.refin,
+                                                                       &crc8_param_hacker.refout,
+                                                                       &reinit ) ) {
         if ( data.obj ) {
             PyBuffer_Release( &data );
         }
         return NULL;
     }
 #else
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s*|BBBII", kwlist, &data,
-                                                                      &crc8_param_hacker.poly,
-                                                                      &crc8_param_hacker.init,
-                                                                      &crc8_param_hacker.xorout,
-                                                                      &crc8_param_hacker.refin,
-                                                                      &crc8_param_hacker.refout ) ) {
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s*|BBBIII", kwlist, &data,
+                                                                       &crc8_param_hacker.poly,
+                                                                       &crc8_param_hacker.init,
+                                                                       &crc8_param_hacker.xorout,
+                                                                       &crc8_param_hacker.refin,
+                                                                       &crc8_param_hacker.refout,
+                                                                       &reinit ) ) {
         if ( data.obj ) {
             PyBuffer_Release( &data );
         }
         return NULL;
     }
 #endif /* PY_MAJOR_VERSION */
+
+    crc8_param_hacker.is_initial = ( reinit == FALSE ) ? crc8_param_hacker.is_initial : FALSE;
 
     crc8_param_hacker.result = hexin_crc8_compute( (const unsigned char *)data.buf, (unsigned int)data.len, &crc8_param_hacker, crc8_param_hacker.init );
 

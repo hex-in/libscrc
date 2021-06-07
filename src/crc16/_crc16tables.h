@@ -12,6 +12,7 @@
 *                       2020-03-13 16:10PM [Heyn] New add hacker code.
 *                       2020-04-27 [Heyn] Optimized code.
 *                       2020-08-04 [Heyn] Fixed Issues #4.
+*                       2021-06-07 [Heyn] Fixed Issues #8.
 *
 *********************************************************************************************************
 */
@@ -41,6 +42,8 @@
 #define                 CRC16_POLYNOMIAL_C867                   0xC867
 
 #define                 HEXIN_POLYNOMIAL_IS_HIGH(x)             ( x & 0x8000 )
+#define                 HEXIN_REFIN_IS_TRUE(x)                  ( x->refin  == TRUE )
+#define                 HEXIN_REFOUT_IS_TRUE(x)                 ( x->refout == TRUE )
 #define                 HEXIN_REFIN_REFOUT_IS_TRUE(x)           ( ( x->refin == TRUE ) && ( x->refout == TRUE ) )
 #define                 HEXIN_GRADUAL_CALCULATE_IS_TRUE(x)      ( x->is_gradual == 2 )
 

@@ -60,8 +60,8 @@ class TestCRC8( unittest.TestCase ):
 
         self.assertEqual( module.opensafety8(b'6789', module.opensafety8(b'12345') ), 0x3E )
 
-        # self.assertEqual( module.lin2x( bytes( [0x15 ,0x2B ,0x67 ,0x72 ,0xB1 ,0x5B] ) )['crc'], 0x98 )
-        # self.assertEqual( module.lin(   bytes( [0xD6, 0x5B, 0x67] ) )['crc'], 0x3D )
+        self.assertEqual( module.lin2x( bytes( [0x15 ,0x2B ,0x67 ,0x72 ,0xB1 ,0x5B] ) )['crc'], 0x98 )
+        self.assertEqual( module.lin(   bytes( [0xD6, 0x5B, 0x67] ) ), 0x3D )
 
         self.assertEqual( module.id8( b'21020020210229117' ),       '5'  )
         self.assertEqual( module.nmea(b'$PFEC,GPint,RMC06*'),       0x2E )
@@ -98,6 +98,16 @@ class TestCRC8( unittest.TestCase ):
         self.assertEqual( module.aes8(b'123456789'),        0x97 )
 
         self.assertEqual( module.nmea(b'$PFEC,GPint,RMC06*'),   0x2E )
+
+        self.assertEqual( module.hacker8(b'123456789', poly=0x07, init=0x00, xorout=0x00, refin=False, refout=False ), 0xF4 )
+        self.assertEqual( module.hacker8(b'123456789', poly=0x07, init=0x00, xorout=0x00, refin=True,  refout=False ), 0x04 )
+        self.assertEqual( module.hacker8(b'123456789', poly=0x07, init=0x00, xorout=0x00, refin=False, refout=True  ), 0x2F )
+        self.assertEqual( module.hacker8(b'123456789', poly=0x07, init=0x00, xorout=0x00, refin=True,  refout=True  ), 0x20 )
+
+        self.assertEqual( module.hacker8(b'123456789', poly=0x07, init=0x00, xorout=0x01, refin=False, refout=True  ), 0x2E )
+        self.assertEqual( module.hacker8(b'123456789', poly=0x07, init=0x01, xorout=0x01, refin=False, refout=True  ), 0xB0 )
+
+        self.assertEqual( module.hacker8(b'123456789', poly=0x07, init=0xFF, xorout=0x00, refin=True,  refout=True  ), 0xD0 )
 
     def test_basics( self ):
         """ Test basic functionality.

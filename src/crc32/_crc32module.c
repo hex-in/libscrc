@@ -18,7 +18,8 @@
 *                      2020-04-26 [Heyn] Optimized Code
 *                      2020-08-04 [Heyn] Fixed Issues #4.
 *                      2020-11-18 [Heyn] Fixed (Python2) Parsing arguments has no 'p' type
-* 
+*                      2021-06-07 [Heyn] Add hacker32() reinit parameter. reinit=True -> Reinitialize the table
+*
 * Web : https://en.wikipedia.org/wiki/Polynomial_representations_of_cyclic_redundancy_checks
 *
 ********************************************************************************************************
@@ -167,6 +168,7 @@ static PyObject * _crc32_table( PyObject *self, PyObject *args )
 
 static PyObject * _crc32_hacker( PyObject *self, PyObject *args, PyObject* kws )
 {
+    unsigned int reinit = FALSE;
     Py_buffer data = { NULL, NULL };
     struct _hexin_crc32 crc32_param_hacker = { .is_initial=FALSE,
                                                .width  = HEXIN_CRC32_WIDTH,
@@ -177,27 +179,29 @@ static PyObject * _crc32_hacker( PyObject *self, PyObject *args, PyObject* kws )
                                                .xorout = 0xFFFFFFFFL,
                                                .result = 0 };
 
-    static char* kwlist[]={ "data", "poly", "init", "xorout", "refin", "refout", NULL };
+    static char* kwlist[]={ "data", "poly", "init", "xorout", "refin", "refout", "reinit", NULL };
 
 #if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y*|IIIpp", kwlist, &data,
-                                                                      &crc32_param_hacker.poly,
-                                                                      &crc32_param_hacker.init,
-                                                                      &crc32_param_hacker.xorout,
-                                                                      &crc32_param_hacker.refin,
-                                                                      &crc32_param_hacker.refout ) ) {
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y*|IIIppp", kwlist, &data,
+                                                                       &crc32_param_hacker.poly,
+                                                                       &crc32_param_hacker.init,
+                                                                       &crc32_param_hacker.xorout,
+                                                                       &crc32_param_hacker.refin,
+                                                                       &crc32_param_hacker.refout,
+                                                                       &reinit ) ) {
         if ( data.obj ) {
             PyBuffer_Release( &data );
         }
         return NULL;        
     }
 #else
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s*|IIIII", kwlist, &data,
-                                                                      &crc32_param_hacker.poly,
-                                                                      &crc32_param_hacker.init,
-                                                                      &crc32_param_hacker.xorout,
-                                                                      &crc32_param_hacker.refin,
-                                                                      &crc32_param_hacker.refout ) ) {
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s*|IIIIII", kwlist, &data,
+                                                                       &crc32_param_hacker.poly,
+                                                                       &crc32_param_hacker.init,
+                                                                       &crc32_param_hacker.xorout,
+                                                                       &crc32_param_hacker.refin,
+                                                                       &crc32_param_hacker.refout,
+                                                                       &reinit ) ) {
         if ( data.obj ) {
             PyBuffer_Release( &data );
         }
@@ -205,6 +209,7 @@ static PyObject * _crc32_hacker( PyObject *self, PyObject *args, PyObject* kws )
     }
 #endif /* PY_MAJOR_VERSION */
 
+    crc32_param_hacker.is_initial = ( reinit == FALSE ) ? crc32_param_hacker.is_initial : FALSE;
     crc32_param_hacker.result = hexin_crc32_compute( (const unsigned char *)data.buf, (unsigned int)data.len, &crc32_param_hacker, crc32_param_hacker.init );
 
     if ( data.obj )

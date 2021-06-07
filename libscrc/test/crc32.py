@@ -42,6 +42,7 @@ class TestCRC32( unittest.TestCase ):
         self.assertEqual( module.xfer(    b'6789', module.xfer(    b'12345') ), 0xBD0BE338 )
         self.assertEqual( module.cdma(    b'6789', module.cdma(    b'12345') ), 0x04C34ABF )
         self.assertEqual( module.philips( b'6789', module.philips( b'12345') ), 0x0CE9E46C )
+        self.assertEqual( module.stm32(   b'6789', module.stm32(   b'12345') ), 0x1556F485 )
 
     def do_basics( self, module ):
         """ Test basic functionality.
@@ -71,6 +72,7 @@ class TestCRC32( unittest.TestCase ):
 
         self.assertEqual( module.cdma(b'123456789'),    0x04C34ABF )
         self.assertEqual( module.philips(b'123456789'), 0x0CE9E46C )
+        self.assertEqual( module.stm32(b'123456789'),   0x1556F485 )
 
         self.assertEqual( module.crc32( b'A' * 4096),           0xFEA63440 )
         self.assertEqual( module.crc32( b'A' * 4096 * 10),      0x1521C066 )
@@ -81,12 +83,10 @@ class TestCRC32( unittest.TestCase ):
 
         # test hacker.
         self.assertEqual( module.hacker32( b'123456789' ),      0xCBF43926 )
-        self.assertEqual( module.hacker32( data=b'123456789',
-                                           poly=0x04C11DB7,
-                                           init=0xFFFFFFFF,
-                                           xorout=0xFFFFFFFF,
-                                           refin=True,
-                                           refout=True ),       0xCBF43926 )
+        self.assertEqual( module.hacker32( data=b'123456789', poly=0x04C11DB7, init=0xFFFFFFFF, xorout=0xFFFFFFFF, refin=False, refout=False ), 0xFC891918 )
+        self.assertEqual( module.hacker32( data=b'123456789', poly=0x04C11DB7, init=0xFFFFFFFF, xorout=0xFFFFFFFF, refin=True,  refout=False ), 0x649C2FD3 )
+        self.assertEqual( module.hacker32( data=b'123456789', poly=0x04C11DB7, init=0xFFFFFFFF, xorout=0xFFFFFFFF, refin=False, refout=True  ), 0x1898913F )
+        self.assertEqual( module.hacker32( data=b'123456789', poly=0x04C11DB7, init=0xFFFFFFFF, xorout=0xFFFFFFFF, refin=True,  refout=True  ), 0xCBF43926 )
 
     def test_basics( self ):
         """ Test basic functionality.

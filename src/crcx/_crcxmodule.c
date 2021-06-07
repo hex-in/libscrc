@@ -12,6 +12,8 @@
 *                       2020-03-17 [Heyn] Optimized code.
 *                       2020-04-27 [Heyn] Optimized code.
 *                       2020-08-04 [Heyn] Fixed Issues #4.
+*                       2021-06-07 [Heyn] Update gradually calculate functions.
+*                                         ( CRCx -> libscrc.umts12()  libscrc.crc12_3gpp() ).
 *
 *********************************************************************************************************
 */
@@ -447,8 +449,10 @@ static PyObject * _crc12_umts12( PyObject *self, PyObject *args )
         return NULL;
     }
 
-    /* TODO : refin=False, refout=True */
-    crc12_param_umts12.result = hexin_crcx_reverse12( crc12_param_umts12.result );
+    /* TODO : refin=False, refout=True
+       v1.7 fixed ( removed below code )
+    */
+    // crc12_param_umts12.result = hexin_crcx_reverse12( crc12_param_umts12.result );
 
     return Py_BuildValue( "H", crc12_param_umts12.result );
 }

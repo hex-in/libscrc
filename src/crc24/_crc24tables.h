@@ -11,6 +11,7 @@
 *		New Create at 	2020-04-17 [Heyn] Initialize.
 *                       2020-04-27 [Heyn] Optimized code.
 *                       2020-08-04 [Heyn] Fixed Issues #4.
+*                       2021-06-07 [Heyn] Fixed Issues #8.
 *
 *********************************************************************************************************
 */
@@ -33,6 +34,8 @@
 #define                 HEXIN_CRC24_WIDTH                       24
 
 #define                 HEXIN_POLYNOMIAL_IS_HIGH(x)             ( x & 0x800000L )
+#define                 HEXIN_REFIN_IS_TRUE(x)                  ( x->refin  == TRUE )
+#define                 HEXIN_REFOUT_IS_TRUE(x)                 ( x->refout == TRUE )
 #define                 HEXIN_REFIN_REFOUT_IS_TRUE(x)           ( ( x->refin == TRUE ) && ( x->refout == TRUE ) )
 #define                 HEXIN_GRADUAL_CALCULATE_IS_TRUE(x)      ( x->is_gradual == 2 )
 

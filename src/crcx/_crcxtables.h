@@ -12,6 +12,7 @@
 *                       2020-03-17 [Heyn] Optimized code.
 *                       2020-04-27 [Heyn] Optimized code.
 *                       2020-08-04 [Heyn] Fixed Issues #4.
+*                       2021-06-07 [Heyn] Fixed Issues #8.
 *
 *********************************************************************************************************
 */
@@ -32,6 +33,8 @@
 #endif
 
 #define                 HEXIN_CRCX_WIDTH                        16
+#define                 HEXIN_REFIN_IS_TRUE(x)                  ( x->refin  == TRUE )
+#define                 HEXIN_REFOUT_IS_TRUE(x)                 ( x->refout == TRUE )
 #define                 HEXIN_REFIN_REFOUT_IS_TRUE(x)           ( ( x->refin == TRUE ) && ( x->refout == TRUE ) )
 #define                 HEXIN_GRADUAL_CALCULATE_IS_TRUE(x)      ( x->is_gradual == 2 )
 

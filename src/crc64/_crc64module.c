@@ -17,6 +17,7 @@
 *                       2020-05-12 [Heyn] (Python2.7) FIX : Windows compilation error.
 *                       2020-08-04 [Heyn] Fixed Issues #4.
 *                       2020-11-18 [Heyn] Fixed (Python2) Parsing arguments has no 'p' type
+*                       2021-06-07 [Heyn] Add hacker64() reinit parameter. reinit=True -> Reinitialize the table
 *
 *********************************************************************************************************
 */
@@ -235,6 +236,7 @@ static PyObject * _crc64_table( PyObject *self, PyObject *args )
 
 static PyObject * _crc64_hacker( PyObject *self, PyObject *args, PyObject* kws )
 {
+    unsigned int reinit = FALSE;
     Py_buffer data = { NULL, NULL };
 
 #if PY_MAJOR_VERSION >= 3
@@ -256,27 +258,29 @@ static PyObject * _crc64_hacker( PyObject *self, PyObject *args, PyObject* kws )
                                                0x0000000000000000L,
                                                0 };
 #endif /* PY_MAJOR_VERSION */
-    static char* kwlist[]={ "data", "poly", "init", "xorout", "refin", "refout", NULL };
+    static char* kwlist[]={ "data", "poly", "init", "xorout", "refin", "refout", "reinit", NULL };
 
 #if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y*|KKKpp", kwlist, &data,
-                                                                      &crc64_param_hacker.poly,
-                                                                      &crc64_param_hacker.init,
-                                                                      &crc64_param_hacker.xorout,
-                                                                      &crc64_param_hacker.refin,
-                                                                      &crc64_param_hacker.refout ) ) {
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y*|KKKppp", kwlist, &data,
+                                                                       &crc64_param_hacker.poly,
+                                                                       &crc64_param_hacker.init,
+                                                                       &crc64_param_hacker.xorout,
+                                                                       &crc64_param_hacker.refin,
+                                                                       &crc64_param_hacker.refout,
+                                                                       &reinit ) ) {
         if ( data.obj ) {
             PyBuffer_Release( &data );
         }
         return NULL; 
     }
 #else
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s*|KKKII", kwlist, &data,
-                                                                      &crc64_param_hacker.poly,
-                                                                      &crc64_param_hacker.init,
-                                                                      &crc64_param_hacker.xorout,
-                                                                      &crc64_param_hacker.refin,
-                                                                      &crc64_param_hacker.refout ) ) {
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s*|KKKIII", kwlist, &data,
+                                                                       &crc64_param_hacker.poly,
+                                                                       &crc64_param_hacker.init,
+                                                                       &crc64_param_hacker.xorout,
+                                                                       &crc64_param_hacker.refin,
+                                                                       &crc64_param_hacker.refout,
+                                                                       &reinit ) ) {
         if ( data.obj ) {
             PyBuffer_Release( &data );
         }
@@ -284,6 +288,7 @@ static PyObject * _crc64_hacker( PyObject *self, PyObject *args, PyObject* kws )
     }
 #endif /* PY_MAJOR_VERSION */
 
+    crc64_param_hacker.is_initial = ( reinit == FALSE ) ? crc64_param_hacker.is_initial : FALSE;
     crc64_param_hacker.result = hexin_crc64_compute( (const unsigned char *)data.buf, (unsigned int)data.len, &crc64_param_hacker, crc64_param_hacker.init );
 
     if ( data.obj )

@@ -12,6 +12,7 @@
 *                       2020-04-27 [Heyn] Optimized code.
 *                       2020-08-04 [Heyn] Fixed Issues #4.
 *                       2020-11-18 [Heyn] Fixed (Python2) Parsing arguments has no 'p' type
+*                       2021-06-07 [Heyn] Add hacker24() reinit parameter. reinit=True -> Reinitialize the table
 *
 ********************************************************************************************************
 */
@@ -200,6 +201,7 @@ static PyObject * _crc24_interlaken( PyObject *self, PyObject *args )
 
 static PyObject * _crc24_hacker( PyObject *self, PyObject *args, PyObject* kws )
 {
+    unsigned int reinit = FALSE;
     Py_buffer data = { NULL, NULL };
     struct _hexin_crc24 crc24_param_hacker = { .is_initial=FALSE,
                                                .width  = HEXIN_CRC24_WIDTH,
@@ -210,27 +212,29 @@ static PyObject * _crc24_hacker( PyObject *self, PyObject *args, PyObject* kws )
                                                .xorout = 0x00FFFFFF,
                                                .result = 0 };
 
-    static char* kwlist[]={ "data", "poly", "init", "xorout", "refin", "refout", NULL };
+    static char* kwlist[]={ "data", "poly", "init", "xorout", "refin", "refout", "reinit", NULL };
 
 #if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y*|IIIpp", kwlist, &data,
-                                                                      &crc24_param_hacker.poly,
-                                                                      &crc24_param_hacker.init,
-                                                                      &crc24_param_hacker.xorout,
-                                                                      &crc24_param_hacker.refin,
-                                                                      &crc24_param_hacker.refout ) ) {
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y*|IIIppp", kwlist, &data,
+                                                                       &crc24_param_hacker.poly,
+                                                                       &crc24_param_hacker.init,
+                                                                       &crc24_param_hacker.xorout,
+                                                                       &crc24_param_hacker.refin,
+                                                                       &crc24_param_hacker.refout,
+                                                                       &reinit ) ) {
         if ( data.obj ) {
             PyBuffer_Release( &data );
         }
         return NULL;        
     }
 #else
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s*|IIIII", kwlist, &data,
-                                                                      &crc24_param_hacker.poly,
-                                                                      &crc24_param_hacker.init,
-                                                                      &crc24_param_hacker.xorout,
-                                                                      &crc24_param_hacker.refin,
-                                                                      &crc24_param_hacker.refout ) ) {
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s*|IIIIII", kwlist, &data,
+                                                                       &crc24_param_hacker.poly,
+                                                                       &crc24_param_hacker.init,
+                                                                       &crc24_param_hacker.xorout,
+                                                                       &crc24_param_hacker.refin,
+                                                                       &crc24_param_hacker.refout,
+                                                                       &reinit ) ) {
         if ( data.obj ) {
             PyBuffer_Release( &data );
         }
@@ -238,6 +242,7 @@ static PyObject * _crc24_hacker( PyObject *self, PyObject *args, PyObject* kws )
     }
 #endif /* PY_MAJOR_VERSION */
 
+    crc24_param_hacker.is_initial = ( reinit == FALSE ) ? crc24_param_hacker.is_initial : FALSE;
     crc24_param_hacker.result = hexin_crc24_compute( (const unsigned char *)data.buf, (unsigned int)data.len, &crc24_param_hacker, crc24_param_hacker.init );
     
     if ( data.obj )
