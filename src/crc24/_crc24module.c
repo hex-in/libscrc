@@ -264,10 +264,12 @@ static PyMethodDef _crc24Methods[] = {
     { "interlaken",  (PyCFunction)_crc24_interlaken, METH_VARARGS,   "Calculate INTERLAKEN of CRC24 [Poly=0x328B63, Init=0xFFFFFF, Xorout=0xFFFFFF Refin=False Refout=False]"},
     { "hacker24",    (PyCFunction)_crc24_hacker,     METH_KEYWORDS|METH_VARARGS, "User calculation CRC24\n"
                                                                                  "@data   : bytes\n"
-                                                                                 "@poly   : default=0xEDB88320\n"
-                                                                                 "@init   : default=0xFFFFFFFF\n"
-                                                                                 "@xorout : default=0x00000000\n"
-                                                                                 "@ref    : default=False" },
+                                                                                 "@poly   : default=0x00800063\n"
+                                                                                 "@init   : default=0x00FFFFFF\n"
+                                                                                 "@xorout : default=0x00FFFFFF\n"
+                                                                                 "@refin  : default=False\n"
+                                                                                 "@refout : default=False\n"
+                                                                                 "@reinit : default=False" },
     { NULL, NULL, 0, NULL }        /* Sentinel */
 };
 
@@ -283,6 +285,7 @@ PyDoc_STRVAR( _crc24_doc,
 "libscrc.lte_b      -> Calculate LTE-B of CRC24 [Poly=0x800063, Init=0x000000, Xorout=0x00000000 Refin=False Refout=False]\n"
 "libscrc.os9        -> Calculate OS-9 of CRC24 [Poly=0x800063, Init=0xFFFFFF, Xorout=0xFFFFFF Refin=False Refout=False]\n"
 "libscrc.interlaken -> Calculate INTERLAKEN of CRC24 [Poly=0x328B63, Init=0xFFFFFF, Xorout=0xFFFFFF Refin=False Refout=False]\n"
+"libscrc.hacker24   -> Free calculation CRC24 @reinit reinitialize the crc24 tables\n"
 "\n" );
 
 

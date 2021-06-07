@@ -662,7 +662,9 @@ static PyMethodDef _crc8Methods[] = {
                                                                                  "@poly   : default=0x31\n"
                                                                                  "@init   : default=0xFF\n"
                                                                                  "@xorout : default=0x00\n"
-                                                                                 "@ref    : default=False" },
+                                                                                 "@refin  : default=False\n"
+                                                                                 "@refout : default=False\n"
+                                                                                 "@reinit : default=False" },
     { "fletcher8",  (PyCFunction)_crc8_fletcher,     METH_VARARGS, "Calculate fletcher8" },
     { "smbus",      (PyCFunction)_crc8_crc8,         METH_VARARGS, "Calculate SMBUS of CRC8 [Poly=0x07 Initial=0x00 Xorout=0x00 Refin=False Refout=False]" },
     { "autosar8",   (PyCFunction)_crc8_autosar8,     METH_VARARGS, "Calculate AUTOSAR of CRC8 [Poly=0x2F Initial=0xFF Xorout=0xFF Refin=False Refout=False]" },
@@ -700,7 +702,7 @@ PyDoc_STRVAR( _crc8_doc,
 "libscrc.i432_1     -> Calculate I-432-1 of CRC8 [Poly=0x07 Initial=0x00 Xorout=0x55 Refin=False Refout=False]\n"
 "libscrc.crc8       -> Calculate CRC of CRC8 [Poly=0x07 Initial=0x00 Xorout=0x00 Refin=False Refout=False]\n"
 "libscrc.sum8       -> Calculate SUM of CRC8 [Initial=0x00]\n"
-"libscrc.hacker8    -> Free calculation CRC8 [poly=any(default=0x31), init=any(default=0xFF), xorout=0x00 Refin=False Refout=False]\n"
+"libscrc.hacker8    -> Free calculation CRC8 @reinit reinitialize the crc8 tables\n"
 "libscrc.fletcher8  -> Calculate fletcher8 \n"
 "libscrc.smbus      -> Calculate SMBUS of CRC8 [Poly=0x07 Initial=0x00 Xorout=0x00 Refin=False Refout=False]\n"
 "libscrc.autosar8   -> Calculate AUTOSAR of CRC8 [Poly=0x2F Initial=0xFF Xorout=0xFF Refin=False Refout=False]\n"

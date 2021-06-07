@@ -483,10 +483,12 @@ static PyMethodDef _crc32Methods[] = {
     { "table32",     (PyCFunction)_crc32_table,      METH_VARARGS,   "Print CRC32 table to list. libscrc.table32( polynomial, False, 32 )" },
     { "hacker32",    (PyCFunction)_crc32_hacker,     METH_KEYWORDS|METH_VARARGS, "User calculation CRC32\n"
                                                                                  "@data   : bytes\n"
-                                                                                 "@poly   : default=0xEDB88320\n"
+                                                                                 "@poly   : default=0x04C11DB7\n"
                                                                                  "@init   : default=0xFFFFFFFF\n"
-                                                                                 "@xorout : default=0x00000000\n"
-                                                                                 "@ref    : default=False" },
+                                                                                 "@xorout : default=0xFFFFFFFF\n"
+                                                                                 "@refin  : default=True\n"
+                                                                                 "@refout : default=True\n"
+                                                                                 "@reinit : default=False" },
     { "adler32",    (PyCFunction)_crc32_adler32,     METH_VARARGS,   "Calculate adler32 (MOD=65521)" },
     { "fletcher32", (PyCFunction)_crc32_fletcher32,  METH_VARARGS,   "Calculate fletcher32" },
     { "posix",      (PyCFunction)_crc32_posix,       METH_VARARGS,   "Calculate CRC (POSIX) of CRC32 [Poly=0x04C11DB7, Init=0x00000000, Xorout=0xFFFFFFFF Refin=True Refout=True]"},
@@ -521,7 +523,7 @@ PyDoc_STRVAR( _crc32_doc,
 "libscrc.adccp      -> Calculate ADCCP [Poly=0x04C11DB7L, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]\n"
 "libscrc.v_42       -> Calculate V-42 [Poly=0x04C11DB7L, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]\n"
 "libscrc.table32    -> Print CRC32 table to list. libscrc.table32( polynomial, False, 32 )\n"
-"libscrc.hacker32   -> Free calculation CRC32 (not support python2 series) Xorout=0x00000000 Refin=False Refout=False\n"
+"libscrc.hacker32   -> Free calculation CRC32 @reinit reinitialize the crc32 tables\n"
 "libscrc.adler32    -> Calculate adler32 (MOD=65521)\n"
 "libscrc.fletcher32 -> Calculate fletcher32\n"
 "libscrc.posix      -> Calculate CRC (POSIX) [Poly=0x04C11DB7, Init=0x00000000, Xorout=0xFFFFFFFF Refin=False Refout=False]\n"

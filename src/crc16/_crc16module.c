@@ -796,11 +796,13 @@ static PyMethodDef _crc16Methods[] = {
     { "dect_x",      (PyCFunction)_crc16_dect_x,    METH_VARARGS, "Calculate DECT-X of CRC16 [Poly=0x0589, Init=0x0000 Xorout=0x0000 Refin=False Refout=False]" },
     { "table16",     (PyCFunction)_crc16_table,     METH_VARARGS, "Print CRC16 table to list. libscrc.table16( polynomial )" },
     { "hacker16",    (PyCFunction)_crc16_hacker,    METH_KEYWORDS|METH_VARARGS, "User calculation CRC16\n"
-                                                                             "@data   : bytes\n"
-                                                                             "@poly   : default=0x1021\n"
-                                                                             "@init   : default=0xFFFF\n"
-                                                                             "@xorout : default=0x0000\n"
-                                                                             "@ref    : default=False" },
+                                                                                "@data   : bytes\n"
+                                                                                "@poly   : default=0x8050\n"
+                                                                                "@init   : default=0xFFFF\n"
+                                                                                "@xorout : default=0x0000\n"
+                                                                                "@refin  : default=True\n"
+                                                                                "@refout : default=True\n"
+                                                                                "@reinit : default=False" },
     { "udp",         (PyCFunction)_crc16_network,    METH_VARARGS, "Calculate UDP checksum." },
     { "tcp",         (PyCFunction)_crc16_network,    METH_VARARGS, "Calculate TCP checksum." },
     { "fletcher16",  (PyCFunction)_crc16_fletcher,   METH_VARARGS, "Calculate FLETCHER16" },
@@ -858,7 +860,7 @@ PyDoc_STRVAR( _crc16_doc,
 "libscrc.maxim16    -> Calculate MAXIM of CRC16               [Poly=0x8005, Init=0x0000 Xorout=0xFFFF Refin=True Refout=True]\n"
 "libscrc.dect_r     -> Calculate DECT-R of CRC16              [Poly=0x0589, Init=0x0000 Xorout=0x0001 Refin=False Refout=False]\n"
 "libscrc.dect_x     -> Calculate DECT-X of CRC16              [Poly=0x0589, Init=0x0000 Xorout=0x0000 Refin=False Refout=False]\n"
-"libscrc.hacker16   -> Free calculation CRC16 (not support python2 series)\n"
+"libscrc.hacker16   -> Free calculation CRC16 @reinit reinitialize the crc16 tables\n"
 "libscrc.fletcher16 -> Calculate FLETCHER16\n"
 "libscrc.epc16      -> Calculate RFID EPC of CRC16           [Poly=0x1021, Init=0xFFFF Xorout=0xFFFF Refin=False Refout=False]\n"
 "libscrc.profibus   -> Calculate PROFIBUS [Poly=0x1DCF, Init=0xFFFF Xorout=0xFFFF Refin=False Refout=False]\n"
