@@ -384,15 +384,15 @@ static PyObject * _crc16_hacker( PyObject *self, PyObject *args, PyObject* kws )
 {
     unsigned int reinit = FALSE;
     Py_buffer data = { NULL, NULL };
-    struct _hexin_crc16 crc16_param_hacker = { .is_initial = FALSE,
-                                               .is_gradual = 0,
-                                               .width  = HEXIN_CRC16_WIDTH,
-                                               .poly   = CRC16_POLYNOMIAL_8005,
-                                               .init   = 0xFFFF,
-                                               .refin  = TRUE,
-                                               .refout = TRUE,
-                                               .xorout = 0x0000,
-                                               .result = 0 };
+    static struct _hexin_crc16 crc16_param_hacker = { .is_initial = FALSE,
+                                                      .is_gradual = FALSE,
+                                                      .width  = HEXIN_CRC16_WIDTH,
+                                                      .poly   = CRC16_POLYNOMIAL_8005,
+                                                      .init   = 0xFFFF,
+                                                      .refin  = TRUE,
+                                                      .refout = TRUE,
+                                                      .xorout = 0x0000,
+                                                      .result = 0 };
 
     static char* kwlist[]={ "data", "poly", "init", "xorout", "refin", "refout", "reinit", NULL };
 

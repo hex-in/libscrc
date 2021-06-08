@@ -255,15 +255,15 @@ static PyObject * _crc8_hacker( PyObject *self, PyObject *args, PyObject* kws )
 {
     unsigned int reinit = FALSE;
     Py_buffer data = { NULL, NULL };
-    struct _hexin_crc8 crc8_param_hacker = { .is_initial = FALSE,
-                                             .is_gradual = 0,
-                                             .width  = HEXIN_CRC8_WIDTH,
-                                             .poly   = CRC8_POLYNOMIAL_31,
-                                             .init   = 0xFF,
-                                             .refin  = FALSE,
-                                             .refout = FALSE,
-                                             .xorout = 0x00,
-                                             .result = 0 };
+    static struct _hexin_crc8 crc8_param_hacker = { .is_initial = FALSE,
+                                                    .is_gradual = FALSE,
+                                                    .width  = HEXIN_CRC8_WIDTH,
+                                                    .poly   = CRC8_POLYNOMIAL_31,
+                                                    .init   = 0xFF,
+                                                    .refin  = FALSE,
+                                                    .refout = FALSE,
+                                                    .xorout = 0x00,
+                                                    .result = 0 };
 
     static char* kwlist[]={ "data", "poly", "init", "xorout", "refin", "refout", "reinit", NULL };
 
@@ -296,7 +296,6 @@ static PyObject * _crc8_hacker( PyObject *self, PyObject *args, PyObject* kws )
 #endif /* PY_MAJOR_VERSION */
 
     crc8_param_hacker.is_initial = ( reinit == FALSE ) ? crc8_param_hacker.is_initial : FALSE;
-
     crc8_param_hacker.result = hexin_crc8_compute( (const unsigned char *)data.buf, (unsigned int)data.len, &crc8_param_hacker, crc8_param_hacker.init );
 
     if ( data.obj )

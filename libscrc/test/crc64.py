@@ -10,6 +10,7 @@
 #           2020-03-16 Wheel Ver:0.1.6 [Heyn] New add libscrc.hacker64()
 #           2020-04-23 Wheel Ver:1.1   [Heyn] Bug fixed.
 #           2020-08-04 Wheel Ver:1.4   [Heyn] New add gradually calculating
+#           2021-06-08 Wheel Ver:1.7   [Heyn] Optimize the code for hacker64
 
 import unittest
 import libscrc
@@ -57,16 +58,19 @@ class TestCRC64( unittest.TestCase ):
         self.assertEqual( module.we(b'123456789'),      0x62EC59E3F1A4F00A )
         self.assertEqual( module.xz64(b'123456789'),    0x995DC9BBDF1939FA )
 
-        self.assertEqual( module.hacker64(b'123456789', poly=0x42F0E1EBA9EA3693, init=0, xorout=0, refin=False, refout=False ), 0x6C40DF5F0B497347 )
-        self.assertEqual( module.hacker64(b'123456789', poly=0x42F0E1EBA9EA3693, init=0, xorout=0, refin=True,  refout=False ), 0x51301E47277E39D4 )
-        self.assertEqual( module.hacker64(b'123456789', poly=0x42F0E1EBA9EA3693, init=0, xorout=0, refin=False, refout=True  ), 0xE2CE92D0FAFB0236 )
-        self.assertEqual( module.hacker64(b'123456789', poly=0x42F0E1EBA9EA3693, init=0, xorout=0, refin=True,  refout=True ),  0x2B9C7EE4E2780C8A )
+        # # # If the polynomial changes, you need to set reinit=True
+        # # # hacker64() Does not support revert gradually calculation.
+        self.assertEqual( module.hacker64(b'123456789', poly=0x42F0E1EBA9EA3693, init=0, xorout=0, refin=False, refout=False, reinit=True ), 0x6C40DF5F0B497347 )
+        self.assertEqual( module.hacker64(b'123456789', poly=0x42F0E1EBA9EA3693, init=0, xorout=0, refin=True,  refout=False, reinit=True ), 0x51301E47277E39D4 )
+        self.assertEqual( module.hacker64(b'123456789', poly=0x42F0E1EBA9EA3693, init=0, xorout=0, refin=False, refout=True,  reinit=True ), 0xE2CE92D0FAFB0236 )
+        self.assertEqual( module.hacker64(b'123456789', poly=0x42F0E1EBA9EA3693, init=0, xorout=0, refin=True,  refout=True,  reinit=True ), 0x2B9C7EE4E2780C8A )
 
     def test_basics( self ):
         """Test basic functionality.
         """
         self.assertEqual( libscrc.darc82(b'123456789'),  0x09EA83F625023801FD612 )
-
+        self.assertEqual( libscrc.darc82(b'\x01\x02\x03\x04\x05\x06\x07\x08\x09'),  0x3E2074C9A8CCD4C40C171 )
+        
         self.do_basics( libscrc )
         self.do_gradually( libscrc )
 

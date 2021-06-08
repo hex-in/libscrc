@@ -9,6 +9,7 @@
 # History:  2020-03-13 Wheel Ver:0.1.6 [Heyn] Initialize
 #           2020-04-26 Wheel Ver:1.3   [Heyn] Optimized Code
 #           2020-08-05 Wheel Ver:1.4   [Heyn] New add gradually calculating
+#           2021-06-08 Wheel Ver:1.7   [Heyn] Optimize the code for hacker32
 
 import unittest
 
@@ -81,12 +82,13 @@ class TestCRC32( unittest.TestCase ):
         # test when there are no data
         self.assertEqual( module.crc32( b'' ),                  0x00000000 )
 
-        # test hacker.
+        # # # If the polynomial changes, you need to set reinit=True
+        # # # hacker32() Does not support revert gradually calculation.
         self.assertEqual( module.hacker32( b'123456789' ),      0xCBF43926 )
-        self.assertEqual( module.hacker32( data=b'123456789', poly=0x04C11DB7, init=0xFFFFFFFF, xorout=0xFFFFFFFF, refin=False, refout=False ), 0xFC891918 )
-        self.assertEqual( module.hacker32( data=b'123456789', poly=0x04C11DB7, init=0xFFFFFFFF, xorout=0xFFFFFFFF, refin=True,  refout=False ), 0x649C2FD3 )
-        self.assertEqual( module.hacker32( data=b'123456789', poly=0x04C11DB7, init=0xFFFFFFFF, xorout=0xFFFFFFFF, refin=False, refout=True  ), 0x1898913F )
-        self.assertEqual( module.hacker32( data=b'123456789', poly=0x04C11DB7, init=0xFFFFFFFF, xorout=0xFFFFFFFF, refin=True,  refout=True  ), 0xCBF43926 )
+        self.assertEqual( module.hacker32( data=b'123456789', poly=0x04C11DB7, init=0xFFFFFFFF, xorout=0xFFFFFFFF, refin=False, refout=False, reinit=True ), 0xFC891918 )
+        self.assertEqual( module.hacker32( data=b'123456789', poly=0x04C11DB7, init=0xFFFFFFFF, xorout=0xFFFFFFFF, refin=True,  refout=False, reinit=True ), 0x649C2FD3 )
+        self.assertEqual( module.hacker32( data=b'123456789', poly=0x04C11DB7, init=0xFFFFFFFF, xorout=0xFFFFFFFF, refin=False, refout=True,  reinit=True ), 0x1898913F )
+        self.assertEqual( module.hacker32( data=b'123456789', poly=0x04C11DB7, init=0xFFFFFFFF, xorout=0xFFFFFFFF, refin=True,  refout=True,  reinit=True ), 0xCBF43926 )
 
     def test_basics( self ):
         """ Test basic functionality.

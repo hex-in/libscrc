@@ -10,7 +10,9 @@
 #           2020-03-13 Wheel Ver:0.1.6 [Heyn] optimized code
 #           2020-08-05 Wheel Ver:1.4   [Heyn] New add gradually calculating
 #           2021-03-16 Wheel Ver:1.7+  [Heyn] New add lin, lin2x, id8 functions.
+#           2021-06-08 Wheel Ver:1.7   [Heyn] Compatible with python2
 
+import sys
 import unittest
 
 import libscrc
@@ -59,10 +61,14 @@ class TestCRC8( unittest.TestCase ):
         self.assertEqual( module.tech_3250( b'6789', module.tech_3250(  b'12345') ), 0x97 )
 
         self.assertEqual( module.opensafety8(b'6789', module.opensafety8(b'12345') ), 0x3E )
-
-        self.assertEqual( module.lin2x( bytes( [0x15 ,0x2B ,0x67 ,0x72 ,0xB1 ,0x5B] ) )['crc'], 0x98 )
-        self.assertEqual( module.lin(   bytes( [0xD6, 0x5B, 0x67] ) ), 0x3D )
-
+        
+        if sys.version_info > ( 3, 0 ):
+            self.assertEqual( module.lin2x( bytes( [0x15 ,0x2B ,0x67 ,0x72 ,0xB1 ,0x5B] ) )['crc'], 0x98 )
+            self.assertEqual( module.lin(   bytes( [0xD6, 0x5B, 0x67] ) ), 0x3D )
+        else:
+            self.assertEqual( module.lin2x( b'\x15\x2B\x67\x72\xB1\x5B' )['crc'], 0x98 )
+            self.assertEqual( module.lin(   b'\xD6\x5B\x67' ), 0x3D )
+            
         self.assertEqual( module.id8( b'21020020210229117' ),       '5'  )
         self.assertEqual( module.nmea(b'$PFEC,GPint,RMC06*'),       0x2E )
 
@@ -99,15 +105,17 @@ class TestCRC8( unittest.TestCase ):
 
         self.assertEqual( module.nmea(b'$PFEC,GPint,RMC06*'),   0x2E )
 
-        self.assertEqual( module.hacker8(b'123456789', poly=0x07, init=0x00, xorout=0x00, refin=False, refout=False ), 0xF4 )
-        self.assertEqual( module.hacker8(b'123456789', poly=0x07, init=0x00, xorout=0x00, refin=True,  refout=False ), 0x04 )
-        self.assertEqual( module.hacker8(b'123456789', poly=0x07, init=0x00, xorout=0x00, refin=False, refout=True  ), 0x2F )
-        self.assertEqual( module.hacker8(b'123456789', poly=0x07, init=0x00, xorout=0x00, refin=True,  refout=True  ), 0x20 )
+        # # # If the polynomial changes, you need to set reinit=True
+        # # # hacker8() Does not support revert gradually calculation.
+        self.assertEqual( module.hacker8(b'123456789', poly=0x07, init=0x00, xorout=0x00, refin=False, refout=False, reinit=True ), 0xF4 )
+        self.assertEqual( module.hacker8(b'123456789', poly=0x07, init=0x00, xorout=0x00, refin=True,  refout=False, reinit=True ), 0x04 )
+        self.assertEqual( module.hacker8(b'123456789', poly=0x07, init=0x00, xorout=0x00, refin=False, refout=True,  reinit=True ), 0x2F )
+        self.assertEqual( module.hacker8(b'123456789', poly=0x07, init=0x00, xorout=0x00, refin=True,  refout=True,  reinit=True ), 0x20 )
 
-        self.assertEqual( module.hacker8(b'123456789', poly=0x07, init=0x00, xorout=0x01, refin=False, refout=True  ), 0x2E )
-        self.assertEqual( module.hacker8(b'123456789', poly=0x07, init=0x01, xorout=0x01, refin=False, refout=True  ), 0xB0 )
+        self.assertEqual( module.hacker8(b'123456789', poly=0x07, init=0x00, xorout=0x01, refin=False, refout=True,  reinit=True ), 0x2E )
+        self.assertEqual( module.hacker8(b'123456789', poly=0x07, init=0x01, xorout=0x01, refin=False, refout=True,  reinit=True ), 0xB0 )
 
-        self.assertEqual( module.hacker8(b'123456789', poly=0x07, init=0xFF, xorout=0x00, refin=True,  refout=True  ), 0xD0 )
+        self.assertEqual( module.hacker8(b'123456789', poly=0x07, init=0xFF, xorout=0x00, refin=True,  refout=True,  reinit=True ), 0xD0 )
 
     def test_basics( self ):
         """ Test basic functionality.

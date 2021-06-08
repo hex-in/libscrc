@@ -10,6 +10,7 @@
 #           2019-04-22 Wheel Ver:1.1   [Heyn] New add some functions.
 #           2020-04-28 Wheel Ver:1.3   [Heyn] Optimized code.
 #           2020-08-04 Wheel Ver:1.4   [Heyn] New add gradually calculating
+#           2021-06-08 Wheel Ver:1.7   [Heyn] Optimize the code for hacker16
 
 import unittest
 
@@ -147,10 +148,12 @@ class TestCRC16( unittest.TestCase ):
         self.assertEqual( module.lte16(b'123456789'),       0x31C3 )
         self.assertEqual( module.nrsc5(b'123456789'),       0xA066 )
 
-        self.assertEqual( module.hacker16( data=b'123456789', poly=0x8005, init=0xFFFF, xorout=0x0000, refin=False, refout=False ),   0xAEE7 )
-        self.assertEqual( module.hacker16( data=b'123456789', poly=0x8005, init=0xFFFF, xorout=0x0000, refin=True,  refout=False ),   0xECD2 )
-        self.assertEqual( module.hacker16( data=b'123456789', poly=0x8005, init=0xFFFF, xorout=0x0000, refin=False, refout=True  ),   0xE775 )
-        self.assertEqual( module.hacker16( data=b'123456789', poly=0x8005, init=0xFFFF, xorout=0x0000, refin=True,  refout=True  ),   0x4B37 )
+        # # # If the polynomial changes, you need to set reinit=True
+        # # # hacker16() Does not support revert gradually calculation.
+        self.assertEqual( module.hacker16( data=b'123456789', poly=0x8005, init=0xFFFF, xorout=0x0000, refin=False, refout=False, reinit=True ), 0xAEE7 )
+        self.assertEqual( module.hacker16( data=b'123456789', poly=0x8005, init=0xFFFF, xorout=0x0000, refin=True,  refout=False, reinit=True ), 0xECD2 )
+        self.assertEqual( module.hacker16( data=b'123456789', poly=0x8005, init=0xFFFF, xorout=0x0000, refin=False, refout=True,  reinit=True ), 0xE775 )
+        self.assertEqual( module.hacker16( data=b'123456789', poly=0x8005, init=0xFFFF, xorout=0x0000, refin=True,  refout=True,  reinit=True ), 0x4B37 )
 
     def test_basics( self ):
         """ Test basic functionality.

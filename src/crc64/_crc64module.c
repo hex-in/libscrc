@@ -239,25 +239,16 @@ static PyObject * _crc64_hacker( PyObject *self, PyObject *args, PyObject* kws )
     unsigned int reinit = FALSE;
     Py_buffer data = { NULL, NULL };
 
-#if PY_MAJOR_VERSION >= 3
-    struct _hexin_crc64 crc64_param_hacker = { .is_initial=FALSE,
-                                               .width  = HEXIN_CRC64_WIDTH,
-                                               .poly   = CRC64_POLYNOMIAL_ECMA182,
-                                               .init   = 0x0000000000000000L,
-                                               .refin  = FALSE,
-                                               .refout = FALSE,
-                                               .xorout = 0x0000000000000000L,
-                                               .result = 0 };
-#else
-    struct _hexin_crc64 crc64_param_hacker = { FALSE,
-                                               HEXIN_CRC64_WIDTH,
-                                               CRC64_POLYNOMIAL_ECMA182,
-                                               0x0000000000000000L,
-                                               FALSE,
-                                               FALSE,
-                                               0x0000000000000000L,
-                                               0 };
-#endif /* PY_MAJOR_VERSION */
+    static struct _hexin_crc64 crc64_param_hacker = { .is_initial = FALSE,
+                                                      .is_gradual = FALSE,
+                                                      .width  = HEXIN_CRC64_WIDTH,
+                                                      .poly   = CRC64_POLYNOMIAL_ECMA182,
+                                                      .init   = 0x0000000000000000L,
+                                                      .refin  = FALSE,
+                                                      .refout = FALSE,
+                                                      .xorout = 0x0000000000000000L,
+                                                      .result = 0 };
+
     static char* kwlist[]={ "data", "poly", "init", "xorout", "refin", "refout", "reinit", NULL };
 
 #if PY_MAJOR_VERSION >= 3

@@ -8,6 +8,7 @@
 # Package:  pip install libscrc.
 # History:  2020-04-20 Wheel Ver:1.1 [Heyn] Initialize
 #           2020-08-05 Wheel Ver:1.4 [Heyn] New add gradually calculating
+#           2021-06-08 Wheel Ver:1.7   [Heyn] Optimize the code for hacker24
 
 import unittest
 
@@ -33,6 +34,12 @@ class TestCRC24( unittest.TestCase ):
         self.assertEqual( module.lte_b(b'6789', module.lte_b(b'12345') ), 0x23EF52 )
 
         self.assertEqual( module.interlaken(b'6789', module.interlaken(b'12345') ), 0xB4F3E6 )
+        # self.assertEqual( module.hacker24( data   = b'6789',
+        #                                    poly   = 0x800063,
+        #                                    init   = module.hacker24( data=b'12345', poly=0x800063, init=0xFFFFFF, xorout=0xFFFFFF, refin=False, refout=True ),
+        #                                    xorout = 0xFFFFFF,
+        #                                    refin  = False,
+        #                                    refout = True  ), 0xA5F004 )
 
     def do_basics( self, module ):
         """ Test basic functionality.
@@ -49,10 +56,12 @@ class TestCRC24( unittest.TestCase ):
 
         self.assertEqual( module.os9(b'123456789'),         0x200FA5 )
 
-        self.assertEqual( module.hacker24( data=b'123456789', poly=0x800063, init=0xFFFFFF, xorout=0xFFFFFF, refin=False, refout=False ), 0x200FA5 )
-        self.assertEqual( module.hacker24( data=b'123456789', poly=0x800063, init=0xFFFFFF, xorout=0xFFFFFF, refin=True,  refout=False ), 0x23503A )
-        self.assertEqual( module.hacker24( data=b'123456789', poly=0x800063, init=0xFFFFFF, xorout=0xFFFFFF, refin=False, refout=True  ), 0xA5F004 )
-        self.assertEqual( module.hacker24( data=b'123456789', poly=0x800063, init=0xFFFFFF, xorout=0xFFFFFF, refin=True,  refout=True  ), 0x5C0AC4 )
+        # # # If the polynomial changes, you need to set reinit=True
+        # # # hacker24() Does not support revert gradually calculation.
+        self.assertEqual( module.hacker24( data=b'123456789', poly=0x800063, init=0xFFFFFF, xorout=0xFFFFFF, refin=False, refout=False, reinit=True ), 0x200FA5 )
+        self.assertEqual( module.hacker24( data=b'123456789', poly=0x800063, init=0xFFFFFF, xorout=0xFFFFFF, refin=True,  refout=False, reinit=True ), 0x23503A )
+        self.assertEqual( module.hacker24( data=b'123456789', poly=0x800063, init=0xFFFFFF, xorout=0xFFFFFF, refin=False, refout=True,  reinit=True ), 0xA5F004 )
+        self.assertEqual( module.hacker24( data=b'123456789', poly=0x800063, init=0xFFFFFF, xorout=0xFFFFFF, refin=True,  refout=True,  reinit=True ), 0x5C0AC4 )
 
     def test_basics( self ):
         """ Test basic functionality.
