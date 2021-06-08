@@ -508,7 +508,8 @@ static PyMethodDef _crc32Methods[] = {
     { "xfer",       (PyCFunction)_crc32_xfer,        METH_VARARGS,   "Calculate CRC (XFER) of CRC32 [Poly=0x000000AF, Init=0x00000000, Xorout=0x00000000 Refin=True Refout=True]"},
     { "cdma",       (PyCFunction)_crc30_cdma,        METH_VARARGS,   "Calculate CDMA of CRC30 [Poly=0x2030B9C7, Init=0x3FFFFFFF, Xorout=0x3FFFFFFF Refin=False Refout=False]"},
     { "philips",    (PyCFunction)_crc31_philips,     METH_VARARGS,   "Calculate PHILIPS of CRC31 [Poly=0x04C11DB7, Init=0x7FFFFFFF, Xorout=0x7FFFFFFF Refin=False Refout=False]"},
-    { "stm32",      (PyCFunction)_crc32_stm32,       METH_VARARGS,   "Calculate STM32 of CRC32 (Hardware calculate CRC32) ]"},
+    { "stm32",      (PyCFunction)_crc32_stm32,       METH_VARARGS,   "Calculate STM32 of CRC32 (Hardware calculate CRC32)"},
+    { "ecmxf",      (PyCFunction)_crc32_crc32,       METH_VARARGS,   "Calculate ECMXF of CRC32" },
     { NULL, NULL, 0, NULL }        /* Sentinel */
 };
 
@@ -540,7 +541,8 @@ PyDoc_STRVAR( _crc32_doc,
 "libscrc.xfer       -> Calculate CRC (XFER) [Poly=0x000000AF, Init=0x00000000, Xorout=0x00000000 Refin=True  Refout=True]\n"
 "libscrc.cdma       -> Calculate CDMA of CRC30 [Poly=0x2030B9C7, Init=0x3FFFFFFF, Xorout=0x3FFFFFFF Refin=False Refout=False]\n"
 "libscrc.philips    -> Calculate PHILIPS of CRC31 Calculate PHILIPS of CRC31 [Poly=0x04C11DB7, Init=0x7FFFFFFF, Xorout=0x7FFFFFFF Refin=False Refout=False]\n"
-"libscrc.stm32      -> Calculate STM32 of CRC32 (Hardware calculate CRC32) ]\n"
+"libscrc.stm32      -> Calculate STM32 of CRC32 (Hardware calculate CRC32)\n"
+"libscrc.ecmxf      -> Calculate ECMXF of CRC32\n"
 "\n" );
 
 
@@ -566,7 +568,7 @@ PyInit__crc32( void )
         return NULL;
     }
 
-    PyModule_AddStringConstant( m, "__version__", "1.4"  );
+    PyModule_AddStringConstant( m, "__version__", "1.7"  );
     PyModule_AddStringConstant( m, "__author__",  "Heyn" );
 
     return m;

@@ -48,7 +48,7 @@ libscrc is a library for calculating CRC3 CRC4 CRC5 CRC6 CRC7 CRC8 CRC16 CRC24 C
 +------------+------------+------------+-----------+-----------+-----------+
 | MPT1327    | DARC       | RIELLO     |           |   STM32   |           |
 +------------+------------+------------+-----------+-----------+-----------+
-| CDMA2000   | MIFARE     | OPENSAFETY |           |           |           |
+| CDMA2000   | MIFARE     | OPENSAFETY |           |   ECMXF   |           |
 +------------+------------+------------+-----------+-----------+-----------+
 |            | LIN1.3     | EN13757    |           |           |           |
 +------------+------------+------------+-----------+-----------+-----------+
@@ -116,8 +116,7 @@ Usage
 
 Example
 -------
-* CRCx::
-
+* CRCx::  
     crc3 = libscrc.gsm3(b'1234')
     crc3 = libscrc.rohc3(b'1234')
     crc4 = libscrc.itu4(b'1234')
@@ -159,8 +158,8 @@ Example
 
     crc82 = libscrc.darc82(b'1234')
     
-* CRC8::
 
+* CRC8::  
     crc8 = libscrc.intel(b'1234')
     crc8 = libscrc.bcc(b'1234')  
     crc8 = libscrc.lrc(b'1234')  
@@ -191,8 +190,8 @@ Example
     crc8 = libscrc.id8(b'21020020210229117')      # ID check code of China  
     crc8 = libscrc.nmea(b'$PFEC,GPint,RMC06*')    # National Marine Electronics Association  
   
-* CRC16::
 
+* CRC16::  
     crc16 = libscrc.ibm(b'1234')            # poly=0xA001 (default Reversed)  
     crc16 = libscrc.ibm(b'1234', 0x8005)    # poly=0x8005 (Normal)
     crc16 = libscrc.modbus(b'1234')  
@@ -255,8 +254,8 @@ Example
     crc16 = libscrc.lte16(b'1234')  
     crc16 = libscrc.nrsc5(b'1234')  
 
-* CRC24::
 
+* CRC24::  
     crc24 = libscrc.ble(b'1234')  
     crc24 = libscrc.flexraya(b'1234')  
     crc24 = libscrc.flexrayb(b'1234')  
@@ -267,8 +266,8 @@ Example
     crc24 = libscrc.interlaken(b'1234')  
     crc24 = libscrc.crc24(b'1234')  
 
-* CRC32::
-    
+
+* CRC32::  
     crc32 = libscrc.fsc(b'1234')            # Ethernet frame sequence (FSC)  
     crc32 = libscrc.mpeg2(b'1234')          # MPEG2  
     crc32 = libscrc.crc32(b'1234')          # WinRAR, File  
@@ -291,17 +290,18 @@ Example
     crc32 = libscrc.adccp(b'1234')  
     crc32 = libscrc.v_42(b'1234')  
     crc32 = libscrc.aal5(b'1234')  
-    crc32 = libscrc.stm32(b'1234')  
-
-* CRC64::
-    
+    crc32 = libscrc.stm32(b'1234')        # STM32 hardware calculate CRC32  
+    crc32 = libscrc.ecmxf(b'1234')				# ECMXF
+  
+  
+* CRC64::  
     crc64 = libscrc.iso(b'1234')  
     crc64 = libscrc.ecma182(b'1234')  
     crc64 = libscrc.we(b'1234')  
     crc64 = libscrc.xz64(b'1234')  
 
-* CRC82::
-    
+
+* CRC82::  
     crc82 = libscrc.darc82(b'123456789')  
 
 NOTICE
@@ -367,7 +367,7 @@ V0.1.3 (2017-09-19)
 V0.1.2 (2017-08-22)
 +++++++++++++++++++
 **Platform Support**
-  * Win32
+  * Win32 \ X64
   * Linux_x86_64
   * MacOSX_10_6_intel
   * ARMv7 (Toradex Ixora iMX6 Linux-4.1.41)

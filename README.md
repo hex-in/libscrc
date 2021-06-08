@@ -27,7 +27,7 @@ libscrc is a library for calculating CRC3 CRC4 CRC5 CRC6 CRC7 CRC8 CRC16 CRC24 C
 | CRC10-ATM | DVB-S2 |GENIBUS | | ADCCP | |
 | CRC13-BBC | EBU |GSM16 | | V-42 | |
 | MPT1327 | DARC |RIELLO | | STM32 | |
-| CDMA2000 | MIFARE |OPENSAFETY | |  | |
+| CDMA2000 | MIFARE |OPENSAFETY | | ECMXF | |
 | | LIN1.3 |EN13757 | |               | |
 | | LIN2.x |CMS | | CRC30-CDMA | DARC82 |
 | | ID8 | | | CRC31-PHILIPS |  |
@@ -306,7 +306,8 @@ crc32 = libscrc.pkzip(b'1234')
 crc32 = libscrc.adccp(b'1234')
 crc32 = libscrc.v_42(b'1234')
 crc32 = libscrc.aal5(b'1234')
-crc32 = libscrc.stm32(b'1234')				# STM32 hardware calculate CRC32 
+crc32 = libscrc.stm32(b'1234')				# STM32 hardware calculate CRC32
+crc32 = libscrc.ecmxf(b'1234')				# ECMXF
 ```
 
 6. CRC64
