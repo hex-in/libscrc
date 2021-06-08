@@ -26,6 +26,7 @@
 *                       2020-08-04 [Heyn] Fixed Issues #4.
 *                       2020-11-17 [Heyn] Fixed Issues #6 (Python2 vc9 error C2059 )
 *                       2021-03-16 [Heyn] New add ID checksum.
+*                       2021-06-07 [Heyn] Add hacker8() reinit parameter. reinit=True -> Reinitialize the table
 *
 *********************************************************************************************************
 */
@@ -260,11 +261,13 @@ static PyObject * _crc8_table( PyObject *self, PyObject *args )
 
 static PyObject * _crc8_hacker( PyObject *self, PyObject *args, PyObject* kws )
 {
+    unsigned int reinit = FALSE;
     Py_buffer data = { NULL, NULL };
     struct _hexin_crc8 crc8_param_hacker;
-    static char* kwlist[]={ "data", "poly", "init", "xorout", "refin", "refout", NULL };
+    static char* kwlist[]={ "data", "poly", "init", "xorout", "refin", "refout", "reinit", NULL };
 
     crc8_param_hacker.is_initial = FALSE;
+    crc8_param_hacker.is_gradual = FALSE;
     crc8_param_hacker.width      = HEXIN_CRC8_WIDTH;
     crc8_param_hacker.poly       = CRC8_POLYNOMIAL_31;
     crc8_param_hacker.init       = 0xFF;
@@ -274,24 +277,26 @@ static PyObject * _crc8_hacker( PyObject *self, PyObject *args, PyObject* kws )
     crc8_param_hacker.result     = 0;
 
 #if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y*|BBBpp", kwlist, &data,
-                                                                      &crc8_param_hacker.poly,
-                                                                      &crc8_param_hacker.init,
-                                                                      &crc8_param_hacker.xorout,
-                                                                      &crc8_param_hacker.refin,
-                                                                      &crc8_param_hacker.refout ) ) {
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y*|BBBppp", kwlist, &data,
+                                                                       &crc8_param_hacker.poly,
+                                                                       &crc8_param_hacker.init,
+                                                                       &crc8_param_hacker.xorout,
+                                                                       &crc8_param_hacker.refin,
+                                                                       &crc8_param_hacker.refout,
+                                                                       &reinit ) ) {
         if ( data.obj ) {
             PyBuffer_Release( &data );
         }
         return NULL;
     }
 #else
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s*|BBBII", kwlist, &data,
-                                                                      &crc8_param_hacker.poly,
-                                                                      &crc8_param_hacker.init,
-                                                                      &crc8_param_hacker.xorout,
-                                                                      &crc8_param_hacker.refin,
-                                                                      &crc8_param_hacker.refout ) ) {
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s*|BBBIII", kwlist, &data,
+                                                                       &crc8_param_hacker.poly,
+                                                                       &crc8_param_hacker.init,
+                                                                       &crc8_param_hacker.xorout,
+                                                                       &crc8_param_hacker.refin,
+                                                                       &crc8_param_hacker.refout,
+                                                                       &reinit ) ) {
         if ( data.obj ) {
             PyBuffer_Release( &data );
         }
@@ -299,6 +304,7 @@ static PyObject * _crc8_hacker( PyObject *self, PyObject *args, PyObject* kws )
     }
 #endif /* PY_MAJOR_VERSION */
 
+    crc8_param_hacker.is_initial = ( reinit == FALSE ) ? crc8_param_hacker.is_initial : FALSE;
     crc8_param_hacker.result = hexin_crc8_compute( (const unsigned char *)data.buf, (unsigned int)data.len, &crc8_param_hacker, crc8_param_hacker.init );
 
     if ( data.obj )
@@ -692,7 +698,9 @@ static PyMethodDef _crc8Methods[] = {
                                                                                  "@poly   : default=0x31\n"
                                                                                  "@init   : default=0xFF\n"
                                                                                  "@xorout : default=0x00\n"
-                                                                                 "@ref    : default=False" },
+                                                                                 "@refin  : default=False\n"
+                                                                                 "@refout : default=False\n"
+                                                                                 "@reinit : default=False" },
     { "fletcher8",  (PyCFunction)_crc8_fletcher,     METH_VARARGS, "Calculate fletcher8" },
     { "smbus",      (PyCFunction)_crc8_crc8,         METH_VARARGS, "Calculate SMBUS of CRC8 [Poly=0x07 Initial=0x00 Xorout=0x00 Refin=False Refout=False]" },
     { "autosar8",   (PyCFunction)_crc8_autosar8,     METH_VARARGS, "Calculate AUTOSAR of CRC8 [Poly=0x2F Initial=0xFF Xorout=0xFF Refin=False Refout=False]" },
@@ -731,7 +739,7 @@ PyDoc_STRVAR( _crc8_doc,
 "libscrc.crc8       -> Calculate CRC of CRC8 [Poly=0x07 Initial=0x00 Xorout=0x00 Refin=False Refout=False]\n"
 "libscrc.sum8       -> Calculate SUM of CRC8 [Initial=0x00]\n"
 "libscrc.hacker8    -> Free calculation CRC8 [poly=any(default=0x31), init=any(default=0xFF), xorout=0x00 Refin=False Refout=False]\n"
-"libscrc.fletcher8  -> Calculate fletcher8 \n"
+"libscrc.hacker8    -> Free calculation CRC8 @reinit reinitialize the crc8 tables\n"
 "libscrc.smbus      -> Calculate SMBUS of CRC8 [Poly=0x07 Initial=0x00 Xorout=0x00 Refin=False Refout=False]\n"
 "libscrc.autosar8   -> Calculate AUTOSAR of CRC8 [Poly=0x2F Initial=0xFF Xorout=0xFF Refin=False Refout=False]\n"
 "libscrc.lte8       -> Calculate LTE of CRC8 [Poly=0x9B Initial=0x00 Xorout=0x00 Refin=False Refout=False]\n"

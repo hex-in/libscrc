@@ -1,10 +1,10 @@
 /*
 *********************************************************************************************************
-*                              		(c) Copyright 2017-2020, Hexin
+*                              		(c) Copyright 2017-2021, Hexin
 *                                           All Rights Reserved
 * File    : _crcxmodule.c
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V1.4
+* Version : V1.7
 *
 * LICENSING TERMS:
 * ---------------
@@ -13,6 +13,8 @@
 *                       2020-04-27 [Heyn] Optimized code.
 *                       2020-08-04 [Heyn] Fixed Issues #4.
 *                       2020-11-17 [Heyn] Fixed Issues #6 (Python2 vc9 error C2059 )
+*                       2021-06-07 [Heyn] Update gradually calculate functions.
+*                                         ( CRCx -> libscrc.umts12()  libscrc.crc12_3gpp() ).
 *
 *********************************************************************************************************
 */
@@ -492,8 +494,10 @@ static PyObject * _crc12_umts12( PyObject *self, PyObject *args )
         return NULL;
     }
 
-    /* TODO : refin=False, refout=True */
-    crc12_param_umts12.result = hexin_crcx_reverse12( crc12_param_umts12.result );
+    /* TODO : refin=False, refout=True
+       v1.7 fixed ( removed below code )
+    */
+    // crc12_param_umts12.result = hexin_crcx_reverse12( crc12_param_umts12.result );
 
     return Py_BuildValue( "H", crc12_param_umts12.result );
 }
@@ -657,7 +661,7 @@ PyInit__crcx( void )
         return NULL;
     }
 
-    PyModule_AddStringConstant( m, "__version__", "1.4" );
+    PyModule_AddStringConstant( m, "__version__", "1.7" );
     PyModule_AddStringConstant( m, "__author__",  "Heyn"  );
 
     return m;

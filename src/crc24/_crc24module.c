@@ -1,10 +1,10 @@
 /*
  ********************************************************************************************************
-*                              		(c) Copyright 2020-2020, Hexin
+*                              		(c) Copyright 2020-2021, Hexin
 *                                           All Rights Reserved
 * File    : _crc24module.c
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V1.4
+* Version : V1.7
 *
 * LICENSING TERMS:
 * ---------------
@@ -12,6 +12,7 @@
 *                       2020-04-27 [Heyn] Optimized code.
 *                       2020-08-04 [Heyn] Fixed Issues #4.
 *                       2020-11-17 [Heyn] Fixed Issues #6 (Python2 vc9 error C2059 )
+*                       2021-06-07 [Heyn] Add hacker24() reinit parameter. reinit=True -> Reinitialize the table
 *
 ********************************************************************************************************
 */
@@ -216,11 +217,13 @@ static PyObject * _crc24_interlaken( PyObject *self, PyObject *args )
 
 static PyObject * _crc24_hacker( PyObject *self, PyObject *args, PyObject* kws )
 {
+    unsigned int reinit = FALSE;
     Py_buffer data = { NULL, NULL };
     struct _hexin_crc24 crc24_param_hacker;
-    static char* kwlist[]={ "data", "poly", "init", "xorout", "refin", "refout", NULL };
+    static char* kwlist[]={ "data", "poly", "init", "xorout", "refin", "refout", "reinit", NULL };
 
     crc24_param_hacker.is_initial = FALSE;
+    crc24_param_hacker.is_gradual = FALSE;
     crc24_param_hacker.width      = HEXIN_CRC24_WIDTH;
     crc24_param_hacker.poly       = CRC24_POLYNOMIAL_800063;
     crc24_param_hacker.init       = 0x00FFFFFF;
@@ -231,24 +234,26 @@ static PyObject * _crc24_hacker( PyObject *self, PyObject *args, PyObject* kws )
 
 
 #if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y*|IIIpp", kwlist, &data,
-                                                                      &crc24_param_hacker.poly,
-                                                                      &crc24_param_hacker.init,
-                                                                      &crc24_param_hacker.xorout,
-                                                                      &crc24_param_hacker.refin,
-                                                                      &crc24_param_hacker.refout ) ) {
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y*|IIIppp", kwlist, &data,
+                                                                       &crc24_param_hacker.poly,
+                                                                       &crc24_param_hacker.init,
+                                                                       &crc24_param_hacker.xorout,
+                                                                       &crc24_param_hacker.refin,
+                                                                       &crc24_param_hacker.refout,
+                                                                       &reinit ) ) {
         if ( data.obj ) {
             PyBuffer_Release( &data );
         }
         return NULL;        
     }
 #else
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s*|IIIII", kwlist, &data,
-                                                                      &crc24_param_hacker.poly,
-                                                                      &crc24_param_hacker.init,
-                                                                      &crc24_param_hacker.xorout,
-                                                                      &crc24_param_hacker.refin,
-                                                                      &crc24_param_hacker.refout ) ) {
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s*|IIIIII", kwlist, &data,
+                                                                       &crc24_param_hacker.poly,
+                                                                       &crc24_param_hacker.init,
+                                                                       &crc24_param_hacker.xorout,
+                                                                       &crc24_param_hacker.refin,
+                                                                       &crc24_param_hacker.refout,
+                                                                       &reinit ) ) {
         if ( data.obj ) {
             PyBuffer_Release( &data );
         }
@@ -256,6 +261,7 @@ static PyObject * _crc24_hacker( PyObject *self, PyObject *args, PyObject* kws )
     }
 #endif /* PY_MAJOR_VERSION */
 
+    crc24_param_hacker.is_initial = ( reinit == FALSE ) ? crc24_param_hacker.is_initial : FALSE;
     crc24_param_hacker.result = hexin_crc24_compute( (const unsigned char *)data.buf, (unsigned int)data.len, &crc24_param_hacker, crc24_param_hacker.init );
     
     if ( data.obj )
@@ -276,11 +282,12 @@ static PyMethodDef _crc24Methods[] = {
     { "os9",         (PyCFunction)_crc24_os9,        METH_VARARGS,   "Calculate OS-9 of CRC24 [Poly=0x800063, Init=0xFFFFFF, Xorout=0xFFFFFF Refin=False Refout=False]"},
     { "interlaken",  (PyCFunction)_crc24_interlaken, METH_VARARGS,   "Calculate INTERLAKEN of CRC24 [Poly=0x328B63, Init=0xFFFFFF, Xorout=0xFFFFFF Refin=False Refout=False]"},
     { "hacker24",    (PyCFunction)_crc24_hacker,     METH_KEYWORDS|METH_VARARGS, "User calculation CRC24\n"
-                                                                                 "@data   : bytes\n"
-                                                                                 "@poly   : default=0xEDB88320\n"
-                                                                                 "@init   : default=0xFFFFFFFF\n"
-                                                                                 "@xorout : default=0x00000000\n"
-                                                                                 "@ref    : default=False" },
+                                                                                 "@poly   : default=0x00800063\n"
+                                                                                 "@init   : default=0x00FFFFFF\n"
+                                                                                 "@xorout : default=0x00FFFFFF\n"
+                                                                                 "@refin  : default=False\n"
+                                                                                 "@refout : default=False\n"
+                                                                                 "@reinit : default=False" },
     { NULL, NULL, 0, NULL }        /* Sentinel */
 };
 
@@ -296,6 +303,7 @@ PyDoc_STRVAR( _crc24_doc,
 "libscrc.lte_b      -> Calculate LTE-B of CRC24 [Poly=0x800063, Init=0x000000, Xorout=0x00000000 Refin=False Refout=False]\n"
 "libscrc.os9        -> Calculate OS-9 of CRC24 [Poly=0x800063, Init=0xFFFFFF, Xorout=0xFFFFFF Refin=False Refout=False]\n"
 "libscrc.interlaken -> Calculate INTERLAKEN of CRC24 [Poly=0x328B63, Init=0xFFFFFF, Xorout=0xFFFFFF Refin=False Refout=False]\n"
+"libscrc.hacker24   -> Free calculation CRC24 @reinit reinitialize the crc24 tables\n"
 "\n" );
 
 
@@ -321,7 +329,7 @@ PyInit__crc24( void )
         return NULL;
     }
 
-    PyModule_AddStringConstant( m, "__version__", "1.4"  );
+    PyModule_AddStringConstant( m, "__version__", "1.7"  );
     PyModule_AddStringConstant( m, "__author__",  "Heyn" );
 
     return m;

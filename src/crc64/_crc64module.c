@@ -1,10 +1,10 @@
 /*
 *********************************************************************************************************
-*                              		(c) Copyright 2017-2020, Hexin
+*                              		(c) Copyright 2017-2021, Hexin
 *                                           All Rights Reserved
 * File    : _crc64module.c
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V1.4
+* Version : V1.7
 *
 * LICENSING TERMS:
 * ---------------
@@ -17,6 +17,7 @@
 *                       2020-05-12 [Heyn] (Python2.7) FIX : Windows compilation error.
 *                       2020-08-04 [Heyn] Fixed Issues #4.
 *                       2020-11-17 [Heyn] Fixed Issues #6 (Python2 vc9 error C2059 )
+*                       2021-06-07 [Heyn] Add hacker64() reinit parameter. reinit=True -> Reinitialize the table
 *
 *********************************************************************************************************
 */
@@ -245,10 +246,12 @@ static PyObject * _crc64_table( PyObject *self, PyObject *args )
 
 static PyObject * _crc64_hacker( PyObject *self, PyObject *args, PyObject* kws )
 {
+    unsigned int reinit = FALSE;
     Py_buffer data = { NULL, NULL };
 
 #if PY_MAJOR_VERSION >= 3
-    struct _hexin_crc64 crc64_param_hacker = { .is_initial=FALSE,
+    struct _hexin_crc64 crc64_param_hacker = { .is_initial = FALSE,
+                                               .is_gradual = FALSE,
                                                .width  = HEXIN_CRC64_WIDTH,
                                                .poly   = CRC64_POLYNOMIAL_ECMA182,
                                                .init   = 0x0000000000000000L,
@@ -256,13 +259,14 @@ static PyObject * _crc64_hacker( PyObject *self, PyObject *args, PyObject* kws )
                                                .refout = FALSE,
                                                .xorout = 0x0000000000000000L,
                                                .result = 0 };
-    static char* kwlist[]={ "data", "poly", "init", "xorout", "refin", "refout", NULL };
+    static char* kwlist[]={ "data", "poly", "init", "xorout", "refin", "refout", "reinit", NULL };
 
 #else
     struct _hexin_crc64 crc64_param_hacker;
-    static char* kwlist[]={ "data", "poly", "init", "xorout", "refin", "refout", NULL };
+    static char* kwlist[]={ "data", "poly", "init", "xorout", "refin", "refout", "reinit", NULL };
 
     crc64_param_hacker.is_initial = FALSE;
+    crc64_param_hacker.is_gradual = FALSE;
     crc64_param_hacker.width      = HEXIN_CRC64_WIDTH;
     crc64_param_hacker.poly       = CRC64_POLYNOMIAL_ECMA182;
     crc64_param_hacker.init       = 0x0000000000000000L;
@@ -273,24 +277,26 @@ static PyObject * _crc64_hacker( PyObject *self, PyObject *args, PyObject* kws )
 #endif /* PY_MAJOR_VERSION */
 
 #if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y*|KKKpp", kwlist, &data,
-                                                                      &crc64_param_hacker.poly,
-                                                                      &crc64_param_hacker.init,
-                                                                      &crc64_param_hacker.xorout,
-                                                                      &crc64_param_hacker.refin,
-                                                                      &crc64_param_hacker.refout ) ) {
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y*|KKKppp", kwlist, &data,
+                                                                       &crc64_param_hacker.poly,
+                                                                       &crc64_param_hacker.init,
+                                                                       &crc64_param_hacker.xorout,
+                                                                       &crc64_param_hacker.refin,
+                                                                       &crc64_param_hacker.refout,
+                                                                       &reinit ) ) {
         if ( data.obj ) {
             PyBuffer_Release( &data );
         }
         return NULL; 
     }
 #else
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s*|KKKII", kwlist, &data,
-                                                                      &crc64_param_hacker.poly,
-                                                                      &crc64_param_hacker.init,
-                                                                      &crc64_param_hacker.xorout,
-                                                                      &crc64_param_hacker.refin,
-                                                                      &crc64_param_hacker.refout ) ) {
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s*|KKKIII", kwlist, &data,
+                                                                       &crc64_param_hacker.poly,
+                                                                       &crc64_param_hacker.init,
+                                                                       &crc64_param_hacker.xorout,
+                                                                       &crc64_param_hacker.refin,
+                                                                       &crc64_param_hacker.refout,
+                                                                       &reinit ) ) {
         if ( data.obj ) {
             PyBuffer_Release( &data );
         }
@@ -298,6 +304,7 @@ static PyObject * _crc64_hacker( PyObject *self, PyObject *args, PyObject* kws )
     }
 #endif /* PY_MAJOR_VERSION */
 
+    crc64_param_hacker.is_initial = ( reinit == FALSE ) ? crc64_param_hacker.is_initial : FALSE;
     crc64_param_hacker.result = hexin_crc64_compute( (const unsigned char *)data.buf, (unsigned int)data.len, &crc64_param_hacker, crc64_param_hacker.init );
 
     if ( data.obj )
@@ -359,7 +366,7 @@ PyInit__crc64( void )
         return NULL;
     }
 
-    PyModule_AddStringConstant( m, "__version__", "1.4" );
+    PyModule_AddStringConstant( m, "__version__", "1.7" );
     PyModule_AddStringConstant( m, "__author__",  "Heyn");
 
     return m;

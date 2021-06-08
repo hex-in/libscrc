@@ -12,6 +12,7 @@
 *                       2020-08-04 [Heyn] Fixed Issues #4.
 *                       2020-09-18 [Heyn] New add lin and lin2x checksum.
 *                       2021-03-16 [Heyn] New add ID checksum.
+*                       2021-06-07 [Heyn] Fixed Issues #8.
 *
 *********************************************************************************************************
 */
@@ -32,6 +33,8 @@
 #endif
 
 #define                 HEXIN_CRC8_WIDTH                        16
+#define                 HEXIN_REFIN_IS_TRUE(x)                  ( x->refin  == TRUE )
+#define                 HEXIN_REFOUT_IS_TRUE(x)                 ( x->refout == TRUE )
 #define                 HEXIN_REFIN_REFOUT_IS_TRUE(x)           ( ( x->refin == TRUE ) && ( x->refout == TRUE ) )
 
 #define                 HEXIN_POLYNOMIAL_IS_HIGH(x)             ( x & 0x80 )

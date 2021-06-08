@@ -1,28 +1,29 @@
 /*
  ********************************************************************************************************
-*                              		(c) Copyright 2017-2020, Hexin
- *                                           All Rights Reserved
- * File    : _crc32module.c
- * Author  : Heyn (heyunhuan@gmail.com)
- * Version : V1.4
- *
- * LICENSING TERMS:
- * ---------------
- *		New Create at 	2017-08-09 16:39PM
- *                      2017-08-17 [Heyn] Optimized Code.
- *                      2017-08-21 [Heyn] Optimization code for the C99 standard.
- *                                        for ( unsigned int i=0; i<256; i++ ) -> for ( i=0; i<256; i++ )
- *                      2017-09-22 [Heyn] Optimized Code. New add table32() function.
- *                      2020-03-20 [Heyn] New add adler32 and fletcher32 functions.
- *                      2020-04-17 [Heyn] Fixed Issues #1
- *                      2020-04-26 [Heyn] Optimized Code
- *                      2020-08-04 [Heyn] Fixed Issues #4.
- *                      2020-11-17 [Heyn] Fixed Issues #6 (Python2 vc9 error C2059 )
- * 
- * Web : https://en.wikipedia.org/wiki/Polynomial_representations_of_cyclic_redundancy_checks
- *
- ********************************************************************************************************
- */
+*                              		(c) Copyright 2017-2021, Hexin
+*                                           All Rights Reserved
+* File    : _crc32module.c
+* Author  : Heyn (heyunhuan@gmail.com)
+* Version : V1.7
+*
+* LICENSING TERMS:
+* ---------------
+*		New Create at  2017-08-09 16:39PM
+*                      2017-08-17 [Heyn] Optimized Code.
+*                      2017-08-21 [Heyn] Optimization code for the C99 standard.
+*                                        for ( unsigned int i=0; i<256; i++ ) -> for ( i=0; i<256; i++ )
+*                      2017-09-22 [Heyn] Optimized Code. New add table32() function.
+*                      2020-03-20 [Heyn] New add adler32 and fletcher32 functions.
+*                      2020-04-17 [Heyn] Fixed Issues #1
+*                      2020-04-26 [Heyn] Optimized Code
+*                      2020-08-04 [Heyn] Fixed Issues #4.
+*                      2020-11-17 [Heyn] Fixed Issues #6 (Python2 vc9 error C2059 )
+*                      2021-06-07 [Heyn] Add hacker32() reinit parameter. reinit=True -> Reinitialize the table
+* 
+* Web : https://en.wikipedia.org/wiki/Polynomial_representations_of_cyclic_redundancy_checks
+*
+********************************************************************************************************
+*/
 
 #include <Python.h>
 #include "_crc32tables.h"
@@ -171,11 +172,13 @@ static PyObject * _crc32_table( PyObject *self, PyObject *args )
 
 static PyObject * _crc32_hacker( PyObject *self, PyObject *args, PyObject* kws )
 {
+    unsigned int reinit = FALSE;
     Py_buffer data = { NULL, NULL };
     struct _hexin_crc32 crc32_param_hacker;
-    static char* kwlist[]={ "data", "poly", "init", "xorout", "refin", "refout", NULL };
+    static char* kwlist[]={ "data", "poly", "init", "xorout", "refin", "refout", "reinit", NULL };
 
     crc32_param_hacker.is_initial = FALSE;
+    crc32_param_hacker.is_gradual = FALSE;
     crc32_param_hacker.width      = HEXIN_CRC32_WIDTH;
     crc32_param_hacker.poly       = CRC32_POLYNOMIAL_04C11DB7;
     crc32_param_hacker.init       = 0xFFFFFFFFL;
@@ -186,24 +189,26 @@ static PyObject * _crc32_hacker( PyObject *self, PyObject *args, PyObject* kws )
     
 
 #if PY_MAJOR_VERSION >= 3
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y*|IIIpp", kwlist, &data,
-                                                                      &crc32_param_hacker.poly,
-                                                                      &crc32_param_hacker.init,
-                                                                      &crc32_param_hacker.xorout,
-                                                                      &crc32_param_hacker.refin,
-                                                                      &crc32_param_hacker.refout ) ) {
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "y*|IIIppp", kwlist, &data,
+                                                                       &crc32_param_hacker.poly,
+                                                                       &crc32_param_hacker.init,
+                                                                       &crc32_param_hacker.xorout,
+                                                                       &crc32_param_hacker.refin,
+                                                                       &crc32_param_hacker.refout,
+                                                                       &reinit ) ) {
         if ( data.obj ) {
             PyBuffer_Release( &data );
         }
         return NULL;        
     }
 #else
-    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s*|IIIII", kwlist, &data,
-                                                                      &crc32_param_hacker.poly,
-                                                                      &crc32_param_hacker.init,
-                                                                      &crc32_param_hacker.xorout,
-                                                                      &crc32_param_hacker.refin,
-                                                                      &crc32_param_hacker.refout ) ) {
+    if ( !PyArg_ParseTupleAndKeywords( args, kws, "s*|IIIIII", kwlist, &data,
+                                                                       &crc32_param_hacker.poly,
+                                                                       &crc32_param_hacker.init,
+                                                                       &crc32_param_hacker.xorout,
+                                                                       &crc32_param_hacker.refin,
+                                                                       &crc32_param_hacker.refout,
+                                                                       &reinit ) ) {
         if ( data.obj ) {
             PyBuffer_Release( &data );
         }
@@ -211,6 +216,7 @@ static PyObject * _crc32_hacker( PyObject *self, PyObject *args, PyObject* kws )
     }
 #endif /* PY_MAJOR_VERSION */
 
+    crc32_param_hacker.is_initial = ( reinit == FALSE ) ? crc32_param_hacker.is_initial : FALSE;
     crc32_param_hacker.result = hexin_crc32_compute( (const unsigned char *)data.buf, (unsigned int)data.len, &crc32_param_hacker, crc32_param_hacker.init );
 
     if ( data.obj )
@@ -507,10 +513,12 @@ static PyMethodDef _crc32Methods[] = {
     { "table32",     (PyCFunction)_crc32_table,      METH_VARARGS,   "Print CRC32 table to list. libscrc.table32( polynomial, False, 32 )" },
     { "hacker32",    (PyCFunction)_crc32_hacker,     METH_KEYWORDS|METH_VARARGS, "User calculation CRC32\n"
                                                                                  "@data   : bytes\n"
-                                                                                 "@poly   : default=0xEDB88320\n"
+                                                                                 "@poly   : default=0x04C11DB7\n"
                                                                                  "@init   : default=0xFFFFFFFF\n"
-                                                                                 "@xorout : default=0x00000000\n"
-                                                                                 "@ref    : default=False" },
+                                                                                 "@xorout : default=0xFFFFFFFF\n"
+                                                                                 "@refin  : default=True\n"
+                                                                                 "@refout : default=True\n"
+                                                                                 "@reinit : default=False" },
     { "adler32",    (PyCFunction)_crc32_adler32,     METH_VARARGS,   "Calculate adler32 (MOD=65521)" },
     { "fletcher32", (PyCFunction)_crc32_fletcher32,  METH_VARARGS,   "Calculate fletcher32" },
     { "posix",      (PyCFunction)_crc32_posix,       METH_VARARGS,   "Calculate CRC (POSIX) of CRC32 [Poly=0x04C11DB7, Init=0x00000000, Xorout=0xFFFFFFFF Refin=True Refout=True]"},
@@ -545,7 +553,7 @@ PyDoc_STRVAR( _crc32_doc,
 "libscrc.adccp      -> Calculate ADCCP [Poly=0x04C11DB7L, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]\n"
 "libscrc.v_42       -> Calculate V-42 [Poly=0x04C11DB7L, Init=0xFFFFFFFF, Xorout=0xFFFFFFFF Refin=True Refout=True]\n"
 "libscrc.table32    -> Print CRC32 table to list. libscrc.table32( polynomial, False, 32 )\n"
-"libscrc.hacker32   -> Free calculation CRC32 (not support python2 series) Xorout=0x00000000 Refin=False Refout=False\n"
+"libscrc.hacker32   -> Free calculation CRC32 @reinit reinitialize the crc32 tables\n"
 "libscrc.adler32    -> Calculate adler32 (MOD=65521)\n"
 "libscrc.fletcher32 -> Calculate fletcher32\n"
 "libscrc.posix      -> Calculate CRC (POSIX) [Poly=0x04C11DB7, Init=0x00000000, Xorout=0xFFFFFFFF Refin=False Refout=False]\n"
@@ -587,7 +595,7 @@ PyInit__crc32( void )
         return NULL;
     }
 
-    PyModule_AddStringConstant( m, "__version__", "1.6"  );
+    PyModule_AddStringConstant( m, "__version__", "1.7"  );
     PyModule_AddStringConstant( m, "__author__",  "Heyn" );
 
     return m;

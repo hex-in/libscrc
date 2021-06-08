@@ -20,6 +20,7 @@ from codecs import open
 #           2020-04-17 Wheel Ver:1.1   [Heyn] Issues #1
 #           2020-08-04 Wheel Ver:1.4   [Heyn] Issues #4
 #           2021-03-16 Wheel Ver:1.6   [Heyn] New add lin, lin2x, stm32
+#           2021-06-07 Wheel Ver:1.7   [Heyn] Issues #8.
 
 here = path.abspath(path.dirname(__file__))
 
@@ -57,11 +58,13 @@ setup(
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
     ],

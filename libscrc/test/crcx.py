@@ -58,8 +58,8 @@ class TestCRCx( unittest.TestCase ):
         self.assertEqual( module.crc10_cdma2000( b'6789', module.crc10_cdma2000(b'12345') ), 0x233 )
         self.assertEqual( module.crc12_cdma2000( b'6789', module.crc12_cdma2000(b'12345') ), 0xD4D )
 
-        # self.assertEqual( module.umts12(b'6789', module.umts12(b'12345') ), 0xDAF )
-        # self.assertEqual( module.crc12_3gpp(b'6789', module.crc12_3gpp(b'12345') ), 0xDAF )
+        self.assertEqual( module.umts12(         b'6789', module.umts12(b'12345') ),     0xDAF )
+        self.assertEqual( module.crc12_3gpp(     b'6789', module.crc12_3gpp(b'12345') ), 0xDAF )
 
     def do_basics( self, module ):
         """ Test basic functionality.

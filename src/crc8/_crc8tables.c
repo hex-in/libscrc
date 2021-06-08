@@ -13,6 +13,7 @@
 *                       2020-08-04 [Heyn] Fixed Issues #4.
 *                       2020-09-18 [Heyn] New add lin and lin2x checksum.
 *                       2021-03-16 [Heyn] New add ID checksum.
+*                       2021-06-07 [Heyn] Fixed Issues #8.
 *
 *   SEE : http://reveng.sourceforge.net/crc-catalogue/1-15.htm#crc.cat-bits.8
 *
@@ -125,29 +126,17 @@ static unsigned int hexin_crc8_compute_init_table( struct _hexin_crc8 *param )
     unsigned int i = 0, j = 0;
     unsigned char crc = 0, c = 0;
 
-    if ( HEXIN_REFIN_REFOUT_IS_TRUE( param ) ) {
-        for ( i=0; i<MAX_TABLE_ARRAY; i++ ) {
-            crc = 0;
-            c   = i;
-            for ( j=0; j<8; j++ ) {
-                if ( (crc ^ c) & 0x01 )   crc = ( crc >> 1 ) ^ param->poly;
-                else                      crc =   crc >> 1;
-                c = c >> 1;
-            }
-            param->table[i] = crc;
+    for ( i=0; i<MAX_TABLE_ARRAY; i++ ) {
+        crc = 0;
+        c   = i;
+        for ( j=0; j<8; j++ ) {
+            if ( (crc ^ c) & 0x80 ) crc = ( crc << 1 ) ^ param->poly;
+            else                    crc =   crc << 1;
+            c = c << 1;
         }
-    } else {
-        for ( i=0; i<MAX_TABLE_ARRAY; i++ ) {
-            crc = 0;
-            c   = i;
-            for ( j=0; j<8; j++ ) {
-                if ( (crc ^ c) & 0x80 ) crc = ( crc << 1 ) ^ param->poly;
-                else                    crc =   crc << 1;
-                c = c << 1;
-            }
-            param->table[i] = crc;
-        }
+        param->table[i] = crc;
     }
+
     return TRUE;
 }
 
@@ -162,19 +151,29 @@ unsigned char hexin_crc8_compute( const unsigned char *pSrc, unsigned int len, s
     unsigned char crc = init;
 
     if ( param->is_initial == FALSE ) {
-        if ( HEXIN_REFIN_REFOUT_IS_TRUE( param ) ) {
-            param->poly = hexin_reverse8( param->poly );
-        }
         param->is_initial = hexin_crc8_compute_init_table( param );
     }
-    /* Fixed Issues #4  */
-    if ( HEXIN_REFIN_REFOUT_IS_TRUE( param ) && ( !HEXIN_GRADUAL_CALCULATE_IS_TRUE( param ) ) ) { 
+
+    /* Fixed Issues #4 #8 */
+    if ( HEXIN_REFOUT_IS_TRUE( param ) && ( HEXIN_GRADUAL_CALCULATE_IS_TRUE( param ) ) ) {
         crc = hexin_reverse8( init );
     }
 
-	for ( i=0; i<len; i++ ) {
-		crc = hexin_crc8_compute_char( crc, pSrc[i], param );
-	}
+    /* Fixed Issues #8  */
+    if ( HEXIN_REFIN_IS_TRUE( param ) ) { 
+        for ( i=0; i<len; i++ ) {
+            crc = hexin_crc8_compute_char( crc, hexin_reverse8(pSrc[i]), param );
+        }
+    } else {
+        for ( i=0; i<len; i++ ) {
+            crc = hexin_crc8_compute_char( crc, pSrc[i], param );
+        }
+    }
+
+    /* Fixed Issues #8  */
+    if ( HEXIN_REFOUT_IS_TRUE( param ) ) {
+        crc = hexin_reverse8( crc );
+    }
     
 	return ( crc ^ param->xorout );
 }
@@ -213,7 +212,6 @@ unsigned char hexin_crc8_get_lin2x_pid( const unsigned char id )
 
 unsigned char hexin_calc_crc8_lin2x( const unsigned char *pSrc, unsigned int len, unsigned char crc8 ) 
 {
-    unsigned char crc = crc8;
     unsigned char id  = pSrc[0];
 
     /*
@@ -256,7 +254,6 @@ unsigned char hexin_calc_crc8_id8( const unsigned char *pSrc, unsigned int len, 
 unsigned char hexin_calc_crc8_nmea( const unsigned char *pSrc, unsigned int len, unsigned char crc8 ) 
 {
     const unsigned char *ptr = ( const unsigned char * )pSrc;
-    unsigned int  i   = 0;
     unsigned int  crc = crc8;
 
     if ( *ptr == '$' ) {

@@ -314,8 +314,12 @@ NOTICE
 ------ 
 * Revert gradually calculating function v1.4+ (2020-08-04) 
 
-V1.7( DEVELOPING )
+V1.7(2021-06-07)
+++++++++++++++++++
 * New add CRC8   -> libscrc.id8() and libscrc.nmea()
+* Update gradually calculate functions ( CRCx -> libscrc.umts12() libscrc.crc12_3gpp() )  
+* Fixed issues #8  
+
 
 V1.6 (2021-03-16)
 ++++++++++++++++++

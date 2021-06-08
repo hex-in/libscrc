@@ -57,8 +57,11 @@ class TestCRC64( unittest.TestCase ):
         self.assertEqual( module.we(b'123456789'),      0x62EC59E3F1A4F00A )
         self.assertEqual( module.xz64(b'123456789'),    0x995DC9BBDF1939FA )
 
-        self.assertEqual( module.hacker64(b'123456789', poly=0x42F0E1EBA9EA3693, init=0, xorout=0, refin=False, refout=False), 0x6C40DF5F0B497347 )
-
+        self.assertEqual( module.hacker64(b'123456789', poly=0x42F0E1EBA9EA3693, init=0, xorout=0, refin=False, refout=False ), 0x6C40DF5F0B497347 )
+        self.assertEqual( module.hacker64(b'123456789', poly=0x42F0E1EBA9EA3693, init=0, xorout=0, refin=True,  refout=False ), 0x51301E47277E39D4 )
+        self.assertEqual( module.hacker64(b'123456789', poly=0x42F0E1EBA9EA3693, init=0, xorout=0, refin=False, refout=True  ), 0xE2CE92D0FAFB0236 )
+        self.assertEqual( module.hacker64(b'123456789', poly=0x42F0E1EBA9EA3693, init=0, xorout=0, refin=True,  refout=True ),  0x2B9C7EE4E2780C8A )
+    
     def test_basics( self ):
         """Test basic functionality.
         """
