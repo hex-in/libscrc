@@ -1,10 +1,10 @@
 /*
 *********************************************************************************************************
-*                              		(c) Copyright 2017-2021, Hexin
+*                              		(c) Copyright 2017-2022, Hexin
 *                                           All Rights Reserved
 * File    : _crc8tables.h
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V1.7
+* Version : V1.8
 *
 * LICENSING TERMS:
 * ---------------
@@ -13,6 +13,7 @@
 *                       2020-09-18 [Heyn] New add lin and lin2x checksum.
 *                       2021-03-16 [Heyn] New add ID checksum.
 *                       2021-06-07 [Heyn] Fixed Issues #8.
+*                       2022-03-04 [Heyn] New add modbus(ASCII) checksum(LRC).
 *
 *********************************************************************************************************
 */
@@ -79,5 +80,7 @@ unsigned char hexin_calc_crc8_lin(      const unsigned char *pSrc, unsigned int 
 unsigned char hexin_calc_crc8_lin2x(    const unsigned char *pSrc, unsigned int len, unsigned char crc8 );
 unsigned char hexin_calc_crc8_id8(      const unsigned char *pSrc, unsigned int len, unsigned char crc8 );
 unsigned char hexin_calc_crc8_nmea(     const unsigned char *pSrc, unsigned int len, unsigned char crc8 );
+
+unsigned char hexin_calc_modbus_ascii(  const unsigned char *pSrc, unsigned int len, unsigned char crc8 );
 
 #endif //__CRC8_TABLES_H__

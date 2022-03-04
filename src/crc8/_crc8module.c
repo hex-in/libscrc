@@ -1,10 +1,10 @@
 /*
 *********************************************************************************************************
-*                              		(c) Copyright 2017-2021, Hexin
+*                              		(c) Copyright 2017-2022, Hexin
 *                                           All Rights Reserved
 * File    : _crc8module.c
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V1.7
+* Version : V1.8
 *
 * LICENSING TERMS:
 * ---------------
@@ -27,6 +27,7 @@
 *                       2020-09-18 [Heyn] New add lin and lin2x checksum.
 *                       2020-11-18 [Heyn] Fixed (Python2) Parsing arguments has no 'p' type
 *                       2021-06-07 [Heyn] Add hacker8() reinit parameter. reinit=True -> Reinitialize the table
+*                       2022-03-04 [Heyn] New add modbus(ASCII) checksum(LRC).
 *
 *********************************************************************************************************
 */
@@ -644,6 +645,24 @@ static PyObject * _crc8_nmea( PyObject *self, PyObject *args )
     return Py_BuildValue( "B", result );
 }
 
+static PyObject * _crc8_modbus_asc( PyObject *self, PyObject *args )
+{
+    unsigned char result = 0x00, tmp = 0x00;
+    unsigned char init   = 0x00;
+    unsigned char crc[2] = { 0x00, 0x00 };
+
+    if ( !hexin_PyArg_ParseTuple( self, args, init, hexin_calc_modbus_ascii, ( unsigned char * )&result ) ) {
+        return NULL;
+    }
+
+    tmp   = ( result >> 4 ) & 0x0F;
+    crc[0] = ( tmp > 9 ? ( tmp - 10 + 'A' ) : ( tmp + 0x30 ) );
+    tmp   = ( result >> 0 ) & 0x0F;
+    crc[1] = ( tmp > 9 ? ( tmp - 10 + 'A' ) : ( tmp + 0x30 ) );
+    
+    return Py_BuildValue( "y#", crc, 2 );
+}
+
 /* method table */
 static PyMethodDef _crc8Methods[] = {
     { "intel",      (PyCFunction)_crc8_intel,        METH_VARARGS, "Calculate Intel hexadecimal of CRC8 [Initial=0x00]" },
@@ -686,6 +705,7 @@ static PyMethodDef _crc8Methods[] = {
     { "lin2x",      (PyCFunction)_crc8_lin2x,        METH_VARARGS, "Calculate LIN Protocol 2.x (ENHANCED)"  },
     { "id8",        (PyCFunction)_crc8_id8,          METH_VARARGS, "Calculate identity card of CHINA."      },
     { "nmea",       (PyCFunction)_crc8_nmea,         METH_VARARGS, "Calculate NMEA Checksum. XOR of all the bytes between the $ and the * (not including the delimiters themselves)" },
+    { "modbus_asc", (PyCFunction)_crc8_modbus_asc,   METH_VARARGS, "Calculate Modbus(ASCII) Checksum."      },
     { NULL, NULL, 0, NULL }        /* Sentinel */
 };
 
@@ -724,6 +744,7 @@ PyDoc_STRVAR( _crc8_doc,
 "libscrc.lin2x      -> Calculate LIN Protocol 2.x (ENHANCED)\n"
 "libscrc.id8        -> Calculate identity card of CHINA.\n"
 "libscrc.nmea       -> Calculate NMEA Checksum. XOR of all the bytes between the $ and the * (not including the delimiters themselves).\n"
+"libscrc.modbus_asc -> Calculate Modbus(ASCII) Checksum.\n"
 "\n" );
 
 

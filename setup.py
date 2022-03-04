@@ -20,6 +20,7 @@ from codecs import open
 #           2020-04-17 Wheel Ver:1.1   [Heyn] Issues #1
 #           2020-08-04 Wheel Ver:1.4   [Heyn] Issues #4
 #           2021-03-17 Wheel Ver:1.7   [Heyn] Developing.
+#           2022-03-04 Wheel Ver:1.8   [Heyn] New add modbus(ASCII) checksum(LRC).
 
 here = path.abspath(path.dirname(__file__))
 
@@ -29,7 +30,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name='libscrc',
-    version='1.7',
+    version='1.8',
 
     description='Library for calculating CRC3/CRC4/CRC8/CRC16/CRC24/CRC32/CRC64/CRC82',
     long_description=long_description,

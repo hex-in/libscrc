@@ -32,6 +32,7 @@ libscrc is a library for calculating CRC3 CRC4 CRC5 CRC6 CRC7 CRC8 CRC16 CRC24 C
 | | LIN2.x |CMS | | CRC30-CDMA | DARC82 |
 | | ID8 | | | CRC31-PHILIPS |  |
 | | NMEA | | |  | |
+| | MODBUS_ASC | | | | |
 
 
 
@@ -88,8 +89,8 @@ Usage
 
 ```python
 import libscrc
-crc16 = libscrc.modbus(b'1234')      # Calculate ASCII of modbus
-crc16 = libscrc.modbus(b'\x01\x02')  # Calculate HEX of modbus
+crc16 = libscrc.modbus(b'1234')      # Calculate ASCII of modbus(rtu)
+crc16 = libscrc.modbus(b'\x01\x02')  # Calculate HEX of modbus(rtu)
 crc16 = libscrc.modbus(bytearray( [ 0x01, 0x02 ] ))
 ```
 
@@ -187,6 +188,10 @@ crc8 = libscrc.lin2x(bytes([0x15, 0x5B, 0x67, 0x72, 0xAF, 0x5B]))
 
 crc8 = libscrc.id8(b'21020020210229117')		# ID check code of China
 crc8 = libscrc.nmea(b'$PFEC,GPint,RMC06*')		# National Marine Electronics Association
+
+# Return value is bytes (b'FA')
+crc8 = libscrc.modbus_asc(b'010300010001')      # Modbus(ASCII) checksum.
+
 ```
 
 3. CRC16
@@ -194,7 +199,7 @@ crc8 = libscrc.nmea(b'$PFEC,GPint,RMC06*')		# National Marine Electronics Associ
 ```python
 crc16 = libscrc.ibm(b'1234')            # poly=0xA001 (default Reversed)
 crc16 = libscrc.ibm(b'1234', 0x8005)    # poly=0x8005 (Normal)
-crc16 = libscrc.modbus(b'1234')
+crc16 = libscrc.modbus(b'1234')			# Modbus(RTU) checksum
 crc16 = libscrc.xmodem(b'1234')
 crc16 = libscrc.zmodem(b'1234')
 crc16 = libscrc.ccitt(b'1234')
@@ -335,7 +340,18 @@ NOTICE
 ------
 * Revert gradually calculating function v1.4+ (2020-08-04) 
 
-  
+
+
+
+### V1.8 (2022-03-04)
+
+------
+
+New add modbus (ASCII) LRC checksum.
+
+1. CRC8  -> libscrc.modbus_asc()
+
+
 
 ### V1.7 (2021-06-07)
 

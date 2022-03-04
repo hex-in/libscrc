@@ -1,2 +1,3 @@
 recursive-include libscrc/test *.py
 recursive-include libscrc/_crc82.py
+recursive-include libscrc/plugins *.py

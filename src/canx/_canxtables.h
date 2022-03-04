@@ -1,6 +1,6 @@
 /*
 *********************************************************************************************************
-*                              		(c) Copyright 2020-2021, Hexin
+*                              		(c) Copyright 2020-2022, Hexin
 *                                           All Rights Reserved
 * File    : _canxtables.h
 * Author  : Heyn (heyunhuan@gmail.com)

@@ -11,6 +11,7 @@
 #           2020-08-05 Wheel Ver:1.4   [Heyn] New add gradually calculating
 #           2021-03-16 Wheel Ver:1.7+  [Heyn] New add lin, lin2x, id8 functions.
 #           2021-06-08 Wheel Ver:1.7   [Heyn] Compatible with python2
+#           2022-03-04 Wheel Ver:1.8   [Heyn] New add modbus(ascii) checksum.
 
 import sys
 import unittest
@@ -103,7 +104,8 @@ class TestCRC8( unittest.TestCase ):
         self.assertEqual( module.tech_3250(b'123456789'),   0x97 )
         self.assertEqual( module.aes8(b'123456789'),        0x97 )
 
-        self.assertEqual( module.nmea(b'$PFEC,GPint,RMC06*'),   0x2E )
+        self.assertEqual( module.nmea(b'$PFEC,GPint,RMC06*'),   0x2E  )
+        self.assertEqual( module.modbus_asc(b'010300010001'),   b'FA' )
 
         # # # If the polynomial changes, you need to set reinit=True
         # # # hacker8() Does not support revert gradually calculation.
