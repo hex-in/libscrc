@@ -1,10 +1,10 @@
 /*
 *********************************************************************************************************
-*                              		(c) Copyright 2017-2021, Hexin
+*                              		(c) Copyright 2017-2022, Hexin
 *                                           All Rights Reserved
 * File    : _crc8tables.c
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V1.7
+* Version : V1.8
 *
 * LICENSING TERMS:
 * ---------------
@@ -14,6 +14,7 @@
 *                       2020-09-18 [Heyn] New add lin and lin2x checksum.
 *                       2021-03-16 [Heyn] New add ID checksum.
 *                       2021-06-07 [Heyn] Fixed Issues #8.
+*                       2022-03-04 [Heyn] New add modbus(ASCII) checksum(LRC).
 *
 *   SEE : http://reveng.sourceforge.net/crc-catalogue/1-15.htm#crc.cat-bits.8
 *
@@ -265,4 +266,38 @@ unsigned char hexin_calc_crc8_nmea( const unsigned char *pSrc, unsigned int len,
     }
 
     return crc;
+}
+
+const unsigned char ascii2hex[MAX_TABLE_ARRAY] = {
+    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+    0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15,
+    0, 10, 11, 12, 13, 14, 15,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+    0, 10, 11, 12, 13, 14, 15,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 };
+
+unsigned char hexin_calc_modbus_ascii( const unsigned char *pSrc, unsigned int len, unsigned char crc8 )
+{
+    unsigned int i = 0;
+    unsigned char crc = 0;
+
+    if ( ( i % 2 ) != 0 ) {
+        return 0;
+    }
+
+    for ( i=0; i<len; i+=2 ) {
+        crc += ( ascii2hex[ *( pSrc + i ) ] << 4 ) | ( ascii2hex[ *( pSrc + i + 1 ) ] );
+    }
+
+    return (~crc) + 0x01;
 }

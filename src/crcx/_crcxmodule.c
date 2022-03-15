@@ -1,6 +1,6 @@
 /*
 *********************************************************************************************************
-*                              		(c) Copyright 2017-2021, Hexin
+*                              		(c) Copyright 2017-2022, Hexin
 *                                           All Rights Reserved
 * File    : _crcxmodule.c
 * Author  : Heyn (heyunhuan@gmail.com)
