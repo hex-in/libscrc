@@ -73,6 +73,8 @@ setup(
 
     packages=['libscrc'],
 
+    install_requires=['wheel'],
+
     include_package_data=True,
 
     ext_modules=[Extension('libscrc._crcx',  sources=['src/crcx/_crcxmodule.c',   'src/crcx/_crcxtables.c'  ]),
