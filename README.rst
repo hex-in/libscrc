@@ -311,6 +311,10 @@ NOTICE
 ------ 
 * Revert gradually calculating function v1.4+ (2020-08-04) 
 
+V1.8.1(2022-08-18)
+++++++++++++++++++
+* PyArg_ParseTuple() and formats which use # require the PY_SSIZE_T_CLEAN macro since python 3.10  
+
 V1.8(2022-03-04)
 ++++++++++++++++++
 * New add modbus (ASCII) LRC checksum.  

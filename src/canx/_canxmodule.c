@@ -12,10 +12,12 @@
 *                       2020-04-27 [Heyn] Optimized Code.
 *                       2020-05-12 [Heyn] (Python2.7) FIX : Windows compilation error.
 *                       2020-08-04 [Heyn] Fixed Issues #4.
+*                       2022-08-18 [Heyn] Fix Python deprication (PY_SSIZE_T_CLEAN)
 *
 *********************************************************************************************************
 */
 
+#define PY_SSIZE_T_CLEAN
 #include <Python.h>
 #include "_canxtables.h"
 

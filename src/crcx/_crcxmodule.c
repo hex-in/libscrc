@@ -14,10 +14,12 @@
 *                       2020-08-04 [Heyn] Fixed Issues #4.
 *                       2021-06-07 [Heyn] Update gradually calculate functions.
 *                                         ( CRCx -> libscrc.umts12()  libscrc.crc12_3gpp() ).
+*                       2022-08-18 [Heyn] Fix Python deprication (PY_SSIZE_T_CLEAN)
 *
 *********************************************************************************************************
 */
 
+#define PY_SSIZE_T_CLEAN
 #include <Python.h>
 #include "_crcxtables.h"
 

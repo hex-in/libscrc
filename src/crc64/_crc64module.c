@@ -18,10 +18,12 @@
 *                       2020-08-04 [Heyn] Fixed Issues #4.
 *                       2020-11-18 [Heyn] Fixed (Python2) Parsing arguments has no 'p' type
 *                       2021-06-07 [Heyn] Add hacker64() reinit parameter. reinit=True -> Reinitialize the table
+*                       2022-08-18 [Heyn] Fix Python deprication (PY_SSIZE_T_CLEAN)
 *
 *********************************************************************************************************
 */
 
+#define PY_SSIZE_T_CLEAN
 #include <Python.h>
 #include "_crc64tables.h"
 
