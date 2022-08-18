@@ -77,12 +77,12 @@ setup(
 
     include_package_data=True,
 
-    ext_modules=[Extension('libscrc._crcx',  sources=['src/crcx/_crcxmodule.c',   'src/crcx/_crcxtables.c'], include_dirs=['src/crcx/_crcxtables.h' ]),
-                 Extension('libscrc._canx',  sources=['src/canx/_canxmodule.c',   'src/canx/_canxtables.c'], include_dirs=['src/canx/_canxtables.h' ]),
-                 Extension('libscrc._crc8',  sources=['src/crc8/_crc8module.c',   'src/crc8/_crc8tables.c'], include_dirs=['src/crc8/_crc8tables.h' ]),
-                 Extension('libscrc._crc16', sources=['src/crc16/_crc16module.c', 'src/crc16/_crc16tables.c'], include_dirs=['src/crc16/_crc16tables.h' ]),
-                 Extension('libscrc._crc24', sources=['src/crc24/_crc24module.c', 'src/crc24/_crc24tables.c'], include_dirs=['src/crc24/_crc24tables.h' ]),
-                 Extension('libscrc._crc32', sources=['src/crc32/_crc32module.c', 'src/crc32/_crc32tables.c'], include_dirs=['src/crc32/_crc32tables.h' ]),
-                 Extension('libscrc._crc64', sources=['src/crc64/_crc64module.c', 'src/crc64/_crc64tables.c'], include_dirs=['src/crc64/_crc64tables.h' ]),
+    ext_modules=[Extension('libscrc._crcx',  sources=['src/crcx/_crcxmodule.c',   'src/crcx/_crcxtables.c'], include_dirs=['src/crcx' ]),
+                 Extension('libscrc._canx',  sources=['src/canx/_canxmodule.c',   'src/canx/_canxtables.c'], include_dirs=['src/canx' ]),
+                 Extension('libscrc._crc8',  sources=['src/crc8/_crc8module.c',   'src/crc8/_crc8tables.c'], include_dirs=['src/crc8' ]),
+                 Extension('libscrc._crc16', sources=['src/crc16/_crc16module.c', 'src/crc16/_crc16tables.c'], include_dirs=['src/crc16' ]),
+                 Extension('libscrc._crc24', sources=['src/crc24/_crc24module.c', 'src/crc24/_crc24tables.c'], include_dirs=['src/crc24' ]),
+                 Extension('libscrc._crc32', sources=['src/crc32/_crc32module.c', 'src/crc32/_crc32tables.c'], include_dirs=['src/crc32' ]),
+                 Extension('libscrc._crc64', sources=['src/crc64/_crc64module.c', 'src/crc64/_crc64tables.c'], include_dirs=['src/crc64' ]),
                 ],
 )
