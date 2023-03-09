@@ -788,7 +788,7 @@ static PyMethodDef _crc16Methods[] = {
     { "v41_lsb",     (PyCFunction)_crc16_kermit,    METH_VARARGS, "Calculate V-41-LSB of CRC16 [Poly=0x1021, Init=0x0000 Xorout=0x0000 Refin=True Refout=True]" },
     { "mcrf4xx",     (PyCFunction)_crc16_mcrf4xx,   METH_VARARGS, "Calculate MCRF4XX of CRC16 [Poly=0x1021, Init=0xFFFF Xorout=0x0000 Refin=True Refout=True]" },
     { "sick",        (PyCFunction)_crc16_sick,      METH_VARARGS, "Calculate SICK of CRC16 [Poly=0x8005, Init=0x0000]" },
-    { "dnp",         (PyCFunction)_crc16_dnp,       METH_VARARGS, "Calculate DNP (Ues:M-Bus, ICE870) of CRC16 [Poly=0x3D65, Init=0x0000 Xorout=0xFFFF Refin=False Refout=False]" },
+    { "dnp",         (PyCFunction)_crc16_dnp,       METH_VARARGS, "Calculate DNP (Ues:M-Bus, ICE870) of CRC16 [Poly=0x3D65, Init=0x0000 Xorout=0xFFFF Refin=True Refout=True]" },
     { "x25",         (PyCFunction)_crc16_x25,       METH_VARARGS, "Calculate X25 of CRC16 [Poly=0x1021, Init=0xFFFF Xorout=0xFFFF Refin=True Refout=True]" },
     { "ibm_sdlc",    (PyCFunction)_crc16_x25,       METH_VARARGS, "Calculate IBM-SDLC of CRC16 [Poly=0x1021, Init=0xFFFF Xorout=0xFFFF Refin=True Refout=True]" },
     { "iso_hdlc16",  (PyCFunction)_crc16_x25,       METH_VARARGS, "Calculate ISO-HDLC of CRC16 [Poly=0x1021, Init=0xFFFF Xorout=0xFFFF Refin=True Refout=True]" },
