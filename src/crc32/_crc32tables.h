@@ -1,10 +1,10 @@
 /*
 *********************************************************************************************************
-*                              		(c) Copyright 2017-2022, Hexin
+*                              		(c) Copyright 2017-2024, Hexin
 *                                           All Rights Reserved
 * File    : _crc32tables.h
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V1.7
+* Version : V1.8
 *
 * LICENSING TERMS:
 * ---------------
@@ -12,6 +12,7 @@
 *                       2020-04-26 [Heyn] Optimized Code.
 *                       2020-08-04 [Heyn] Fixed Issues #4.
 *                       2021-06-07 [Heyn] Fixed Issues #8.
+*                       2023-12-31 [Heyn] Fixed Issues #17.
 *
 *********************************************************************************************************
 */
