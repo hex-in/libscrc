@@ -1,10 +1,10 @@
 /*
 *********************************************************************************************************
-*                              		(c) Copyright 2017-2022, Hexin
+*                              		(c) Copyright 2017-2024, Hexin
 *                                           All Rights Reserved
 * File    : _crcxmodule.c
 * Author  : Heyn (heyunhuan@gmail.com)
-* Version : V1.7
+* Version : V1.8
 *
 * LICENSING TERMS:
 * ---------------
@@ -15,6 +15,7 @@
 *                       2021-06-07 [Heyn] Update gradually calculate functions.
 *                                         ( CRCx -> libscrc.umts12()  libscrc.crc12_3gpp() ).
 *                       2022-08-18 [Heyn] Fix Python deprication (PY_SSIZE_T_CLEAN)
+*                       2023-12-31 [Heyn] ETSI TS 102 361 (B.3.13 7-bit CRC calculation)
 *
 *********************************************************************************************************
 */
@@ -236,6 +237,24 @@ static PyObject * _crc6_darc6( PyObject *self, PyObject *args )
     }
 
     return Py_BuildValue( "B", crc6_param_darc.result );
+}
+
+static PyObject * _crc7_rc7( PyObject *self, PyObject *args )
+{
+    static struct _hexin_crcx crc7_param_rc7 = { .is_initial=FALSE,
+                                                 .width  = 7,
+                                                 .poly   = 0x27,
+                                                 .init   = 0x00,
+                                                 .refin  = FALSE,
+                                                 .refout = FALSE,
+                                                 .xorout = 0x00,
+                                                 .result = 0 };
+
+    if ( !hexin_PyArg_ParseTuple_Paramete( self, args, &crc7_param_rc7 ) ) {
+        return NULL;
+    }
+
+    return Py_BuildValue( "B", crc7_param_rc7.result );
 }
 
 static PyObject * _crc7_mmc( PyObject *self, PyObject *args )
@@ -543,6 +562,7 @@ static PyMethodDef _crcxMethods[] = {
     { "itu6",    _crc6_itu,          METH_VARARGS, "Calculate ITU  of CRC6 [Poly=0x03 Initial=0x00 Xorout=0x00 Refin=True Refout=True]" },
     { "gsm6",    _crc6_gsm,          METH_VARARGS, "Calculate GSM  of CRC6 [Poly=0x2F Initial=0x00 Xorout=0x3F Refin=False Refout=False]" },
     { "darc6",   _crc6_darc6,        METH_VARARGS, "Calculate ROHC of CRC6 [Poly=0x19 Initial=0x00 Xorout=0x00 Refin=True Refout=True]"   },
+    { "rc7",     _crc7_rc7,          METH_VARARGS, "Calculate RC   of CRC7 [Poly=0x27 Initial=0x00 Xorout=0x00 Refin=False Refout=False]" },
     { "mmc",     _crc7_mmc,          METH_VARARGS, "Calculate MMC  of CRC7 [Poly=0x09 Initial=0x00 Xorout=0x00 Refin=False Refout=False]" },
     { "crc7",    _crc7_mmc,          METH_VARARGS, "Calculate CRC  of CRC7 [Poly=0x09 Initial=0x00 Xorout=0x00 Refin=False Refout=False]" },
     { "umts7",   _crc7_umts7,        METH_VARARGS, "Calculate UMTS of CRC7 [Poly=0x45 Initial=0x00 Xorout=0x00 Refin=False Refout=False]" },
@@ -581,6 +601,7 @@ PyDoc_STRVAR( _crcx_doc,
 "libscrc.itu6   -> Calculate ITU  of CRC6 [Poly=0x03 Initial=0x00 Xorout=0x00 Refin=True Refout=True]\n"
 "libscrc.gsm6   -> Calculate GSM  of CRC6 [Poly=0x2F Initial=0x00 Xorout=0x3F Refin=False Refout=False]\n"
 "libscrc.darc6  -> Calculate DARC of CRC6 [Poly=0x19 Initial=0x00 Xorout=0x00 Refin=True Refout=True]\n"
+"libscrc.rc7    -> Calculate RC   of CRC7 [Poly=0x27 Initial=0x00 Xorout=0x00 Refin=False Refout=False]\n"
 "libscrc.mmc    -> Calculate MMC  of CRC7 [Poly=0x09 Initial=0x00 Xorout=0x00 Refin=False Refout=False]\n"
 "libscrc.crc7   -> Calculate CRC  of CRC7 [Poly=0x09 Initial=0x00 Xorout=0x00 Refin=False Refout=False]\n"
 "libscrc.umts7  -> Calculate UMTS of CRC7 [Poly=0x45 Initial=0x00 Xorout=0x00 Refin=False Refout=False]\n"
