@@ -1,4 +1,7 @@
 ![](https://github.com/hex-in/libscrc/workflows/Python%20package/badge.svg)
+[![PyPI - Version](https://img.shields.io/pypi/v/libscrc.svg)](https://pypi.org/project/libscrc/)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/libscrc.svg)](https://pypi.org/project/libscrc/)
+[![PyPI - License](https://img.shields.io/pypi/l/libscrc.svg)](./LICENSE)
 
 libscrc
 =======
