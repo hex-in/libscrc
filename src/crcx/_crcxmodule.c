@@ -185,6 +185,38 @@ static PyObject * _crc5_usb( PyObject *self, PyObject *args )
     return Py_BuildValue( "B", crc5_param_usb5.result );
 }
 
+static PyObject * _crc5_cs( PyObject *self, PyObject *args )
+{
+    Py_buffer data = { NULL, NULL };
+    unsigned int sum = 0, i = 0;
+
+#if PY_MAJOR_VERSION >= 3
+    if ( !PyArg_ParseTuple( args, "y*", &data ) ) {
+        if ( data.obj ) {
+            PyBuffer_Release( &data );
+        }
+        return FALSE;
+    }
+#else
+    if ( !PyArg_ParseTuple( args, "s*", &data ) ) {
+        if ( data.obj ) {
+            PyBuffer_Release( &data );
+        }
+        return FALSE;
+    }
+#endif /* PY_MAJOR_VERSION */
+
+    if ( (unsigned int)data.len != 9 ) {
+        return FALSE;
+    }
+
+    for ( i=0; i<(unsigned int)data.len; i++ ) {
+        sum += (unsigned char)data.buf[i];
+    }
+
+    return Py_BuildValue( "B", sum % 31 );
+}
+
 static PyObject * _crc6_itu( PyObject *self, PyObject *args )
 {
     static struct _hexin_crcx crc6_param_itu6 = { .is_initial=FALSE,
@@ -559,6 +591,7 @@ static PyMethodDef _crcxMethods[] = {
     { "itu5",    _crc5_itu,          METH_VARARGS, "Calculate ITU  of CRC5 [Poly=0x15 Initial=0x00 Xorout=0x00 Refin=True Refout=True]" },
     { "epc",     _crc5_epc,          METH_VARARGS, "Calculate EPC  of CRC5 [Poly=0x09 Initial=0x09 Xorout=0x00 Refin=False Refout=False]" },
     { "usb5",    _crc5_usb,          METH_VARARGS, "Calculate USB  of CRC5 [Poly=0x05 Initial=0x1F Xorout=0x1F Refin=True Refout=True]" },
+    { "cs5",     _crc5_cs,           METH_VARARGS, "5-bit Checksum (CS) calculation" },
     { "itu6",    _crc6_itu,          METH_VARARGS, "Calculate ITU  of CRC6 [Poly=0x03 Initial=0x00 Xorout=0x00 Refin=True Refout=True]" },
     { "gsm6",    _crc6_gsm,          METH_VARARGS, "Calculate GSM  of CRC6 [Poly=0x2F Initial=0x00 Xorout=0x3F Refin=False Refout=False]" },
     { "darc6",   _crc6_darc6,        METH_VARARGS, "Calculate ROHC of CRC6 [Poly=0x19 Initial=0x00 Xorout=0x00 Refin=True Refout=True]"   },
@@ -598,6 +631,7 @@ PyDoc_STRVAR( _crcx_doc,
 "libscrc.itu5   -> Calculate ITU  of CRC5 [Poly=0x15 Initial=0x00 Xorout=0x00 Refin=True Refout=True]\n"
 "libscrc.epc    -> Calculate EPC  of CRC5 [Poly=0x09 Initial=0x09 Xorout=0x00 Refin=False Refout=False]\n"
 "libscrc.usb5   -> Calculate USB  of CRC5 [Poly=0x05 Initial=0x1F Xorout=0x1F Refin=True Refout=True]\n"
+"libscrc.cs5    -> https://www.etsi.org/deliver/etsi_ts/102300_102399/10236101/02.04.01_60/ts_10236101v020401p.pdf (B.3.11)\n"
 "libscrc.itu6   -> Calculate ITU  of CRC6 [Poly=0x03 Initial=0x00 Xorout=0x00 Refin=True Refout=True]\n"
 "libscrc.gsm6   -> Calculate GSM  of CRC6 [Poly=0x2F Initial=0x00 Xorout=0x3F Refin=False Refout=False]\n"
 "libscrc.darc6  -> Calculate DARC of CRC6 [Poly=0x19 Initial=0x00 Xorout=0x00 Refin=True Refout=True]\n"
