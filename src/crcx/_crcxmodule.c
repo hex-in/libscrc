@@ -188,6 +188,7 @@ static PyObject * _crc5_usb( PyObject *self, PyObject *args )
 static PyObject * _crc5_cs( PyObject *self, PyObject *args )
 {
     Py_buffer data = { NULL, NULL };
+    unsigned char *ptr = NULL;
     unsigned int sum = 0, i = 0;
 
 #if PY_MAJOR_VERSION >= 3
@@ -210,9 +211,13 @@ static PyObject * _crc5_cs( PyObject *self, PyObject *args )
         return FALSE;
     }
 
+    ptr = (unsigned char *)data.buf;
     for ( i=0; i<(unsigned int)data.len; i++ ) {
-        sum += (unsigned char)data.buf[i];
+        sum += ptr[i];
     }
+    
+    if ( data.obj )
+       PyBuffer_Release( &data );
 
     return Py_BuildValue( "B", sum % 31 );
 }
