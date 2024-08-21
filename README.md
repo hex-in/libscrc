@@ -67,6 +67,11 @@ Installation
 #export CFLAGS='-I/usr/include/python3 -I/usr/include/'
 
 #python3 setup.py bdist_wheel
+#
+#auditwheel repair dist/libscrc-1.8.1-cp311-cp311-linux_x86_64.whl
+#cd wheelhouse
+#ls 
+#libscrc-1.8.1-cp311-cp311-manylinux_2_5_x86_64.manylinux1_x86_64.whl
 ```
 
 3. After installation you can run unit tests to make sure that the library works fine.  Execute
